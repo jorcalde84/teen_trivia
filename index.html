@@ -809,6 +809,91 @@
     }
   }
 
+
+
+  /* ---------- GAME AUDIO + CELEBRATION LAYER ---------- */
+  .sound-toggle {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    z-index: 300;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 2px solid rgba(255,255,255,.72);
+    background: rgba(255,255,255,.78);
+    color: var(--mint-deep);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 12px 34px -18px rgba(0,0,0,.38), var(--shadow-soft);
+    border-radius: 999px;
+    padding: 10px 14px;
+    font-family: inherit;
+    font-size: .86rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+  }
+  .sound-toggle:hover { transform: translateY(-2px); background: rgba(255,255,255,.94); }
+  .sound-toggle .sound-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--mint-deep);
+    box-shadow: 0 0 0 4px rgba(85,139,114,.14);
+  }
+  .sound-toggle.muted .sound-dot {
+    background: var(--pop-red);
+    box-shadow: 0 0 0 4px rgba(238,75,43,.12);
+  }
+  .sound-toggle.muted { color: #8a200f; }
+  .confetti-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 250;
+    pointer-events: none;
+    display: none;
+  }
+  .confetti-canvas.active { display: block; }
+  .final.celebrating {
+    position: relative;
+    overflow: hidden;
+    animation: finalGlow 1.6s ease-in-out infinite alternate;
+  }
+  .final.celebrating::before,
+  .final.celebrating::after {
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    inset: auto;
+    pointer-events: none;
+    opacity: .38;
+    filter: blur(10px);
+  }
+  .final.celebrating::before {
+    width: 180px; height: 180px; background: var(--pop-yellow);
+    top: -60px; left: -50px;
+  }
+  .final.celebrating::after {
+    width: 210px; height: 210px; background: var(--pop-pink);
+    bottom: -80px; right: -60px;
+  }
+  @keyframes finalGlow {
+    from { box-shadow: var(--shadow-soft); transform: translateY(0); }
+    to { box-shadow: 0 24px 70px -26px rgba(255,70,162,.65), var(--shadow-soft); transform: translateY(-2px); }
+  }
+  @media (max-width: 600px) {
+    .sound-toggle {
+      top: 10px;
+      right: 10px;
+      padding: 9px 12px;
+      font-size: .78rem;
+    }
+    .sound-toggle .sound-label { display: none; }
+  }
+
   /* Small helpers */
   .muted { color: var(--mint-mid); }
   .row-flex { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
@@ -818,6 +903,9 @@
 </style>
 </head>
 <body>
+
+<canvas id="confettiCanvas" class="confetti-canvas" aria-hidden="true"></canvas>
+<button id="soundToggle" class="sound-toggle" type="button" onclick="toggleSound()" aria-label="Toggle game sound"><span class="sound-dot"></span><span class="sound-icon">🔊</span><span class="sound-label">Sound on</span></button>
 
 <div class="app">
 
@@ -1143,9 +1231,9 @@
   /* ========== EMBEDDED DEFAULT QUESTIONS ========== */
   /* These ship with the app so it works out-of-the-box even without uploading the JSON file. */
   const DEFAULT_PACK = {
-  "version": "1.0",
-  "title": "Teen Trivia – Custom Question Pack",
-  "exportedAt": "2026-05-01T13:21:15.612Z",
+  "version": "1.1",
+  "title": "Teen Trivia – Expanded Custom Question Pack",
+  "exportedAt": "2026-05-02T00:00:00.000Z",
   "questions": [
     {
       "category": "Pop Music",
@@ -7474,12 +7562,6503 @@
       ],
       "correctIndex": 2,
       "id": 502
+    },
+    {
+      "category": "TV Shows",
+      "question": "What is the name of Sheldon Cooper’s twin sister in Young Sheldon?",
+      "options": [
+        "Mary",
+        "Penny",
+        "Missy",
+        "Mandy"
+      ],
+      "correctIndex": 2,
+      "id": 503,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Young_Sheldon_logo.png"
+    },
+    {
+      "category": "TV Shows",
+      "question": "In Young Sheldon, which U.S. state does Sheldon’s family live in?",
+      "options": [
+        "Texas",
+        "New York",
+        "Florida",
+        "California"
+      ],
+      "correctIndex": 0,
+      "id": 504,
+      "imageUrl": "https://source.unsplash.com/640x420/?Texas+suburb+family+house"
+    },
+    {
+      "category": "TV Shows",
+      "question": "What subject is Young Sheldon especially brilliant at?",
+      "options": [
+        "Cooking",
+        "Drama",
+        "Art",
+        "Science"
+      ],
+      "correctIndex": 3,
+      "id": 505,
+      "imageUrl": "https://source.unsplash.com/640x420/?science+equations+classroom"
+    },
+    {
+      "category": "TV Shows",
+      "question": "What is Sheldon’s mum called in Young Sheldon?",
+      "options": [
+        "Mary",
+        "Paige",
+        "Meemaw",
+        "Mandy"
+      ],
+      "correctIndex": 0,
+      "id": 506,
+      "imageUrl": "https://source.unsplash.com/640x420/?mother+family+sitcom"
+    },
+    {
+      "category": "TV Shows",
+      "question": "What is Sheldon’s grandmother usually called in the show?",
+      "options": [
+        "Auntie",
+        "Nana",
+        "Meemaw",
+        "Grandma Jo"
+      ],
+      "correctIndex": 2,
+      "id": 507,
+      "imageUrl": "https://source.unsplash.com/640x420/?grandmother+smiling"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which fruit is shown in the picture?",
+      "options": [
+        "Pear",
+        "Peach",
+        "Plum",
+        "Apple"
+      ],
+      "correctIndex": 3,
+      "id": 508,
+      "imageUrl": "https://source.unsplash.com/640x420/?apple+fruit"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which yellow fruit is famous for being curved and easy to peel?",
+      "options": [
+        "Mango",
+        "Pineapple",
+        "Lemon",
+        "Banana"
+      ],
+      "correctIndex": 3,
+      "id": 509,
+      "imageUrl": "https://source.unsplash.com/640x420/?banana+fruit"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which fruit is often red outside and has tiny seeds on the skin?",
+      "options": [
+        "Watermelon",
+        "Strawberry",
+        "Raspberry",
+        "Cherry"
+      ],
+      "correctIndex": 1,
+      "id": 510,
+      "imageUrl": "https://source.unsplash.com/640x420/?strawberry+fruit"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which green fruit is also the name of a bird from New Zealand?",
+      "options": [
+        "Kiwi",
+        "Avocado",
+        "Lime",
+        "Pear"
+      ],
+      "correctIndex": 0,
+      "id": 511,
+      "imageUrl": "https://source.unsplash.com/640x420/?kiwi+fruit"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which fruit is usually orange and often used for juice?",
+      "options": [
+        "Peach",
+        "Orange",
+        "Mandarin",
+        "Apricot"
+      ],
+      "correctIndex": 1,
+      "id": 512,
+      "imageUrl": "https://source.unsplash.com/640x420/?orange+fruit"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which tropical fruit has a spiky outside and sweet yellow inside?",
+      "options": [
+        "Mango",
+        "Papaya",
+        "Pineapple",
+        "Durian"
+      ],
+      "correctIndex": 2,
+      "id": 513,
+      "imageUrl": "https://source.unsplash.com/640x420/?pineapple+fruit"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which fruit is famous for being used in guacamole?",
+      "options": [
+        "Zucchini",
+        "Pear",
+        "Cucumber",
+        "Avocado"
+      ],
+      "correctIndex": 3,
+      "id": 514,
+      "imageUrl": "https://source.unsplash.com/640x420/?avocado+fruit"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which fruit is often used to make lemonade?",
+      "options": [
+        "Lime",
+        "Orange",
+        "Grapefruit",
+        "Lemon"
+      ],
+      "correctIndex": 3,
+      "id": 515,
+      "imageUrl": "https://source.unsplash.com/640x420/?lemon+fruit"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which fruit can be red, green, or purple and grows in bunches?",
+      "options": [
+        "Blueberries",
+        "Grapes",
+        "Cherries",
+        "Olives"
+      ],
+      "correctIndex": 1,
+      "id": 516,
+      "imageUrl": "https://source.unsplash.com/640x420/?grapes+fruit"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which large fruit has green skin and red juicy flesh?",
+      "options": [
+        "Rockmelon",
+        "Watermelon",
+        "Papaya",
+        "Pumpkin"
+      ],
+      "correctIndex": 1,
+      "id": 517,
+      "imageUrl": "https://source.unsplash.com/640x420/?watermelon+fruit"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which vegetable is orange and loved by rabbits in cartoons?",
+      "options": [
+        "Pumpkin",
+        "Capsicum",
+        "Carrot",
+        "Sweet potato"
+      ],
+      "correctIndex": 2,
+      "id": 518,
+      "imageUrl": "https://source.unsplash.com/640x420/?carrot+vegetable"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which vegetable is made of small green tree-like florets?",
+      "options": [
+        "Spinach",
+        "Cauliflower",
+        "Asparagus",
+        "Broccoli"
+      ],
+      "correctIndex": 3,
+      "id": 519,
+      "imageUrl": "https://source.unsplash.com/640x420/?broccoli+vegetable"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which vegetable is often used to make French fries?",
+      "options": [
+        "Corn",
+        "Potato",
+        "Turnip",
+        "Carrot"
+      ],
+      "correctIndex": 1,
+      "id": 520,
+      "imageUrl": "https://source.unsplash.com/640x420/?potato+vegetable"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which leafy vegetable is often used in salads?",
+      "options": [
+        "Leek",
+        "Celery",
+        "Lettuce",
+        "Parsley"
+      ],
+      "correctIndex": 2,
+      "id": 521,
+      "imageUrl": "https://source.unsplash.com/640x420/?lettuce+salad"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which vegetable can make people cry when it is chopped?",
+      "options": [
+        "Onion",
+        "Ginger",
+        "Garlic",
+        "Radish"
+      ],
+      "correctIndex": 0,
+      "id": 522,
+      "imageUrl": "https://source.unsplash.com/640x420/?onion+vegetable"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which vegetable is purple and also called aubergine in Britain?",
+      "options": [
+        "Cabbage",
+        "Purple carrot",
+        "Beetroot",
+        "Eggplant"
+      ],
+      "correctIndex": 3,
+      "id": 523,
+      "imageUrl": "https://source.unsplash.com/640x420/?eggplant+vegetable"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which green vegetable is long and often eaten in sushi rolls?",
+      "options": [
+        "Cucumber",
+        "Asparagus",
+        "Zucchini",
+        "Celery"
+      ],
+      "correctIndex": 0,
+      "id": 524,
+      "imageUrl": "https://source.unsplash.com/640x420/?cucumber+vegetable"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which vegetable is yellow and grows on a cob?",
+      "options": [
+        "Corn",
+        "Capsicum",
+        "Squash",
+        "Pumpkin"
+      ],
+      "correctIndex": 0,
+      "id": 525,
+      "imageUrl": "https://source.unsplash.com/640x420/?corn+cob"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which red vegetable/fruit is commonly used in pasta sauce?",
+      "options": [
+        "Capsicum",
+        "Beetroot",
+        "Tomato",
+        "Chilli"
+      ],
+      "correctIndex": 2,
+      "id": 526,
+      "imageUrl": "https://source.unsplash.com/640x420/?tomato+vegetable"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which vegetable is famous for being used in pumpkin soup?",
+      "options": [
+        "Pumpkin",
+        "Sweet corn",
+        "Potato",
+        "Carrot"
+      ],
+      "correctIndex": 0,
+      "id": 527,
+      "imageUrl": "https://source.unsplash.com/640x420/?pumpkin+soup+vegetable"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which country is most associated with sushi?",
+      "options": [
+        "France",
+        "Mexico",
+        "Italy",
+        "Japan"
+      ],
+      "correctIndex": 3,
+      "id": 528,
+      "imageUrl": "https://source.unsplash.com/640x420/?sushi+platter"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which country is pizza most famously associated with?",
+      "options": [
+        "Italy",
+        "Germany",
+        "Spain",
+        "Greece"
+      ],
+      "correctIndex": 0,
+      "id": 529,
+      "imageUrl": "https://source.unsplash.com/640x420/?margherita+pizza"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which country is paella originally associated with?",
+      "options": [
+        "Spain",
+        "Chile",
+        "Portugal",
+        "France"
+      ],
+      "correctIndex": 0,
+      "id": 530,
+      "imageUrl": "https://source.unsplash.com/640x420/?paella+dish"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which country is croissant most famously linked with?",
+      "options": [
+        "Australia",
+        "France",
+        "Brazil",
+        "Italy"
+      ],
+      "correctIndex": 1,
+      "id": 531,
+      "imageUrl": "https://source.unsplash.com/640x420/?croissant+bakery"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which country is fish and chips strongly associated with?",
+      "options": [
+        "India",
+        "United Kingdom",
+        "Canada",
+        "Japan"
+      ],
+      "correctIndex": 1,
+      "id": 532,
+      "imageUrl": "https://source.unsplash.com/640x420/?fish+and+chips"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which country is empanada de pino strongly associated with?",
+      "options": [
+        "Norway",
+        "Chile",
+        "Thailand",
+        "France"
+      ],
+      "correctIndex": 1,
+      "id": 533,
+      "imageUrl": "https://source.unsplash.com/640x420/?chilean+empanada"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Australian dessert is made with meringue, cream, and fruit?",
+      "options": [
+        "Macaron",
+        "Lamington",
+        "Pavlova",
+        "Trifle"
+      ],
+      "correctIndex": 2,
+      "id": 534,
+      "imageUrl": "https://source.unsplash.com/640x420/?pavlova+dessert"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Australian treat is a sponge cake coated in chocolate and coconut?",
+      "options": [
+        "Pavlova",
+        "Scone",
+        "Lamington",
+        "Anzac biscuit"
+      ],
+      "correctIndex": 2,
+      "id": 535,
+      "imageUrl": "https://source.unsplash.com/640x420/?lamington+cake"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which British dessert is often made with sponge, custard, jelly, and cream?",
+      "options": [
+        "Tiramisu",
+        "Pavlova",
+        "Trifle",
+        "Churros"
+      ],
+      "correctIndex": 2,
+      "id": 536,
+      "imageUrl": "https://source.unsplash.com/640x420/?trifle+dessert"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Italian dessert is made with coffee-soaked biscuits and mascarpone?",
+      "options": [
+        "Flan",
+        "Panna cotta",
+        "Tiramisu",
+        "Crème brûlée"
+      ],
+      "correctIndex": 2,
+      "id": 537,
+      "imageUrl": "https://source.unsplash.com/640x420/?tiramisu+dessert"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which French dessert has a caramelised sugar top?",
+      "options": [
+        "Crème brûlée",
+        "Pavlova",
+        "Macaron",
+        "Tiramisu"
+      ],
+      "correctIndex": 0,
+      "id": 538,
+      "imageUrl": "https://source.unsplash.com/640x420/?creme+brulee"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Spanish food is small plates shared with friends?",
+      "options": [
+        "Risotto",
+        "Dim sum",
+        "Tapas",
+        "Pho"
+      ],
+      "correctIndex": 2,
+      "id": 539,
+      "imageUrl": "https://source.unsplash.com/640x420/?tapas+food"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Chilean stew often includes meat, pumpkin, corn, and potatoes?",
+      "options": [
+        "Minestrone",
+        "Paella",
+        "Ratatouille",
+        "Cazuela"
+      ],
+      "correctIndex": 3,
+      "id": 540,
+      "imageUrl": "https://source.unsplash.com/640x420/?chilean+cazuela+soup"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Italian dish is made with rice cooked until creamy?",
+      "options": [
+        "Risotto",
+        "Couscous",
+        "Gnocchi",
+        "Paella"
+      ],
+      "correctIndex": 0,
+      "id": 541,
+      "imageUrl": "https://source.unsplash.com/640x420/?risotto+dish"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which French vegetable stew became famous from a Pixar movie?",
+      "options": [
+        "Bouillabaisse",
+        "Ratatouille",
+        "Quiche",
+        "Cassoulet"
+      ],
+      "correctIndex": 1,
+      "id": 542,
+      "imageUrl": "https://source.unsplash.com/640x420/?ratatouille+dish"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which British baked food is often eaten with jam and cream?",
+      "options": [
+        "Bagel",
+        "Muffin",
+        "Taco",
+        "Scone"
+      ],
+      "correctIndex": 3,
+      "id": 543,
+      "imageUrl": "https://source.unsplash.com/640x420/?scone+jam+cream"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Australian biscuit is linked with ANZAC history?",
+      "options": [
+        "ANZAC biscuit",
+        "Shortbread",
+        "Macaron",
+        "Tim Tam"
+      ],
+      "correctIndex": 0,
+      "id": 544,
+      "imageUrl": "https://source.unsplash.com/640x420/?ANZAC+biscuits"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Italian pasta sauce is made with eggs, cheese, pepper, and cured pork?",
+      "options": [
+        "Napolitana",
+        "Bolognese",
+        "Carbonara",
+        "Pesto"
+      ],
+      "correctIndex": 2,
+      "id": 545,
+      "imageUrl": "https://source.unsplash.com/640x420/?carbonara+pasta"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Spanish cold soup is made mostly with tomato?",
+      "options": [
+        "Pho",
+        "Cazuela",
+        "Minestrone",
+        "Gazpacho"
+      ],
+      "correctIndex": 3,
+      "id": 546,
+      "imageUrl": "https://source.unsplash.com/640x420/?gazpacho+soup"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which French savoury tart often includes eggs, cream, and cheese?",
+      "options": [
+        "Curry",
+        "Quiche",
+        "Pizza",
+        "Paella"
+      ],
+      "correctIndex": 1,
+      "id": 547,
+      "imageUrl": "https://source.unsplash.com/640x420/?quiche+dish"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Chilean sandwich is often loaded with steak, avocado, tomato, and mayo?",
+      "options": [
+        "Burger",
+        "Croque monsieur",
+        "Churrasco Italiano",
+        "Banh mi"
+      ],
+      "correctIndex": 2,
+      "id": 548,
+      "imageUrl": "https://source.unsplash.com/640x420/?churrasco+italiano+sandwich"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Australian spread is dark, salty, and made from yeast extract?",
+      "options": [
+        "Vegemite",
+        "Peanut butter",
+        "Marmite only",
+        "Nutella"
+      ],
+      "correctIndex": 0,
+      "id": 549,
+      "imageUrl": "https://source.unsplash.com/640x420/?vegemite+toast"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Italian dumplings are usually made with potato?",
+      "options": [
+        "Tortellini",
+        "Ravioli",
+        "Arancini",
+        "Gnocchi"
+      ],
+      "correctIndex": 3,
+      "id": 550,
+      "imageUrl": "https://source.unsplash.com/640x420/?gnocchi+pasta"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which French soup is famous for onions, bread, and melted cheese?",
+      "options": [
+        "Pumpkin soup",
+        "French onion soup",
+        "Gazpacho",
+        "Miso soup"
+      ],
+      "correctIndex": 1,
+      "id": 551,
+      "imageUrl": "https://source.unsplash.com/640x420/?french+onion+soup"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Spanish sweet treat is often dipped in chocolate?",
+      "options": [
+        "Scones",
+        "Cannoli",
+        "Churros",
+        "Macarons"
+      ],
+      "correctIndex": 2,
+      "id": 552,
+      "imageUrl": "https://source.unsplash.com/640x420/?churros+chocolate"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Australian snack cake has chocolate cream between biscuits?",
+      "options": [
+        "Jaffa Cake",
+        "Tim Tam",
+        "Macaron",
+        "Lamington"
+      ],
+      "correctIndex": 1,
+      "id": 553,
+      "imageUrl": "https://source.unsplash.com/640x420/?Tim+Tam+biscuits"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Italian food is a folded pizza-like pocket?",
+      "options": [
+        "Lasagne",
+        "Focaccia",
+        "Calzone",
+        "Risotto"
+      ],
+      "correctIndex": 2,
+      "id": 554,
+      "imageUrl": "https://source.unsplash.com/640x420/?calzone+food"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which French bread is long and thin?",
+      "options": [
+        "Sourdough",
+        "Baguette",
+        "Ciabatta",
+        "Brioche bun"
+      ],
+      "correctIndex": 1,
+      "id": 555,
+      "imageUrl": "https://source.unsplash.com/640x420/?baguette+bread"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Chilean street food is a hot dog topped with avocado, tomato, and mayo?",
+      "options": [
+        "Taco",
+        "Corn dog",
+        "Completo",
+        "Sausage roll"
+      ],
+      "correctIndex": 2,
+      "id": 556,
+      "imageUrl": "https://source.unsplash.com/640x420/?chilean+completo+hot+dog"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Italian dessert is a tube-shaped pastry filled with sweet ricotta?",
+      "options": [
+        "Gelato",
+        "Tiramisu",
+        "Cannoli",
+        "Panna cotta"
+      ],
+      "correctIndex": 2,
+      "id": 557,
+      "imageUrl": "https://source.unsplash.com/640x420/?cannoli+dessert"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Australian party food is a small sausage wrapped in pastry?",
+      "options": [
+        "Empanada",
+        "Meat pie",
+        "Corn dog",
+        "Sausage roll"
+      ],
+      "correctIndex": 3,
+      "id": 558,
+      "imageUrl": "https://source.unsplash.com/640x420/?sausage+roll"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which French dessert is colourful and made with almond meringue shells?",
+      "options": [
+        "Macaron",
+        "Cupcake",
+        "Donut",
+        "Lamington"
+      ],
+      "correctIndex": 0,
+      "id": 559,
+      "imageUrl": "https://source.unsplash.com/640x420/?macaron+dessert"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Spanish dish is an omelette made with potato?",
+      "options": [
+        "Frittata",
+        "Quiche",
+        "Pancake",
+        "Tortilla española"
+      ],
+      "correctIndex": 3,
+      "id": 560,
+      "imageUrl": "https://source.unsplash.com/640x420/?spanish+tortilla+potato+omelette"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Italian frozen dessert is similar to ice cream?",
+      "options": [
+        "Gelato",
+        "Sorbet only",
+        "Custard",
+        "Mousse"
+      ],
+      "correctIndex": 0,
+      "id": 561,
+      "imageUrl": "https://source.unsplash.com/640x420/?gelato+ice+cream"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Australian hand-held savoury food is filled with minced meat and gravy?",
+      "options": [
+        "Meat pie",
+        "Scone",
+        "Croissant",
+        "Taco"
+      ],
+      "correctIndex": 0,
+      "id": 562,
+      "imageUrl": "https://source.unsplash.com/640x420/?australian+meat+pie"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which French sauce is made with butter, egg yolk, and lemon?",
+      "options": [
+        "Salsa",
+        "Soy sauce",
+        "Hollandaise",
+        "Pesto"
+      ],
+      "correctIndex": 2,
+      "id": 563,
+      "imageUrl": "https://source.unsplash.com/640x420/?hollandaise+sauce"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Chilean cake is soaked with three kinds of milk?",
+      "options": [
+        "Macaron",
+        "Pavlova",
+        "Tres leches cake",
+        "Tiramisu"
+      ],
+      "correctIndex": 2,
+      "id": 564,
+      "imageUrl": "https://source.unsplash.com/640x420/?tres+leches+cake"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which Italian pasta dish is layered with sauce, cheese, and flat pasta sheets?",
+      "options": [
+        "Risotto",
+        "Gnocchi",
+        "Lasagne",
+        "Carbonara"
+      ],
+      "correctIndex": 2,
+      "id": 565,
+      "imageUrl": "https://source.unsplash.com/640x420/?lasagne+dish"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which British meal is traditionally eaten on Sunday with roast meat and vegetables?",
+      "options": [
+        "Sushi",
+        "Paella",
+        "Tapas",
+        "Sunday roast"
+      ],
+      "correctIndex": 3,
+      "id": 566,
+      "imageUrl": "https://source.unsplash.com/640x420/?sunday+roast+dinner"
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which French dish is a seafood stew from Marseille?",
+      "options": [
+        "Ratatouille",
+        "Quiche",
+        "Cazuela",
+        "Bouillabaisse"
+      ],
+      "correctIndex": 3,
+      "id": 567,
+      "imageUrl": "https://source.unsplash.com/640x420/?bouillabaisse+soup"
+    },
+    {
+      "category": "Science & Space",
+      "question": "Which planet is closest to the Sun?",
+      "options": [
+        "Mercury",
+        "Jupiter",
+        "Mars",
+        "Venus"
+      ],
+      "correctIndex": 0,
+      "id": 568,
+      "imageUrl": "https://source.unsplash.com/640x420/?Mercury+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "Which planet is famous for its beautiful rings?",
+      "options": [
+        "Saturn",
+        "Earth",
+        "Uranus",
+        "Mars"
+      ],
+      "correctIndex": 0,
+      "id": 569,
+      "imageUrl": "https://source.unsplash.com/640x420/?Saturn+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "What do astronauts wear outside a spacecraft?",
+      "options": [
+        "Lab coat",
+        "Spacesuit",
+        "Raincoat",
+        "Diving suit"
+      ],
+      "correctIndex": 1,
+      "id": 570,
+      "imageUrl": "https://source.unsplash.com/640x420/?Spacesuit+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "What is the name of Earth’s natural satellite?",
+      "options": [
+        "The Moon",
+        "Mars",
+        "Pluto",
+        "The Sun"
+      ],
+      "correctIndex": 0,
+      "id": 571,
+      "imageUrl": "https://source.unsplash.com/640x420/?The+Moon+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "What galaxy do we live in?",
+      "options": [
+        "Andromeda",
+        "Whirlpool",
+        "Milky Way",
+        "Sombrero"
+      ],
+      "correctIndex": 2,
+      "id": 572,
+      "imageUrl": "https://source.unsplash.com/640x420/?Milky+Way+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "Which object gives Earth most of its light and heat?",
+      "options": [
+        "Jupiter",
+        "The Sun",
+        "The Moon",
+        "Sirius"
+      ],
+      "correctIndex": 1,
+      "id": 573,
+      "imageUrl": "https://source.unsplash.com/640x420/?The+Sun+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "What is a shooting star really called?",
+      "options": [
+        "Comet",
+        "Planet",
+        "Meteor",
+        "Galaxy"
+      ],
+      "correctIndex": 2,
+      "id": 574,
+      "imageUrl": "https://source.unsplash.com/640x420/?Meteor+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "Which planet is known for a giant storm called the Great Red Spot?",
+      "options": [
+        "Mars",
+        "Venus",
+        "Jupiter",
+        "Neptune"
+      ],
+      "correctIndex": 2,
+      "id": 575,
+      "imageUrl": "https://source.unsplash.com/640x420/?Jupiter+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "What force keeps planets moving around the Sun?",
+      "options": [
+        "Friction",
+        "Gravity",
+        "Magnetism",
+        "Electricity"
+      ],
+      "correctIndex": 1,
+      "id": 576,
+      "imageUrl": "https://source.unsplash.com/640x420/?Gravity+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "Which dwarf planet used to be called the ninth planet?",
+      "options": [
+        "Haumea",
+        "Pluto",
+        "Ceres",
+        "Eris"
+      ],
+      "correctIndex": 1,
+      "id": 577,
+      "imageUrl": "https://source.unsplash.com/640x420/?Pluto+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "What do we call a huge group of stars, gas, and dust?",
+      "options": [
+        "Moon",
+        "Rocket",
+        "Galaxy",
+        "Asteroid"
+      ],
+      "correctIndex": 2,
+      "id": 578,
+      "imageUrl": "https://source.unsplash.com/640x420/?Galaxy+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "Which planet is often called Earth’s twin because of its similar size?",
+      "options": [
+        "Venus",
+        "Mercury",
+        "Mars",
+        "Saturn"
+      ],
+      "correctIndex": 0,
+      "id": 579,
+      "imageUrl": "https://source.unsplash.com/640x420/?Venus+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "What machine is launched into space to orbit Earth?",
+      "options": [
+        "Satellite",
+        "Helicopter",
+        "Submarine",
+        "Tractor"
+      ],
+      "correctIndex": 0,
+      "id": 580,
+      "imageUrl": "https://source.unsplash.com/640x420/?Satellite+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "Which space telescope has taken many famous deep-space images?",
+      "options": [
+        "Hubble Space Telescope",
+        "Voyager Rover",
+        "Apollo Boat",
+        "Big Ben"
+      ],
+      "correctIndex": 0,
+      "id": 581,
+      "imageUrl": "https://source.unsplash.com/640x420/?Hubble+Space+Telescope+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "What do we call the path a planet takes around the Sun?",
+      "options": [
+        "Trail",
+        "Orbit",
+        "Track only",
+        "Spin"
+      ],
+      "correctIndex": 1,
+      "id": 582,
+      "imageUrl": "https://source.unsplash.com/640x420/?Orbit+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "Which planet is the farthest from the Sun?",
+      "options": [
+        "Neptune",
+        "Uranus",
+        "Jupiter",
+        "Saturn"
+      ],
+      "correctIndex": 0,
+      "id": 583,
+      "imageUrl": "https://source.unsplash.com/640x420/?Neptune+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "What is the first phase of the Moon when it is hard to see?",
+      "options": [
+        "Full Moon",
+        "Harvest Moon",
+        "New Moon",
+        "Blue Moon"
+      ],
+      "correctIndex": 2,
+      "id": 584,
+      "imageUrl": "https://source.unsplash.com/640x420/?New+Moon+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "What is the name for rocks that orbit the Sun, mostly between Mars and Jupiter?",
+      "options": [
+        "Comets only",
+        "Asteroids",
+        "Clouds",
+        "Moons"
+      ],
+      "correctIndex": 1,
+      "id": 585,
+      "imageUrl": "https://source.unsplash.com/640x420/?Asteroids+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "Which star is closest to Earth?",
+      "options": [
+        "The Sun",
+        "Polaris",
+        "Sirius",
+        "Betelgeuse"
+      ],
+      "correctIndex": 0,
+      "id": 586,
+      "imageUrl": "https://source.unsplash.com/640x420/?The+Sun+space"
+    },
+    {
+      "category": "Science & Space",
+      "question": "What do scientists call a planet outside our solar system?",
+      "options": [
+        "Moonlet",
+        "Subplanet",
+        "Comet",
+        "Exoplanet"
+      ],
+      "correctIndex": 3,
+      "id": 587,
+      "imageUrl": "https://source.unsplash.com/640x420/?Exoplanet+space"
+    },
+    {
+      "category": "Animals",
+      "question": "Which sea animal is shown?",
+      "options": [
+        "Dolphin",
+        "Seal",
+        "Shark",
+        "Tuna"
+      ],
+      "correctIndex": 0,
+      "id": 588,
+      "imageUrl": "https://source.unsplash.com/640x420/?dolphin+ocean"
+    },
+    {
+      "category": "Animals",
+      "question": "Which sea animal has eight arms?",
+      "options": [
+        "Jellyfish",
+        "Squid",
+        "Octopus",
+        "Starfish"
+      ],
+      "correctIndex": 2,
+      "id": 589,
+      "imageUrl": "https://source.unsplash.com/640x420/?octopus+underwater"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is the largest animal on Earth?",
+      "options": [
+        "Elephant",
+        "Giraffe",
+        "Whale shark",
+        "Blue whale"
+      ],
+      "correctIndex": 3,
+      "id": 590,
+      "imageUrl": "https://source.unsplash.com/640x420/?blue+whale"
+    },
+    {
+      "category": "Animals",
+      "question": "Which sea animal has a shell and can live a very long time?",
+      "options": [
+        "Otter",
+        "Sea turtle",
+        "Penguin",
+        "Seal"
+      ],
+      "correctIndex": 1,
+      "id": 591,
+      "imageUrl": "https://source.unsplash.com/640x420/?sea+turtle"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is known for a black-and-white tuxedo look and waddling?",
+      "options": [
+        "Penguin",
+        "Puffin",
+        "Duck",
+        "Swan"
+      ],
+      "correctIndex": 0,
+      "id": 592,
+      "imageUrl": "https://source.unsplash.com/640x420/?penguin"
+    },
+    {
+      "category": "Animals",
+      "question": "Which sea animal has a star-shaped body?",
+      "options": [
+        "Starfish",
+        "Coral",
+        "Crab",
+        "Sea urchin"
+      ],
+      "correctIndex": 0,
+      "id": 593,
+      "imageUrl": "https://source.unsplash.com/640x420/?starfish"
+    },
+    {
+      "category": "Animals",
+      "question": "Which sea animal has tentacles and can sting?",
+      "options": [
+        "Clownfish",
+        "Dolphin",
+        "Jellyfish",
+        "Seahorse"
+      ],
+      "correctIndex": 2,
+      "id": 594,
+      "imageUrl": "https://source.unsplash.com/640x420/?jellyfish"
+    },
+    {
+      "category": "Animals",
+      "question": "Which tiny sea creature is famous because males carry the babies?",
+      "options": [
+        "Clownfish",
+        "Seahorse",
+        "Prawn",
+        "Lobster"
+      ],
+      "correctIndex": 1,
+      "id": 595,
+      "imageUrl": "https://source.unsplash.com/640x420/?seahorse"
+    },
+    {
+      "category": "Animals",
+      "question": "Which sea animal is a mammal with whiskers and flippers?",
+      "options": [
+        "Ray",
+        "Octopus",
+        "Shark",
+        "Seal"
+      ],
+      "correctIndex": 3,
+      "id": 596,
+      "imageUrl": "https://source.unsplash.com/640x420/?seal+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which sea animal has a flat body and wing-like fins?",
+      "options": [
+        "Eel",
+        "Sea lion",
+        "Manta ray",
+        "Tuna"
+      ],
+      "correctIndex": 2,
+      "id": 597,
+      "imageUrl": "https://source.unsplash.com/640x420/?manta+ray"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is called the king of the jungle?",
+      "options": [
+        "Lion",
+        "Cheetah",
+        "Gorilla",
+        "Tiger"
+      ],
+      "correctIndex": 0,
+      "id": 598,
+      "imageUrl": "https://source.unsplash.com/640x420/?lion"
+    },
+    {
+      "category": "Animals",
+      "question": "Which land animal is the fastest runner?",
+      "options": [
+        "Leopard",
+        "Cheetah",
+        "Horse",
+        "Kangaroo"
+      ],
+      "correctIndex": 1,
+      "id": 599,
+      "imageUrl": "https://source.unsplash.com/640x420/?cheetah+running"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal has a long neck?",
+      "options": [
+        "Giraffe",
+        "Camel",
+        "Moose",
+        "Zebra"
+      ],
+      "correctIndex": 0,
+      "id": 600,
+      "imageUrl": "https://source.unsplash.com/640x420/?giraffe"
+    },
+    {
+      "category": "Animals",
+      "question": "Which large grey animal has a trunk?",
+      "options": [
+        "Rhino",
+        "Elephant",
+        "Hippo",
+        "Buffalo"
+      ],
+      "correctIndex": 1,
+      "id": 601,
+      "imageUrl": "https://source.unsplash.com/640x420/?elephant"
+    },
+    {
+      "category": "Animals",
+      "question": "Which striped animal looks like a horse?",
+      "options": [
+        "Okapi",
+        "Zebra",
+        "Donkey",
+        "Pony"
+      ],
+      "correctIndex": 1,
+      "id": 602,
+      "imageUrl": "https://source.unsplash.com/640x420/?zebra"
+    },
+    {
+      "category": "Animals",
+      "question": "Which Australian animal hops and has a pouch?",
+      "options": [
+        "Dingo",
+        "Koala",
+        "Kangaroo",
+        "Wombat"
+      ],
+      "correctIndex": 2,
+      "id": 603,
+      "imageUrl": "https://source.unsplash.com/640x420/?kangaroo"
+    },
+    {
+      "category": "Animals",
+      "question": "Which sleepy Australian animal eats eucalyptus leaves?",
+      "options": [
+        "Koala",
+        "Kangaroo",
+        "Platypus",
+        "Possum"
+      ],
+      "correctIndex": 0,
+      "id": 604,
+      "imageUrl": "https://source.unsplash.com/640x420/?koala"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is famous for black-and-white fur and eating bamboo?",
+      "options": [
+        "Polar bear",
+        "Raccoon",
+        "Giant panda",
+        "Koala"
+      ],
+      "correctIndex": 2,
+      "id": 605,
+      "imageUrl": "https://source.unsplash.com/640x420/?giant+panda"
+    },
+    {
+      "category": "Animals",
+      "question": "Which bear lives in the Arctic?",
+      "options": [
+        "Polar bear",
+        "Sun bear",
+        "Panda",
+        "Brown bear"
+      ],
+      "correctIndex": 0,
+      "id": 606,
+      "imageUrl": "https://source.unsplash.com/640x420/?polar+bear"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal has armour-like plates and can roll up?",
+      "options": [
+        "Armadillo",
+        "Porcupine",
+        "Badger",
+        "Meerkat"
+      ],
+      "correctIndex": 0,
+      "id": 607,
+      "imageUrl": "https://source.unsplash.com/640x420/?armadillo"
+    },
+    {
+      "category": "Animals",
+      "question": "Which farm animal gives us wool?",
+      "options": [
+        "Sheep",
+        "Horse",
+        "Goat",
+        "Cow"
+      ],
+      "correctIndex": 0,
+      "id": 608,
+      "imageUrl": "https://source.unsplash.com/640x420/?sheep+farm"
+    },
+    {
+      "category": "Animals",
+      "question": "Which farm animal is known for laying eggs?",
+      "options": [
+        "Chicken",
+        "Cow",
+        "Pig",
+        "Goat"
+      ],
+      "correctIndex": 0,
+      "id": 609,
+      "imageUrl": "https://source.unsplash.com/640x420/?chicken+farm"
+    },
+    {
+      "category": "Animals",
+      "question": "Which farm animal gives us milk?",
+      "options": [
+        "Turkey",
+        "Cow",
+        "Duck",
+        "Horse"
+      ],
+      "correctIndex": 1,
+      "id": 610,
+      "imageUrl": "https://source.unsplash.com/640x420/?cow+farm"
+    },
+    {
+      "category": "Animals",
+      "question": "Which farm animal says “neigh”?",
+      "options": [
+        "Pig",
+        "Sheep",
+        "Goose",
+        "Horse"
+      ],
+      "correctIndex": 3,
+      "id": 611,
+      "imageUrl": "https://source.unsplash.com/640x420/?horse+farm"
+    },
+    {
+      "category": "Animals",
+      "question": "Which farm animal has a curly tail and loves mud?",
+      "options": [
+        "Goat",
+        "Llama",
+        "Pig",
+        "Cow"
+      ],
+      "correctIndex": 2,
+      "id": 612,
+      "imageUrl": "https://source.unsplash.com/640x420/?pig+farm"
+    },
+    {
+      "category": "Animals",
+      "question": "Which farm animal has horns and often climbs well?",
+      "options": [
+        "Cow",
+        "Sheep",
+        "Donkey",
+        "Goat"
+      ],
+      "correctIndex": 3,
+      "id": 613,
+      "imageUrl": "https://source.unsplash.com/640x420/?goat+farm"
+    },
+    {
+      "category": "Animals",
+      "question": "Which bird is famous for colourful tail feathers?",
+      "options": [
+        "Flamingo",
+        "Parrot",
+        "Peacock",
+        "Eagle"
+      ],
+      "correctIndex": 2,
+      "id": 614,
+      "imageUrl": "https://source.unsplash.com/640x420/?peacock"
+    },
+    {
+      "category": "Animals",
+      "question": "Which bird can mimic human speech?",
+      "options": [
+        "Owl",
+        "Parrot",
+        "Penguin",
+        "Swan"
+      ],
+      "correctIndex": 1,
+      "id": 615,
+      "imageUrl": "https://source.unsplash.com/640x420/?parrot"
+    },
+    {
+      "category": "Animals",
+      "question": "Which bird is known for silent flight and big eyes?",
+      "options": [
+        "Eagle",
+        "Crow",
+        "Duck",
+        "Owl"
+      ],
+      "correctIndex": 3,
+      "id": 616,
+      "imageUrl": "https://source.unsplash.com/640x420/?owl"
+    },
+    {
+      "category": "Animals",
+      "question": "Which bird is a symbol of peace?",
+      "options": [
+        "Falcon",
+        "Emu",
+        "Dove",
+        "Raven"
+      ],
+      "correctIndex": 2,
+      "id": 617,
+      "imageUrl": "https://source.unsplash.com/640x420/?dove+bird"
+    },
+    {
+      "category": "Animals",
+      "question": "Which bird is Australia’s largest native bird?",
+      "options": [
+        "Emu",
+        "Magpie",
+        "Cockatoo",
+        "Kookaburra"
+      ],
+      "correctIndex": 0,
+      "id": 618,
+      "imageUrl": "https://source.unsplash.com/640x420/?emu+australia"
+    },
+    {
+      "category": "Animals",
+      "question": "Which Australian bird laughs loudly?",
+      "options": [
+        "Galah",
+        "Pelican",
+        "Kookaburra",
+        "Ibis"
+      ],
+      "correctIndex": 2,
+      "id": 619,
+      "imageUrl": "https://source.unsplash.com/640x420/?kookaburra"
+    },
+    {
+      "category": "Animals",
+      "question": "Which pink bird often stands on one leg?",
+      "options": [
+        "Flamingo",
+        "Ibis",
+        "Heron",
+        "Swan"
+      ],
+      "correctIndex": 0,
+      "id": 620,
+      "imageUrl": "https://source.unsplash.com/640x420/?flamingo"
+    },
+    {
+      "category": "Animals",
+      "question": "Which bird is known for catching fish with a big pouch under its beak?",
+      "options": [
+        "Goose",
+        "Puffin",
+        "Pelican",
+        "Duck"
+      ],
+      "correctIndex": 2,
+      "id": 621,
+      "imageUrl": "https://source.unsplash.com/640x420/?pelican"
+    },
+    {
+      "category": "Animals",
+      "question": "Which bird of prey is often a symbol of strength?",
+      "options": [
+        "Pigeon",
+        "Swan",
+        "Eagle",
+        "Sparrow"
+      ],
+      "correctIndex": 2,
+      "id": 622,
+      "imageUrl": "https://source.unsplash.com/640x420/?eagle"
+    },
+    {
+      "category": "Animals",
+      "question": "Which flying mammal uses echolocation?",
+      "options": [
+        "Owl",
+        "Flying squirrel",
+        "Bee",
+        "Bat"
+      ],
+      "correctIndex": 3,
+      "id": 623,
+      "imageUrl": "https://source.unsplash.com/640x420/?bat+flying"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal can change colour to blend into its surroundings?",
+      "options": [
+        "Frog",
+        "Chameleon",
+        "Gecko",
+        "Iguana"
+      ],
+      "correctIndex": 1,
+      "id": 624,
+      "imageUrl": "https://source.unsplash.com/640x420/?Chameleon+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is famous for a black mask around its eyes?",
+      "options": [
+        "Otter",
+        "Meerkat",
+        "Badger",
+        "Raccoon"
+      ],
+      "correctIndex": 3,
+      "id": 625,
+      "imageUrl": "https://source.unsplash.com/640x420/?Raccoon+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which insect makes honey?",
+      "options": [
+        "Ant",
+        "Bee",
+        "Butterfly",
+        "Dragonfly"
+      ],
+      "correctIndex": 1,
+      "id": 626,
+      "imageUrl": "https://source.unsplash.com/640x420/?Bee+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which insect starts life as a caterpillar?",
+      "options": [
+        "Mosquito",
+        "Butterfly",
+        "Ladybird",
+        "Bee"
+      ],
+      "correctIndex": 1,
+      "id": 627,
+      "imageUrl": "https://source.unsplash.com/640x420/?Butterfly+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal builds dams in rivers?",
+      "options": [
+        "Seal",
+        "Beaver",
+        "Platypus",
+        "Otter"
+      ],
+      "correctIndex": 1,
+      "id": 628,
+      "imageUrl": "https://source.unsplash.com/640x420/?Beaver+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which Australian animal lays eggs and has a duck-like bill?",
+      "options": [
+        "Platypus",
+        "Echidna",
+        "Dingo",
+        "Wombat"
+      ],
+      "correctIndex": 0,
+      "id": 629,
+      "imageUrl": "https://source.unsplash.com/640x420/?Platypus+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which spiky Australian mammal lays eggs?",
+      "options": [
+        "Quokka",
+        "Echidna",
+        "Possum",
+        "Koala"
+      ],
+      "correctIndex": 1,
+      "id": 630,
+      "imageUrl": "https://source.unsplash.com/640x420/?Echidna+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is known as “the ship of the desert”?",
+      "options": [
+        "Donkey",
+        "Horse",
+        "Llama",
+        "Camel"
+      ],
+      "correctIndex": 3,
+      "id": 631,
+      "imageUrl": "https://source.unsplash.com/640x420/?Camel+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is famous for black-and-white stripes and lives in Asia?",
+      "options": [
+        "Jaguar",
+        "Tiger",
+        "Lion",
+        "Cheetah"
+      ],
+      "correctIndex": 1,
+      "id": 632,
+      "imageUrl": "https://source.unsplash.com/640x420/?Tiger+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which big cat is black-spotted and very good at climbing?",
+      "options": [
+        "Cheetah",
+        "Lion",
+        "Leopard",
+        "Puma"
+      ],
+      "correctIndex": 2,
+      "id": 633,
+      "imageUrl": "https://source.unsplash.com/640x420/?Leopard+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal has a horn on its nose?",
+      "options": [
+        "Elephant",
+        "Rhinoceros",
+        "Buffalo",
+        "Hippo"
+      ],
+      "correctIndex": 1,
+      "id": 634,
+      "imageUrl": "https://source.unsplash.com/640x420/?Rhinoceros+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal spends lots of time in water and has a huge mouth?",
+      "options": [
+        "Crocodile",
+        "Hippopotamus",
+        "Rhino",
+        "Seal"
+      ],
+      "correctIndex": 1,
+      "id": 635,
+      "imageUrl": "https://source.unsplash.com/640x420/?Hippopotamus+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which reptile has a long body and no legs?",
+      "options": [
+        "Lizard",
+        "Turtle",
+        "Snake",
+        "Frog"
+      ],
+      "correctIndex": 2,
+      "id": 636,
+      "imageUrl": "https://source.unsplash.com/640x420/?Snake+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which reptile has a hard shell?",
+      "options": [
+        "Snake",
+        "Gecko",
+        "Crocodile",
+        "Turtle"
+      ],
+      "correctIndex": 3,
+      "id": 637,
+      "imageUrl": "https://source.unsplash.com/640x420/?Turtle+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which reptile is known for a powerful bite and living near water?",
+      "options": [
+        "Crocodile",
+        "Skink",
+        "Turtle",
+        "Iguana"
+      ],
+      "correctIndex": 0,
+      "id": 638,
+      "imageUrl": "https://source.unsplash.com/640x420/?Crocodile+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which amphibian often says “ribbit”?",
+      "options": [
+        "Lizard",
+        "Frog",
+        "Toad",
+        "Newt"
+      ],
+      "correctIndex": 1,
+      "id": 639,
+      "imageUrl": "https://source.unsplash.com/640x420/?Frog+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is known for black-and-white colouring and a strong smell?",
+      "options": [
+        "Badger",
+        "Raccoon",
+        "Skunk",
+        "Otter"
+      ],
+      "correctIndex": 2,
+      "id": 640,
+      "imageUrl": "https://source.unsplash.com/640x420/?Skunk+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which small animal stores food in cheek pouches?",
+      "options": [
+        "Hamster",
+        "Mouse",
+        "Guinea pig",
+        "Rabbit"
+      ],
+      "correctIndex": 0,
+      "id": 641,
+      "imageUrl": "https://source.unsplash.com/640x420/?Hamster+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is a popular pet and loves to hop?",
+      "options": [
+        "Turtle",
+        "Cat",
+        "Dog",
+        "Rabbit"
+      ],
+      "correctIndex": 3,
+      "id": 642,
+      "imageUrl": "https://source.unsplash.com/640x420/?Rabbit+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is famous for being loyal and wagging its tail?",
+      "options": [
+        "Horse",
+        "Rabbit",
+        "Dog",
+        "Cat"
+      ],
+      "correctIndex": 2,
+      "id": 643,
+      "imageUrl": "https://source.unsplash.com/640x420/?Dog+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which pet often purrs?",
+      "options": [
+        "Dog",
+        "Guinea pig",
+        "Cat",
+        "Parrot"
+      ],
+      "correctIndex": 2,
+      "id": 644,
+      "imageUrl": "https://source.unsplash.com/640x420/?Cat+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is called a joey when it is a baby?",
+      "options": [
+        "Kangaroo",
+        "Cow",
+        "Lion",
+        "Penguin"
+      ],
+      "correctIndex": 0,
+      "id": 645,
+      "imageUrl": "https://source.unsplash.com/640x420/?Kangaroo+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal’s baby is called a calf?",
+      "options": [
+        "Duck",
+        "Cow",
+        "Cat",
+        "Chicken"
+      ],
+      "correctIndex": 1,
+      "id": 646,
+      "imageUrl": "https://source.unsplash.com/640x420/?Cow+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal’s baby is called a foal?",
+      "options": [
+        "Sheep",
+        "Pig",
+        "Horse",
+        "Goat"
+      ],
+      "correctIndex": 2,
+      "id": 647,
+      "imageUrl": "https://source.unsplash.com/640x420/?Horse+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is known for a very long memory?",
+      "options": [
+        "Chicken",
+        "Rabbit",
+        "Snake",
+        "Elephant"
+      ],
+      "correctIndex": 3,
+      "id": 648,
+      "imageUrl": "https://source.unsplash.com/640x420/?Elephant+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is the tallest in the world?",
+      "options": [
+        "Camel",
+        "Giraffe",
+        "Elephant",
+        "Horse"
+      ],
+      "correctIndex": 1,
+      "id": 649,
+      "imageUrl": "https://source.unsplash.com/640x420/?Giraffe+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which fish is famous for living in an anemone?",
+      "options": [
+        "Tuna",
+        "Clownfish",
+        "Goldfish",
+        "Eel"
+      ],
+      "correctIndex": 1,
+      "id": 650,
+      "imageUrl": "https://source.unsplash.com/640x420/?Clownfish+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which fish is known for a long sharp bill like a sword?",
+      "options": [
+        "Swordfish",
+        "Cod",
+        "Salmon",
+        "Carp"
+      ],
+      "correctIndex": 0,
+      "id": 651,
+      "imageUrl": "https://source.unsplash.com/640x420/?Swordfish+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which sea animal has claws and a hard shell?",
+      "options": [
+        "Seal",
+        "Crab",
+        "Jellyfish",
+        "Dolphin"
+      ],
+      "correctIndex": 1,
+      "id": 652,
+      "imageUrl": "https://source.unsplash.com/640x420/?Crab+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which sea animal is famous for walking sideways?",
+      "options": [
+        "Octopus",
+        "Lobster",
+        "Crab",
+        "Turtle"
+      ],
+      "correctIndex": 2,
+      "id": 653,
+      "imageUrl": "https://source.unsplash.com/640x420/?Crab+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is a black-and-white bear-like marsupial? Trick question!",
+      "options": [
+        "Panda",
+        "Koala",
+        "There is no such animal",
+        "Wombat"
+      ],
+      "correctIndex": 2,
+      "id": 654,
+      "imageUrl": "https://source.unsplash.com/640x420/?There+is+no+such+animal+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which bird is black and white and cannot fly?",
+      "options": [
+        "Penguin",
+        "Ostrich",
+        "Kiwi",
+        "Emu"
+      ],
+      "correctIndex": 0,
+      "id": 655,
+      "imageUrl": "https://source.unsplash.com/640x420/?Penguin+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which bird is the fastest when diving?",
+      "options": [
+        "Peregrine falcon",
+        "Owl",
+        "Eagle",
+        "Kookaburra"
+      ],
+      "correctIndex": 0,
+      "id": 656,
+      "imageUrl": "https://source.unsplash.com/640x420/?Peregrine+falcon+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which bird is famous for delivering babies in old cartoons?",
+      "options": [
+        "Stork",
+        "Swan",
+        "Crow",
+        "Duck"
+      ],
+      "correctIndex": 0,
+      "id": 657,
+      "imageUrl": "https://source.unsplash.com/640x420/?Stork+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal has quills?",
+      "options": [
+        "Meerkat",
+        "Beaver",
+        "Porcupine",
+        "Otter"
+      ],
+      "correctIndex": 2,
+      "id": 658,
+      "imageUrl": "https://source.unsplash.com/640x420/?Porcupine+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal stands upright in groups and lives in southern Africa?",
+      "options": [
+        "Mongoose",
+        "Prairie dog",
+        "Meerkat",
+        "Ferret"
+      ],
+      "correctIndex": 2,
+      "id": 659,
+      "imageUrl": "https://source.unsplash.com/640x420/?Meerkat+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which Australian animal is called the “world’s happiest animal” online?",
+      "options": [
+        "Quokka",
+        "Koala",
+        "Bilby",
+        "Wombat"
+      ],
+      "correctIndex": 0,
+      "id": 660,
+      "imageUrl": "https://source.unsplash.com/640x420/?Quokka+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal has a pouch and is a marsupial?",
+      "options": [
+        "Rabbit",
+        "Deer",
+        "Fox",
+        "Wallaby"
+      ],
+      "correctIndex": 3,
+      "id": 661,
+      "imageUrl": "https://source.unsplash.com/640x420/?Wallaby+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is known for a black-and-white face and digging burrows?",
+      "options": [
+        "Badger",
+        "Beaver",
+        "Otter",
+        "Ferret"
+      ],
+      "correctIndex": 0,
+      "id": 662,
+      "imageUrl": "https://source.unsplash.com/640x420/?Badger+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which insect has bright red wings with black spots?",
+      "options": [
+        "Bee",
+        "Ladybird",
+        "Dragonfly",
+        "Moth"
+      ],
+      "correctIndex": 1,
+      "id": 663,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ladybird+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which insect is famous for carrying leaves and working in colonies?",
+      "options": [
+        "Fly",
+        "Butterfly",
+        "Bee",
+        "Ant"
+      ],
+      "correctIndex": 3,
+      "id": 664,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ant+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which flying insect has large colourful wings and rests with wings open?",
+      "options": [
+        "Butterfly",
+        "Moth",
+        "Dragonfly",
+        "Bee"
+      ],
+      "correctIndex": 0,
+      "id": 665,
+      "imageUrl": "https://source.unsplash.com/640x420/?Butterfly+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which insect has a long body and two pairs of clear wings near ponds?",
+      "options": [
+        "Dragonfly",
+        "Ladybird",
+        "Ant",
+        "Mosquito"
+      ],
+      "correctIndex": 0,
+      "id": 666,
+      "imageUrl": "https://source.unsplash.com/640x420/?Dragonfly+animal"
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is a baby dog?",
+      "options": [
+        "Foal",
+        "Puppy",
+        "Calf",
+        "Kitten"
+      ],
+      "correctIndex": 1,
+      "id": 667,
+      "imageUrl": "https://source.unsplash.com/640x420/?Puppy+animal"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What colour is SpongeBob SquarePants?",
+      "options": [
+        "Green",
+        "Yellow",
+        "Pink",
+        "Blue"
+      ],
+      "correctIndex": 1,
+      "id": 668,
+      "imageUrl": "https://source.unsplash.com/640x420/?Yellow+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Where does SpongeBob live?",
+      "options": [
+        "A castle",
+        "A spaceship",
+        "A treehouse",
+        "A pineapple under the sea"
+      ],
+      "correctIndex": 3,
+      "id": 669,
+      "imageUrl": "https://source.unsplash.com/640x420/?A+pineapple+under+the+sea+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What type of animal is Bluey?",
+      "options": [
+        "Koala",
+        "Kangaroo",
+        "Blue Heeler dog",
+        "Cat"
+      ],
+      "correctIndex": 2,
+      "id": 670,
+      "imageUrl": "https://source.unsplash.com/640x420/?Blue+Heeler+dog+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What is Bluey’s little sister called?",
+      "options": [
+        "Bingo",
+        "Coco",
+        "Muffin",
+        "Chilli"
+      ],
+      "correctIndex": 0,
+      "id": 671,
+      "imageUrl": "https://source.unsplash.com/640x420/?Bingo+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What is Peppa Pig’s little brother called?",
+      "options": [
+        "Pedro",
+        "Danny",
+        "Freddy",
+        "George"
+      ],
+      "correctIndex": 3,
+      "id": 672,
+      "imageUrl": "https://source.unsplash.com/640x420/?George+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What animal is Peppa?",
+      "options": [
+        "Pig",
+        "Dog",
+        "Sheep",
+        "Rabbit"
+      ],
+      "correctIndex": 0,
+      "id": 673,
+      "imageUrl": "https://source.unsplash.com/640x420/?Pig+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which Australian children’s music group sings “Hot Potato”?",
+      "options": [
+        "Hi-5",
+        "The Wiggles",
+        "The Beatles",
+        "Bluey Band"
+      ],
+      "correctIndex": 1,
+      "id": 674,
+      "imageUrl": "https://source.unsplash.com/640x420/?The+Wiggles+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What colour skivvy is usually linked with Emma Wiggle?",
+      "options": [
+        "Blue",
+        "Yellow",
+        "Red",
+        "Purple"
+      ],
+      "correctIndex": 1,
+      "id": 675,
+      "imageUrl": "https://source.unsplash.com/640x420/?Yellow+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "In Ben and Holly’s Little Kingdom, what is Holly?",
+      "options": [
+        "A robot",
+        "A fairy princess",
+        "A mermaid",
+        "A pirate"
+      ],
+      "correctIndex": 1,
+      "id": 676,
+      "imageUrl": "https://source.unsplash.com/640x420/?A+fairy+princess+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "In Ben and Holly’s Little Kingdom, what is Ben?",
+      "options": [
+        "A dragon",
+        "A fairy",
+        "A wizard",
+        "An elf"
+      ],
+      "correctIndex": 3,
+      "id": 677,
+      "imageUrl": "https://source.unsplash.com/640x420/?An+elf+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What kind of house does Gabby enter in Gabby’s Dollhouse?",
+      "options": [
+        "A school bus",
+        "A magical dollhouse",
+        "A castle",
+        "A submarine"
+      ],
+      "correctIndex": 1,
+      "id": 678,
+      "imageUrl": "https://source.unsplash.com/640x420/?A+magical+dollhouse+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which Gabby’s Dollhouse character is a cat-mermaid?",
+      "options": [
+        "Pandy Paws",
+        "MerCat",
+        "CatRat",
+        "Cakey"
+      ],
+      "correctIndex": 1,
+      "id": 679,
+      "imageUrl": "https://source.unsplash.com/640x420/?MerCat+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which phrase became a viral number trend among kids in 2025?",
+      "options": [
+        "1-2",
+        "6-7",
+        "9-9",
+        "3-4"
+      ],
+      "correctIndex": 1,
+      "id": 680,
+      "imageUrl": "https://source.unsplash.com/640x420/?6-7+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What app is famous for short viral dances and trends?",
+      "options": [
+        "Google Maps",
+        "TikTok",
+        "Wikipedia",
+        "LinkedIn"
+      ],
+      "correctIndex": 1,
+      "id": 681,
+      "imageUrl": "https://source.unsplash.com/640x420/?TikTok+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What do people often say when a post gets very popular online?",
+      "options": [
+        "It went invisible",
+        "It went viral",
+        "It went offline",
+        "It went sleepy"
+      ],
+      "correctIndex": 1,
+      "id": 682,
+      "imageUrl": "https://source.unsplash.com/640x420/?It+went+viral+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which show features Wednesday Addams at Nevermore Academy?",
+      "options": [
+        "iCarly",
+        "Victorious",
+        "Wednesday",
+        "Stranger Things"
+      ],
+      "correctIndex": 2,
+      "id": 683,
+      "imageUrl": "https://source.unsplash.com/640x420/?Wednesday+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which show is set in Hawkins and has a group of kids facing strange monsters?",
+      "options": [
+        "The Wiggles",
+        "Bluey",
+        "Young Sheldon",
+        "Stranger Things"
+      ],
+      "correctIndex": 3,
+      "id": 684,
+      "imageUrl": "https://source.unsplash.com/640x420/?Stranger+Things+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which character in Stranger Things is known as Eleven?",
+      "options": [
+        "A girl with powers",
+        "A teacher",
+        "A dog",
+        "A robot"
+      ],
+      "correctIndex": 0,
+      "id": 685,
+      "imageUrl": "https://source.unsplash.com/640x420/?A+girl+with+powers+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which sitcom follows a young genius growing up in Texas?",
+      "options": [
+        "Heartstopper",
+        "Bluey",
+        "Wednesday",
+        "Young Sheldon"
+      ],
+      "correctIndex": 3,
+      "id": 686,
+      "imageUrl": "https://source.unsplash.com/640x420/?Young+Sheldon+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What is Sheldon Cooper famous for loving?",
+      "options": [
+        "Ballet",
+        "Cooking only",
+        "Science",
+        "Surfing"
+      ],
+      "correctIndex": 2,
+      "id": 687,
+      "imageUrl": "https://source.unsplash.com/640x420/?Science+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which show features a family called the Heelers?",
+      "options": [
+        "Bluey",
+        "The Simpsons",
+        "SpongeBob",
+        "Peppa Pig"
+      ],
+      "correctIndex": 0,
+      "id": 688,
+      "imageUrl": "https://source.unsplash.com/640x420/?Bluey+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which cartoon family includes Homer, Marge, Bart, Lisa, and Maggie?",
+      "options": [
+        "The Heelers",
+        "The Griffins",
+        "The Simpsons",
+        "The Addams Family"
+      ],
+      "correctIndex": 2,
+      "id": 689,
+      "imageUrl": "https://source.unsplash.com/640x420/?The+Simpsons+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which classic show has a yellow family living in Springfield?",
+      "options": [
+        "Peppa Pig",
+        "Bluey",
+        "Friends",
+        "The Simpsons"
+      ],
+      "correctIndex": 3,
+      "id": 690,
+      "imageUrl": "https://source.unsplash.com/640x420/?The+Simpsons+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which animated show features Finn and Jake?",
+      "options": [
+        "Adventure Time",
+        "Bluey",
+        "SpongeBob",
+        "Gravity Falls"
+      ],
+      "correctIndex": 0,
+      "id": 691,
+      "imageUrl": "https://source.unsplash.com/640x420/?Adventure+Time+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which show has twins Dipper and Mabel visiting a strange town?",
+      "options": [
+        "Adventure Time",
+        "iCarly",
+        "Wednesday",
+        "Gravity Falls"
+      ],
+      "correctIndex": 3,
+      "id": 692,
+      "imageUrl": "https://source.unsplash.com/640x420/?Gravity+Falls+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which show features Phineas and Ferb building wild inventions?",
+      "options": [
+        "The Wiggles",
+        "Bluey",
+        "Young Sheldon",
+        "Phineas and Ferb"
+      ],
+      "correctIndex": 3,
+      "id": 693,
+      "imageUrl": "https://source.unsplash.com/640x420/?Phineas+and+Ferb+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which show has a platypus secret agent called Perry?",
+      "options": [
+        "SpongeBob",
+        "Gabby’s Dollhouse",
+        "Peppa Pig",
+        "Phineas and Ferb"
+      ],
+      "correctIndex": 3,
+      "id": 694,
+      "imageUrl": "https://source.unsplash.com/640x420/?Phineas+and+Ferb+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which Nickelodeon show features Carly hosting a web show?",
+      "options": [
+        "Wednesday",
+        "Bluey",
+        "iCarly",
+        "Victorious"
+      ],
+      "correctIndex": 2,
+      "id": 695,
+      "imageUrl": "https://source.unsplash.com/640x420/?iCarly+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which show stars Tori Vega at a performing arts high school?",
+      "options": [
+        "iCarly",
+        "Victorious",
+        "Peppa Pig",
+        "Bluey"
+      ],
+      "correctIndex": 1,
+      "id": 696,
+      "imageUrl": "https://source.unsplash.com/640x420/?Victorious+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which Disney show features Miley Stewart living a double life as a pop star?",
+      "options": [
+        "Victorious",
+        "Hannah Montana",
+        "Wednesday",
+        "Bluey"
+      ],
+      "correctIndex": 1,
+      "id": 697,
+      "imageUrl": "https://source.unsplash.com/640x420/?Hannah+Montana+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which show features a girl called Raven who has visions?",
+      "options": [
+        "That’s So Raven",
+        "iCarly",
+        "The Wiggles",
+        "Heartstopper"
+      ],
+      "correctIndex": 0,
+      "id": 698,
+      "imageUrl": "https://source.unsplash.com/640x420/?That%E2%80%99s+So+Raven+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which show follows Charlie and Nick in a sweet teen story?",
+      "options": [
+        "Young Sheldon",
+        "SpongeBob",
+        "Stranger Things",
+        "Heartstopper"
+      ],
+      "correctIndex": 3,
+      "id": 699,
+      "imageUrl": "https://source.unsplash.com/640x420/?Heartstopper+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which show features a girl named Devi balancing school, family, and crushes?",
+      "options": [
+        "Never Have I Ever",
+        "Peppa Pig",
+        "Bluey",
+        "Wednesday"
+      ],
+      "correctIndex": 0,
+      "id": 700,
+      "imageUrl": "https://source.unsplash.com/640x420/?Never+Have+I+Ever+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which app is known for disappearing photo messages?",
+      "options": [
+        "Snapchat",
+        "Pinterest",
+        "Netflix",
+        "Spotify"
+      ],
+      "correctIndex": 0,
+      "id": 701,
+      "imageUrl": "https://source.unsplash.com/640x420/?Snapchat+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What does “POV” usually mean in online videos?",
+      "options": [
+        "Point of view",
+        "Post on video",
+        "Power of voice",
+        "Picture over volume"
+      ],
+      "correctIndex": 0,
+      "id": 702,
+      "imageUrl": "https://source.unsplash.com/640x420/?Point+of+view+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What does “GRWM” mean in beauty and lifestyle videos?",
+      "options": [
+        "Get ready with me",
+        "Great rainbow with me",
+        "Game review with music",
+        "Go run with me"
+      ],
+      "correctIndex": 0,
+      "id": 703,
+      "imageUrl": "https://source.unsplash.com/640x420/?Get+ready+with+me+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What is a “meme”?",
+      "options": [
+        "A fruit",
+        "A type of homework",
+        "A sports award",
+        "A funny idea or image shared online"
+      ],
+      "correctIndex": 3,
+      "id": 704,
+      "imageUrl": "https://source.unsplash.com/640x420/?A+funny+idea+or+image+shared+online+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What does “slay” usually mean as slang?",
+      "options": [
+        "To forget",
+        "To fall asleep",
+        "To do something really well",
+        "To be late"
+      ],
+      "correctIndex": 2,
+      "id": 705,
+      "imageUrl": "https://source.unsplash.com/640x420/?To+do+something+really+well+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What does “no cap” usually mean?",
+      "options": [
+        "No hat",
+        "No internet",
+        "No lie / for real",
+        "No school"
+      ],
+      "correctIndex": 2,
+      "id": 706,
+      "imageUrl": "https://source.unsplash.com/640x420/?No+lie+%2F+for+real+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What does “rizz” mean in teen slang?",
+      "options": [
+        "Charm or flirting confidence",
+        "A dance shoe",
+        "A science test",
+        "A sandwich"
+      ],
+      "correctIndex": 0,
+      "id": 707,
+      "imageUrl": "https://source.unsplash.com/640x420/?Charm+or+flirting+confidence+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which platform is famous for long-form videos and creators?",
+      "options": [
+        "Canva only",
+        "Excel",
+        "YouTube",
+        "Google Docs"
+      ],
+      "correctIndex": 2,
+      "id": 708,
+      "imageUrl": "https://source.unsplash.com/640x420/?YouTube+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What is a “creator” online?",
+      "options": [
+        "Someone who sells planets",
+        "A referee",
+        "A dentist only",
+        "Someone who makes content"
+      ],
+      "correctIndex": 3,
+      "id": 709,
+      "imageUrl": "https://source.unsplash.com/640x420/?Someone+who+makes+content+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which game is known for building with blocks and survival mode?",
+      "options": [
+        "FIFA",
+        "Minecraft",
+        "Mario Kart",
+        "Roblox"
+      ],
+      "correctIndex": 1,
+      "id": 710,
+      "imageUrl": "https://source.unsplash.com/640x420/?Minecraft+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which game platform lets users create and play many mini-games?",
+      "options": [
+        "Netflix",
+        "Spotify",
+        "Roblox",
+        "Wikipedia"
+      ],
+      "correctIndex": 2,
+      "id": 711,
+      "imageUrl": "https://source.unsplash.com/640x420/?Roblox+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which game features colourful bean-shaped contestants?",
+      "options": [
+        "Fall Guys",
+        "Minecraft",
+        "Fortnite",
+        "The Sims"
+      ],
+      "correctIndex": 0,
+      "id": 712,
+      "imageUrl": "https://source.unsplash.com/640x420/?Fall+Guys+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which game is known for dances, skins, and battle royale?",
+      "options": [
+        "Sudoku",
+        "Wordle",
+        "Chess",
+        "Fortnite"
+      ],
+      "correctIndex": 3,
+      "id": 713,
+      "imageUrl": "https://source.unsplash.com/640x420/?Fortnite+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which puzzle game became famous for guessing a five-letter word?",
+      "options": [
+        "Fortnite",
+        "Wordle",
+        "Minecraft",
+        "Roblox"
+      ],
+      "correctIndex": 1,
+      "id": 714,
+      "imageUrl": "https://source.unsplash.com/640x420/?Wordle+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which movie character says “To infinity and beyond!”?",
+      "options": [
+        "SpongeBob",
+        "Buzz Lightyear",
+        "Bluey",
+        "Woody"
+      ],
+      "correctIndex": 1,
+      "id": 715,
+      "imageUrl": "https://source.unsplash.com/640x420/?Buzz+Lightyear+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which Disney movie has the song “We Don’t Talk About Bruno”?",
+      "options": [
+        "Moana",
+        "Encanto",
+        "Frozen",
+        "Coco"
+      ],
+      "correctIndex": 1,
+      "id": 716,
+      "imageUrl": "https://source.unsplash.com/640x420/?Encanto+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which Disney movie features a demigod named Maui?",
+      "options": [
+        "Frozen",
+        "Moana",
+        "Encanto",
+        "Brave"
+      ],
+      "correctIndex": 1,
+      "id": 717,
+      "imageUrl": "https://source.unsplash.com/640x420/?Moana+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which movie has sisters Anna and Elsa?",
+      "options": [
+        "Frozen",
+        "Tangled",
+        "Moana",
+        "Coco"
+      ],
+      "correctIndex": 0,
+      "id": 718,
+      "imageUrl": "https://source.unsplash.com/640x420/?Frozen+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which Pixar movie features emotions like Joy and Sadness?",
+      "options": [
+        "Cars",
+        "Ratatouille",
+        "Inside Out",
+        "Up"
+      ],
+      "correctIndex": 2,
+      "id": 719,
+      "imageUrl": "https://source.unsplash.com/640x420/?Inside+Out+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which Pixar movie features a red panda transformation?",
+      "options": [
+        "Turning Red",
+        "Brave",
+        "Coco",
+        "Luca"
+      ],
+      "correctIndex": 0,
+      "id": 720,
+      "imageUrl": "https://source.unsplash.com/640x420/?Turning+Red+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which show features a pink pig family jumping in muddy puddles?",
+      "options": [
+        "Peppa Pig",
+        "Bluey",
+        "SpongeBob",
+        "The Wiggles"
+      ],
+      "correctIndex": 0,
+      "id": 721,
+      "imageUrl": "https://source.unsplash.com/640x420/?Peppa+Pig+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What is SpongeBob’s best friend called?",
+      "options": [
+        "Patrick",
+        "Squidward",
+        "Gary",
+        "Sandy"
+      ],
+      "correctIndex": 0,
+      "id": 722,
+      "imageUrl": "https://source.unsplash.com/640x420/?Patrick+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "What is SpongeBob’s pet snail called?",
+      "options": [
+        "Patrick",
+        "Perry",
+        "Larry",
+        "Gary"
+      ],
+      "correctIndex": 3,
+      "id": 723,
+      "imageUrl": "https://source.unsplash.com/640x420/?Gary+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which kids show has a fairy princess and an elf as best friends?",
+      "options": [
+        "Ben and Holly’s Little Kingdom",
+        "Bluey",
+        "The Simpsons",
+        "Peppa Pig"
+      ],
+      "correctIndex": 0,
+      "id": 724,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ben+and+Holly%E2%80%99s+Little+Kingdom+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which colourful group often sings and dances for preschoolers?",
+      "options": [
+        "The Avengers",
+        "The Matildas",
+        "The Wiggles",
+        "The Simpsons"
+      ],
+      "correctIndex": 2,
+      "id": 725,
+      "imageUrl": "https://source.unsplash.com/640x420/?The+Wiggles+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which popular series features a supernatural “Upside Down”?",
+      "options": [
+        "iCarly",
+        "Bluey",
+        "Stranger Things",
+        "Young Sheldon"
+      ],
+      "correctIndex": 2,
+      "id": 726,
+      "imageUrl": "https://source.unsplash.com/640x420/?Stranger+Things+tv+show"
+    },
+    {
+      "category": "Pop Culture and Viral Trends and Kids TV Shows",
+      "question": "Which show features a smart boy named Sheldon as a child?",
+      "options": [
+        "Wednesday",
+        "Heartstopper",
+        "SpongeBob",
+        "Young Sheldon"
+      ],
+      "correctIndex": 3,
+      "id": 727,
+      "imageUrl": "https://source.unsplash.com/640x420/?Young+Sheldon+tv+show"
+    },
+    {
+      "category": "History",
+      "question": "Who were the First Peoples of Australia?",
+      "options": [
+        "Aboriginal and Torres Strait Islander peoples",
+        "Aztecs",
+        "Romans",
+        "Vikings"
+      ],
+      "correctIndex": 0,
+      "id": 728,
+      "imageUrl": "https://source.unsplash.com/640x420/?Aboriginal+and+Torres+Strait+Islander+peoples+history"
+    },
+    {
+      "category": "History",
+      "question": "Which ship is linked with Captain James Cook’s 1770 voyage to Australia’s east coast?",
+      "options": [
+        "Titanic",
+        "Bounty",
+        "Mayflower",
+        "HMS Endeavour"
+      ],
+      "correctIndex": 3,
+      "id": 729,
+      "imageUrl": "https://source.unsplash.com/640x420/?HMS+Endeavour+history"
+    },
+    {
+      "category": "History",
+      "question": "What happened in Australia on 1 January 1901?",
+      "options": [
+        "Sydney was founded",
+        "Federation",
+        "The Opera House opened",
+        "Gold was discovered"
+      ],
+      "correctIndex": 1,
+      "id": 730,
+      "imageUrl": "https://source.unsplash.com/640x420/?Federation+history"
+    },
+    {
+      "category": "History",
+      "question": "Who is known as Australia’s first Prime Minister?",
+      "options": [
+        "Edmund Barton",
+        "Bob Hawke",
+        "John Curtin",
+        "Henry Parkes"
+      ],
+      "correctIndex": 0,
+      "id": 731,
+      "imageUrl": "https://source.unsplash.com/640x420/?Edmund+Barton+history"
+    },
+    {
+      "category": "History",
+      "question": "Which event in 1854 involved gold miners in Ballarat?",
+      "options": [
+        "Sydney Olympics",
+        "Eureka Stockade",
+        "Anzac landing",
+        "Federation"
+      ],
+      "correctIndex": 1,
+      "id": 732,
+      "imageUrl": "https://source.unsplash.com/640x420/?Eureka+Stockade+history"
+    },
+    {
+      "category": "History",
+      "question": "What was the Gold Rush mainly about?",
+      "options": [
+        "Building railways",
+        "People searching for gold",
+        "Growing cotton",
+        "Fighting pirates"
+      ],
+      "correctIndex": 1,
+      "id": 733,
+      "imageUrl": "https://source.unsplash.com/640x420/?People+searching+for+gold+history"
+    },
+    {
+      "category": "History",
+      "question": "Which day remembers Australians and New Zealanders who served in wars?",
+      "options": [
+        "ANZAC Day",
+        "Boxing Day",
+        "Harmony Day",
+        "Australia Day"
+      ],
+      "correctIndex": 0,
+      "id": 734,
+      "imageUrl": "https://source.unsplash.com/640x420/?ANZAC+Day+history"
+    },
+    {
+      "category": "History",
+      "question": "In which war did the ANZACs land at Gallipoli?",
+      "options": [
+        "Vietnam War",
+        "World War I",
+        "Korean War",
+        "World War II"
+      ],
+      "correctIndex": 1,
+      "id": 735,
+      "imageUrl": "https://source.unsplash.com/640x420/?World+War+I+history"
+    },
+    {
+      "category": "History",
+      "question": "Which Australian city hosted the 2000 Olympic Games?",
+      "options": [
+        "Melbourne",
+        "Sydney",
+        "Brisbane",
+        "Perth"
+      ],
+      "correctIndex": 1,
+      "id": 736,
+      "imageUrl": "https://source.unsplash.com/640x420/?Sydney+history"
+    },
+    {
+      "category": "History",
+      "question": "Which famous Australian building opened in 1973?",
+      "options": [
+        "Story Bridge",
+        "Parliament House",
+        "MCG",
+        "Sydney Opera House"
+      ],
+      "correctIndex": 3,
+      "id": 737,
+      "imageUrl": "https://source.unsplash.com/640x420/?Sydney+Opera+House+history"
+    },
+    {
+      "category": "History",
+      "question": "Who was the first woman elected to the Australian House of Representatives?",
+      "options": [
+        "Edith Cowan",
+        "Julia Gillard",
+        "Dame Enid Lyons",
+        "Cathy Freeman"
+      ],
+      "correctIndex": 2,
+      "id": 738,
+      "imageUrl": "https://source.unsplash.com/640x420/?Dame+Enid+Lyons+history"
+    },
+    {
+      "category": "History",
+      "question": "Who was Australia’s first female Prime Minister?",
+      "options": [
+        "Julia Gillard",
+        "Jacinda Ardern",
+        "Enid Lyons",
+        "Edith Cowan"
+      ],
+      "correctIndex": 0,
+      "id": 739,
+      "imageUrl": "https://source.unsplash.com/640x420/?Julia+Gillard+history"
+    },
+    {
+      "category": "History",
+      "question": "Who was the first woman elected to an Australian parliament?",
+      "options": [
+        "Julia Gillard",
+        "Edith Cowan",
+        "Dawn Fraser",
+        "Mary Reibey"
+      ],
+      "correctIndex": 1,
+      "id": 740,
+      "imageUrl": "https://source.unsplash.com/640x420/?Edith+Cowan+history"
+    },
+    {
+      "category": "History",
+      "question": "Which Australian athlete lit the Olympic cauldron in Sydney 2000?",
+      "options": [
+        "Dawn Fraser",
+        "Ash Barty",
+        "Cathy Freeman",
+        "Sam Kerr"
+      ],
+      "correctIndex": 2,
+      "id": 741,
+      "imageUrl": "https://source.unsplash.com/640x420/?Cathy+Freeman+history"
+    },
+    {
+      "category": "History",
+      "question": "What is the name of the stolen children policy period studied in Australian history?",
+      "options": [
+        "Stolen Generations",
+        "Gold Rush",
+        "Space Race",
+        "Federation"
+      ],
+      "correctIndex": 0,
+      "id": 742,
+      "imageUrl": "https://source.unsplash.com/640x420/?Stolen+Generations+history"
+    },
+    {
+      "category": "History",
+      "question": "Which apology was delivered by Prime Minister Kevin Rudd in 2008?",
+      "options": [
+        "Apology to miners",
+        "National Apology to the Stolen Generations",
+        "Apology to athletes",
+        "Apology to explorers"
+      ],
+      "correctIndex": 1,
+      "id": 743,
+      "imageUrl": "https://source.unsplash.com/640x420/?National+Apology+to+the+Stolen+Generations+history"
+    },
+    {
+      "category": "History",
+      "question": "Which ancient civilisation built pyramids at Giza?",
+      "options": [
+        "Ancient Egyptians",
+        "Romans",
+        "Vikings",
+        "Maya"
+      ],
+      "correctIndex": 0,
+      "id": 744,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ancient+Egyptians+history"
+    },
+    {
+      "category": "History",
+      "question": "Which ancient civilisation had gladiators and the Colosseum?",
+      "options": [
+        "Aztec Empire",
+        "Ancient China",
+        "Ancient Rome",
+        "Inca Empire"
+      ],
+      "correctIndex": 2,
+      "id": 745,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ancient+Rome+history"
+    },
+    {
+      "category": "History",
+      "question": "Which ancient civilisation is linked to democracy in Athens?",
+      "options": [
+        "Vikings",
+        "Mongol Empire",
+        "Ancient Egypt",
+        "Ancient Greece"
+      ],
+      "correctIndex": 3,
+      "id": 746,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ancient+Greece+history"
+    },
+    {
+      "category": "History",
+      "question": "Who was Cleopatra?",
+      "options": [
+        "A Viking explorer",
+        "A Roman soldier",
+        "A Greek philosopher",
+        "A queen of Egypt"
+      ],
+      "correctIndex": 3,
+      "id": 747,
+      "imageUrl": "https://source.unsplash.com/640x420/?A+queen+of+Egypt+history"
+    },
+    {
+      "category": "History",
+      "question": "Who was Julius Caesar?",
+      "options": [
+        "A Chinese emperor",
+        "A Roman leader",
+        "An Egyptian pharaoh",
+        "A French painter"
+      ],
+      "correctIndex": 1,
+      "id": 748,
+      "imageUrl": "https://source.unsplash.com/640x420/?A+Roman+leader+history"
+    },
+    {
+      "category": "History",
+      "question": "Which wall in Britain was built by the Romans?",
+      "options": [
+        "Great Wall",
+        "Berlin Wall",
+        "Wall Street",
+        "Hadrian’s Wall"
+      ],
+      "correctIndex": 3,
+      "id": 749,
+      "imageUrl": "https://source.unsplash.com/640x420/?Hadrian%E2%80%99s+Wall+history"
+    },
+    {
+      "category": "History",
+      "question": "Which empire built the Great Wall to help defend its borders?",
+      "options": [
+        "Rome",
+        "Spain",
+        "Ancient China",
+        "France"
+      ],
+      "correctIndex": 2,
+      "id": 750,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ancient+China+history"
+    },
+    {
+      "category": "History",
+      "question": "Which explorer is credited with reaching the Americas in 1492?",
+      "options": [
+        "James Cook",
+        "Neil Armstrong",
+        "Marco Polo",
+        "Christopher Columbus"
+      ],
+      "correctIndex": 3,
+      "id": 751,
+      "imageUrl": "https://source.unsplash.com/640x420/?Christopher+Columbus+history"
+    },
+    {
+      "category": "History",
+      "question": "Which civilisation built Machu Picchu?",
+      "options": [
+        "Inca",
+        "Maya",
+        "Romans",
+        "Egyptians"
+      ],
+      "correctIndex": 0,
+      "id": 752,
+      "imageUrl": "https://source.unsplash.com/640x420/?Inca+history"
+    },
+    {
+      "category": "History",
+      "question": "Which civilisation is famous for Chichén Itzá?",
+      "options": [
+        "Vikings",
+        "Inca",
+        "Maya",
+        "Greeks"
+      ],
+      "correctIndex": 2,
+      "id": 753,
+      "imageUrl": "https://source.unsplash.com/640x420/?Maya+history"
+    },
+    {
+      "category": "History",
+      "question": "Which people were famous for longships and raids in medieval Europe?",
+      "options": [
+        "Samurai",
+        "Romans",
+        "Vikings",
+        "Aztecs"
+      ],
+      "correctIndex": 2,
+      "id": 754,
+      "imageUrl": "https://source.unsplash.com/640x420/?Vikings+history"
+    },
+    {
+      "category": "History",
+      "question": "Which warriors followed bushidō in Japan?",
+      "options": [
+        "Gladiators",
+        "Knights",
+        "Samurai",
+        "Vikings"
+      ],
+      "correctIndex": 2,
+      "id": 755,
+      "imageUrl": "https://source.unsplash.com/640x420/?Samurai+history"
+    },
+    {
+      "category": "History",
+      "question": "What was the Renaissance?",
+      "options": [
+        "A period of new art, science, and learning",
+        "A type of ship",
+        "A war only",
+        "A food festival"
+      ],
+      "correctIndex": 0,
+      "id": 756,
+      "imageUrl": "https://source.unsplash.com/640x420/?A+period+of+new+art%2C+science%2C+and+learning+history"
+    },
+    {
+      "category": "History",
+      "question": "Who painted the Mona Lisa?",
+      "options": [
+        "Michelangelo",
+        "Van Gogh",
+        "Leonardo da Vinci",
+        "Picasso"
+      ],
+      "correctIndex": 2,
+      "id": 757,
+      "imageUrl": "https://source.unsplash.com/640x420/?Leonardo+da+Vinci+history"
+    },
+    {
+      "category": "History",
+      "question": "Who was famous for inventing the printing press in Europe?",
+      "options": [
+        "Isaac Newton",
+        "Johannes Gutenberg",
+        "Galileo",
+        "Mozart"
+      ],
+      "correctIndex": 1,
+      "id": 758,
+      "imageUrl": "https://source.unsplash.com/640x420/?Johannes+Gutenberg+history"
+    },
+    {
+      "category": "History",
+      "question": "Which scientist said Earth goes around the Sun and got into trouble for his ideas?",
+      "options": [
+        "Einstein",
+        "Darwin",
+        "Pasteur",
+        "Galileo Galilei"
+      ],
+      "correctIndex": 3,
+      "id": 759,
+      "imageUrl": "https://source.unsplash.com/640x420/?Galileo+Galilei+history"
+    },
+    {
+      "category": "History",
+      "question": "Which war ended in 1945?",
+      "options": [
+        "World War II",
+        "World War I",
+        "Vietnam War",
+        "Cold War"
+      ],
+      "correctIndex": 0,
+      "id": 760,
+      "imageUrl": "https://source.unsplash.com/640x420/?World+War+II+history"
+    },
+    {
+      "category": "History",
+      "question": "Which country was split by the Berlin Wall?",
+      "options": [
+        "France",
+        "Germany",
+        "Italy",
+        "Spain"
+      ],
+      "correctIndex": 1,
+      "id": 761,
+      "imageUrl": "https://source.unsplash.com/640x420/?Germany+history"
+    },
+    {
+      "category": "History",
+      "question": "What happened to the Berlin Wall in 1989?",
+      "options": [
+        "It moved to London",
+        "It fell",
+        "It was built",
+        "It became taller"
+      ],
+      "correctIndex": 1,
+      "id": 762,
+      "imageUrl": "https://source.unsplash.com/640x420/?It+fell+history"
+    },
+    {
+      "category": "History",
+      "question": "Who was the first person to walk on the Moon?",
+      "options": [
+        "Albert Einstein",
+        "Yuri Gagarin",
+        "Neil Armstrong",
+        "Buzz Aldrin"
+      ],
+      "correctIndex": 2,
+      "id": 763,
+      "imageUrl": "https://source.unsplash.com/640x420/?Neil+Armstrong+history"
+    },
+    {
+      "category": "History",
+      "question": "What year did humans first walk on the Moon?",
+      "options": [
+        "1945",
+        "1969",
+        "1989",
+        "2000"
+      ],
+      "correctIndex": 1,
+      "id": 764,
+      "imageUrl": "https://source.unsplash.com/640x420/?1969+history"
+    },
+    {
+      "category": "History",
+      "question": "Who was the first woman to fly solo across the Atlantic Ocean?",
+      "options": [
+        "Rosa Parks",
+        "Amelia Earhart",
+        "Marie Curie",
+        "Jane Goodall"
+      ],
+      "correctIndex": 1,
+      "id": 765,
+      "imageUrl": "https://source.unsplash.com/640x420/?Amelia+Earhart+history"
+    },
+    {
+      "category": "History",
+      "question": "Who is famous for refusing to give up her bus seat in the U.S. civil rights movement?",
+      "options": [
+        "Frida Kahlo",
+        "Mary Anning",
+        "Rosa Parks",
+        "Florence Nightingale"
+      ],
+      "correctIndex": 2,
+      "id": 766,
+      "imageUrl": "https://source.unsplash.com/640x420/?Rosa+Parks+history"
+    },
+    {
+      "category": "History",
+      "question": "Who gave the “I Have a Dream” speech?",
+      "options": [
+        "Nelson Mandela",
+        "Winston Churchill",
+        "Martin Luther King Jr.",
+        "Abraham Lincoln"
+      ],
+      "correctIndex": 2,
+      "id": 767,
+      "imageUrl": "https://source.unsplash.com/640x420/?Martin+Luther+King+Jr.+history"
+    },
+    {
+      "category": "History",
+      "question": "Who was the first President of the United States?",
+      "options": [
+        "Abraham Lincoln",
+        "George Washington",
+        "John F. Kennedy",
+        "Thomas Edison"
+      ],
+      "correctIndex": 1,
+      "id": 768,
+      "imageUrl": "https://source.unsplash.com/640x420/?George+Washington+history"
+    },
+    {
+      "category": "History",
+      "question": "Which U.S. president is linked with ending slavery in the United States?",
+      "options": [
+        "Abraham Lincoln",
+        "Barack Obama",
+        "Theodore Roosevelt",
+        "George Washington"
+      ],
+      "correctIndex": 0,
+      "id": 769,
+      "imageUrl": "https://source.unsplash.com/640x420/?Abraham+Lincoln+history"
+    },
+    {
+      "category": "History",
+      "question": "Who was a famous nurse during the Crimean War?",
+      "options": [
+        "Ada Lovelace",
+        "Florence Nightingale",
+        "Marie Curie",
+        "Jane Austen"
+      ],
+      "correctIndex": 1,
+      "id": 770,
+      "imageUrl": "https://source.unsplash.com/640x420/?Florence+Nightingale+history"
+    },
+    {
+      "category": "History",
+      "question": "Who discovered penicillin?",
+      "options": [
+        "Alexander Fleming",
+        "Isaac Newton",
+        "Charles Darwin",
+        "Galileo"
+      ],
+      "correctIndex": 0,
+      "id": 771,
+      "imageUrl": "https://source.unsplash.com/640x420/?Alexander+Fleming+history"
+    },
+    {
+      "category": "History",
+      "question": "Who developed the theory of evolution by natural selection?",
+      "options": [
+        "Newton",
+        "Charles Darwin",
+        "Einstein",
+        "Pasteur"
+      ],
+      "correctIndex": 1,
+      "id": 772,
+      "imageUrl": "https://source.unsplash.com/640x420/?Charles+Darwin+history"
+    },
+    {
+      "category": "History",
+      "question": "Who discovered radium with Pierre Curie?",
+      "options": [
+        "Ada Lovelace",
+        "Marie Curie",
+        "Jane Goodall",
+        "Rosalind Franklin"
+      ],
+      "correctIndex": 1,
+      "id": 773,
+      "imageUrl": "https://source.unsplash.com/640x420/?Marie+Curie+history"
+    },
+    {
+      "category": "History",
+      "question": "Who is often called the first computer programmer?",
+      "options": [
+        "Jane Austen",
+        "Grace Kelly",
+        "Ada Lovelace",
+        "Marie Curie"
+      ],
+      "correctIndex": 2,
+      "id": 774,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ada+Lovelace+history"
+    },
+    {
+      "category": "History",
+      "question": "Which ship famously sank in 1912?",
+      "options": [
+        "Bounty",
+        "Endeavour",
+        "Mayflower",
+        "Titanic"
+      ],
+      "correctIndex": 3,
+      "id": 775,
+      "imageUrl": "https://source.unsplash.com/640x420/?Titanic+history"
+    },
+    {
+      "category": "History",
+      "question": "Which pandemic began in 1918 near the end of World War I?",
+      "options": [
+        "Spanish flu",
+        "SARS",
+        "COVID-19",
+        "Black Death"
+      ],
+      "correctIndex": 0,
+      "id": 776,
+      "imageUrl": "https://source.unsplash.com/640x420/?Spanish+flu+history"
+    },
+    {
+      "category": "History",
+      "question": "Which medieval disease pandemic was called the Black Death?",
+      "options": [
+        "Bubonic plague",
+        "Measles",
+        "Smallpox",
+        "Influenza"
+      ],
+      "correctIndex": 0,
+      "id": 777,
+      "imageUrl": "https://source.unsplash.com/640x420/?Bubonic+plague+history"
+    },
+    {
+      "category": "History",
+      "question": "Which country gifted the Statue of Liberty to the United States?",
+      "options": [
+        "Australia",
+        "France",
+        "Spain",
+        "Italy"
+      ],
+      "correctIndex": 1,
+      "id": 778,
+      "imageUrl": "https://source.unsplash.com/640x420/?France+history"
+    },
+    {
+      "category": "History",
+      "question": "Which city is the Statue of Liberty near?",
+      "options": [
+        "Paris",
+        "London",
+        "New York City",
+        "Los Angeles"
+      ],
+      "correctIndex": 2,
+      "id": 779,
+      "imageUrl": "https://source.unsplash.com/640x420/?New+York+City+history"
+    },
+    {
+      "category": "History",
+      "question": "Which ancient city was buried by Mount Vesuvius?",
+      "options": [
+        "Alexandria",
+        "Athens",
+        "Sparta",
+        "Pompeii"
+      ],
+      "correctIndex": 3,
+      "id": 780,
+      "imageUrl": "https://source.unsplash.com/640x420/?Pompeii+history"
+    },
+    {
+      "category": "History",
+      "question": "Which famous queen ruled Britain for over 60 years in the 1800s?",
+      "options": [
+        "Elizabeth I",
+        "Cleopatra",
+        "Queen Victoria",
+        "Mary Queen of Scots"
+      ],
+      "correctIndex": 2,
+      "id": 781,
+      "imageUrl": "https://source.unsplash.com/640x420/?Queen+Victoria+history"
+    },
+    {
+      "category": "History",
+      "question": "Which queen ruled Britain during the Spanish Armada?",
+      "options": [
+        "Anne Boleyn",
+        "Cleopatra",
+        "Elizabeth I",
+        "Queen Victoria"
+      ],
+      "correctIndex": 2,
+      "id": 782,
+      "imageUrl": "https://source.unsplash.com/640x420/?Elizabeth+I+history"
+    },
+    {
+      "category": "History",
+      "question": "Which empire was ruled by Genghis Khan?",
+      "options": [
+        "Roman Empire",
+        "Inca Empire",
+        "Mongol Empire",
+        "British Empire"
+      ],
+      "correctIndex": 2,
+      "id": 783,
+      "imageUrl": "https://source.unsplash.com/640x420/?Mongol+Empire+history"
+    },
+    {
+      "category": "History",
+      "question": "Which Australian bushranger wore armour in his final shootout?",
+      "options": [
+        "Banjo Paterson",
+        "Ned Kelly",
+        "Don Bradman",
+        "Captain Cook"
+      ],
+      "correctIndex": 1,
+      "id": 784,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ned+Kelly+history"
+    },
+    {
+      "category": "History",
+      "question": "What was the “First Fleet”?",
+      "options": [
+        "Ships bringing British settlers and convicts to Australia",
+        "A soccer team",
+        "A gold mining team",
+        "A group of submarines"
+      ],
+      "correctIndex": 0,
+      "id": 785,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ships+bringing+British+settlers+and+convicts+to+Australia+history"
+    },
+    {
+      "category": "History",
+      "question": "In which year did the First Fleet arrive in Sydney Cove?",
+      "options": [
+        "1788",
+        "1901",
+        "1770",
+        "1854"
+      ],
+      "correctIndex": 0,
+      "id": 786,
+      "imageUrl": "https://source.unsplash.com/640x420/?1788+history"
+    },
+    {
+      "category": "History",
+      "question": "Which Australian capital city was planned as the national capital?",
+      "options": [
+        "Sydney",
+        "Melbourne",
+        "Brisbane",
+        "Canberra"
+      ],
+      "correctIndex": 3,
+      "id": 787,
+      "imageUrl": "https://source.unsplash.com/640x420/?Canberra+history"
+    },
+    {
+      "category": "Sports",
+      "question": "How many players are on a netball team on court?",
+      "options": [
+        "11",
+        "5",
+        "7",
+        "6"
+      ],
+      "correctIndex": 2,
+      "id": 788,
+      "imageUrl": "https://source.unsplash.com/640x420/?7+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport uses a shuttlecock?",
+      "options": [
+        "Cricket",
+        "Tennis",
+        "Badminton",
+        "Golf"
+      ],
+      "correctIndex": 2,
+      "id": 789,
+      "imageUrl": "https://source.unsplash.com/640x420/?Badminton+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport uses a bat, ball, and wickets?",
+      "options": [
+        "Soccer",
+        "Rugby",
+        "Cricket",
+        "Swimming"
+      ],
+      "correctIndex": 2,
+      "id": 790,
+      "imageUrl": "https://source.unsplash.com/640x420/?Cricket+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has events like freestyle, backstroke, and butterfly?",
+      "options": [
+        "Netball",
+        "Gymnastics",
+        "Swimming",
+        "Cricket"
+      ],
+      "correctIndex": 2,
+      "id": 791,
+      "imageUrl": "https://source.unsplash.com/640x420/?Swimming+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport uses a balance beam?",
+      "options": [
+        "Hockey",
+        "Gymnastics",
+        "Tennis",
+        "Basketball"
+      ],
+      "correctIndex": 1,
+      "id": 792,
+      "imageUrl": "https://source.unsplash.com/640x420/?Gymnastics+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport is played at Wimbledon?",
+      "options": [
+        "Netball",
+        "Tennis",
+        "Golf",
+        "Cricket"
+      ],
+      "correctIndex": 1,
+      "id": 793,
+      "imageUrl": "https://source.unsplash.com/640x420/?Tennis+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has a hoop and a backboard?",
+      "options": [
+        "Soccer",
+        "Rugby",
+        "Volleyball",
+        "Basketball"
+      ],
+      "correctIndex": 3,
+      "id": 794,
+      "imageUrl": "https://source.unsplash.com/640x420/?Basketball+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport is played on ice with sticks and a puck?",
+      "options": [
+        "Field hockey",
+        "Lacrosse",
+        "Curling",
+        "Ice hockey"
+      ],
+      "correctIndex": 3,
+      "id": 795,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ice+hockey+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which Olympic sport involves a bow and arrows?",
+      "options": [
+        "Archery",
+        "Shooting",
+        "Rowing",
+        "Fencing"
+      ],
+      "correctIndex": 0,
+      "id": 796,
+      "imageUrl": "https://source.unsplash.com/640x420/?Archery+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has a touchdown?",
+      "options": [
+        "Swimming",
+        "Cricket",
+        "American football",
+        "Tennis"
+      ],
+      "correctIndex": 2,
+      "id": 797,
+      "imageUrl": "https://source.unsplash.com/640x420/?American+football+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has a try?",
+      "options": [
+        "Golf",
+        "Baseball",
+        "Rugby",
+        "Basketball"
+      ],
+      "correctIndex": 2,
+      "id": 798,
+      "imageUrl": "https://source.unsplash.com/640x420/?Rugby+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport uses clubs and holes?",
+      "options": [
+        "Cricket",
+        "Golf",
+        "Hockey",
+        "Softball"
+      ],
+      "correctIndex": 1,
+      "id": 799,
+      "imageUrl": "https://source.unsplash.com/640x420/?Golf+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport uses a board and waves?",
+      "options": [
+        "Surfing",
+        "Rowing",
+        "Skiing",
+        "Skating"
+      ],
+      "correctIndex": 0,
+      "id": 800,
+      "imageUrl": "https://source.unsplash.com/640x420/?Surfing+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport involves riding waves behind a boat or cable?",
+      "options": [
+        "Cricket",
+        "Wakeboarding",
+        "Netball",
+        "Fencing"
+      ],
+      "correctIndex": 1,
+      "id": 801,
+      "imageUrl": "https://source.unsplash.com/640x420/?Wakeboarding+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport uses a foil, épée, or sabre?",
+      "options": [
+        "Archery",
+        "Fencing",
+        "Karate",
+        "Boxing"
+      ],
+      "correctIndex": 1,
+      "id": 802,
+      "imageUrl": "https://source.unsplash.com/640x420/?Fencing+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has kata and kumite?",
+      "options": [
+        "Golf",
+        "Karate",
+        "Swimming",
+        "Tennis"
+      ],
+      "correctIndex": 1,
+      "id": 803,
+      "imageUrl": "https://source.unsplash.com/640x420/?Karate+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport involves throwing a heavy ball as far as possible?",
+      "options": [
+        "Vaulting",
+        "Shot put",
+        "Long jump",
+        "High jump"
+      ],
+      "correctIndex": 1,
+      "id": 804,
+      "imageUrl": "https://source.unsplash.com/640x420/?Shot+put+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport involves jumping over a horizontal bar?",
+      "options": [
+        "High jump",
+        "Shot put",
+        "Rowing",
+        "Marathon"
+      ],
+      "correctIndex": 0,
+      "id": 805,
+      "imageUrl": "https://source.unsplash.com/640x420/?High+jump+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport is a 42.195 km race?",
+      "options": [
+        "Triathlon",
+        "Sprint",
+        "Relay",
+        "Marathon"
+      ],
+      "correctIndex": 3,
+      "id": 806,
+      "imageUrl": "https://source.unsplash.com/640x420/?Marathon+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport combines swimming, cycling, and running?",
+      "options": [
+        "Pentathlon",
+        "Triathlon",
+        "Decathlon",
+        "Rowing"
+      ],
+      "correctIndex": 1,
+      "id": 807,
+      "imageUrl": "https://source.unsplash.com/640x420/?Triathlon+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport is played with a round ball and goals, but no hands for most players?",
+      "options": [
+        "Rugby",
+        "Netball",
+        "Soccer",
+        "Cricket"
+      ],
+      "correctIndex": 2,
+      "id": 808,
+      "imageUrl": "https://source.unsplash.com/640x420/?Soccer+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport uses a small hard ball and a bat, popular in the USA and Japan?",
+      "options": [
+        "Golf",
+        "Hockey",
+        "Cricket",
+        "Baseball"
+      ],
+      "correctIndex": 3,
+      "id": 809,
+      "imageUrl": "https://source.unsplash.com/640x420/?Baseball+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has “love” as a score?",
+      "options": [
+        "Rugby",
+        "Basketball",
+        "Netball",
+        "Tennis"
+      ],
+      "correctIndex": 3,
+      "id": 810,
+      "imageUrl": "https://source.unsplash.com/640x420/?Tennis+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has a libero position?",
+      "options": [
+        "Volleyball",
+        "Rugby",
+        "Golf",
+        "Cricket"
+      ],
+      "correctIndex": 0,
+      "id": 811,
+      "imageUrl": "https://source.unsplash.com/640x420/?Volleyball+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport is played with horses and mallets?",
+      "options": [
+        "Polo",
+        "Equestrian dressage",
+        "Lacrosse",
+        "Hockey"
+      ],
+      "correctIndex": 0,
+      "id": 812,
+      "imageUrl": "https://source.unsplash.com/640x420/?Polo+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport features dressage and show jumping?",
+      "options": [
+        "Equestrian",
+        "Fencing",
+        "Swimming",
+        "Badminton"
+      ],
+      "correctIndex": 0,
+      "id": 813,
+      "imageUrl": "https://source.unsplash.com/640x420/?Equestrian+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport is played with stones and brooms on ice?",
+      "options": [
+        "Skiing",
+        "Skating",
+        "Curling",
+        "Ice hockey"
+      ],
+      "correctIndex": 2,
+      "id": 814,
+      "imageUrl": "https://source.unsplash.com/640x420/?Curling+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which winter sport involves sliding headfirst on a small sled?",
+      "options": [
+        "Skeleton",
+        "Luge",
+        "Ski jump",
+        "Bobsleigh"
+      ],
+      "correctIndex": 0,
+      "id": 815,
+      "imageUrl": "https://source.unsplash.com/640x420/?Skeleton+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which winter sport involves jumping from a ramp with skis?",
+      "options": [
+        "Ice hockey",
+        "Curling",
+        "Ski jumping",
+        "Snowboarding"
+      ],
+      "correctIndex": 2,
+      "id": 816,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ski+jumping+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport uses a board on snow?",
+      "options": [
+        "Surfing",
+        "Skateboarding",
+        "Rowing",
+        "Snowboarding"
+      ],
+      "correctIndex": 3,
+      "id": 817,
+      "imageUrl": "https://source.unsplash.com/640x420/?Snowboarding+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport uses wheels and tricks at a skate park?",
+      "options": [
+        "Surfing",
+        "Skiing",
+        "Skateboarding",
+        "Cycling"
+      ],
+      "correctIndex": 2,
+      "id": 818,
+      "imageUrl": "https://source.unsplash.com/640x420/?Skateboarding+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport is raced on bicycles?",
+      "options": [
+        "Fencing",
+        "Rowing",
+        "Cycling",
+        "Running"
+      ],
+      "correctIndex": 2,
+      "id": 819,
+      "imageUrl": "https://source.unsplash.com/640x420/?Cycling+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport is raced in boats using oars?",
+      "options": [
+        "Sailing",
+        "Surfing",
+        "Swimming",
+        "Rowing"
+      ],
+      "correctIndex": 3,
+      "id": 820,
+      "imageUrl": "https://source.unsplash.com/640x420/?Rowing+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport uses wind and a boat?",
+      "options": [
+        "Sailing",
+        "Cycling",
+        "Surfing",
+        "Rowing"
+      ],
+      "correctIndex": 0,
+      "id": 821,
+      "imageUrl": "https://source.unsplash.com/640x420/?Sailing+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has a goalie and is played with curved sticks on grass or turf?",
+      "options": [
+        "Cricket",
+        "Baseball",
+        "Golf",
+        "Field hockey"
+      ],
+      "correctIndex": 3,
+      "id": 822,
+      "imageUrl": "https://source.unsplash.com/640x420/?Field+hockey+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport uses a lacrosse stick with a netted pocket?",
+      "options": [
+        "Rugby",
+        "Lacrosse",
+        "Hockey",
+        "Tennis"
+      ],
+      "correctIndex": 1,
+      "id": 823,
+      "imageUrl": "https://source.unsplash.com/640x420/?Lacrosse+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport is played with a frisbee and end zones?",
+      "options": [
+        "Netball",
+        "Soccer",
+        "Disc golf",
+        "Ultimate frisbee"
+      ],
+      "correctIndex": 3,
+      "id": 824,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ultimate+frisbee+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has a bullseye board and small pointed missiles?",
+      "options": [
+        "Bowling",
+        "Darts",
+        "Fencing",
+        "Archery"
+      ],
+      "correctIndex": 1,
+      "id": 825,
+      "imageUrl": "https://source.unsplash.com/640x420/?Darts+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport rolls a heavy ball down a lane?",
+      "options": [
+        "Curling",
+        "Cricket",
+        "Golf",
+        "Bowling"
+      ],
+      "correctIndex": 3,
+      "id": 826,
+      "imageUrl": "https://source.unsplash.com/640x420/?Bowling+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has grand slams like the Australian Open?",
+      "options": [
+        "Rugby",
+        "Tennis",
+        "Surfing",
+        "Golf"
+      ],
+      "correctIndex": 1,
+      "id": 827,
+      "imageUrl": "https://source.unsplash.com/640x420/?Tennis+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which country hosts the Tour de France cycling race?",
+      "options": [
+        "Australia",
+        "Italy",
+        "France",
+        "Spain"
+      ],
+      "correctIndex": 2,
+      "id": 828,
+      "imageUrl": "https://source.unsplash.com/640x420/?France+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which event is known as “the race that stops a nation” in Australia?",
+      "options": [
+        "Melbourne Cup",
+        "State of Origin",
+        "Sydney Marathon",
+        "Australian Open"
+      ],
+      "correctIndex": 0,
+      "id": 829,
+      "imageUrl": "https://source.unsplash.com/640x420/?Melbourne+Cup+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which Australian city will host the 2032 Olympics?",
+      "options": [
+        "Sydney",
+        "Brisbane",
+        "Perth",
+        "Melbourne"
+      ],
+      "correctIndex": 1,
+      "id": 830,
+      "imageUrl": "https://source.unsplash.com/640x420/?Brisbane+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has State of Origin in Australia?",
+      "options": [
+        "Tennis",
+        "Cricket",
+        "Netball",
+        "Rugby league"
+      ],
+      "correctIndex": 3,
+      "id": 831,
+      "imageUrl": "https://source.unsplash.com/640x420/?Rugby+league+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which Australian summer sport is played with wickets?",
+      "options": [
+        "Rugby",
+        "AFL",
+        "Netball",
+        "Cricket"
+      ],
+      "correctIndex": 3,
+      "id": 832,
+      "imageUrl": "https://source.unsplash.com/640x420/?Cricket+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport is the AFL mainly known for?",
+      "options": [
+        "Rugby union",
+        "Australian rules football",
+        "Basketball",
+        "Soccer"
+      ],
+      "correctIndex": 1,
+      "id": 833,
+      "imageUrl": "https://source.unsplash.com/640x420/?Australian+rules+football+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has a Brownlow Medal?",
+      "options": [
+        "Cricket",
+        "Australian rules football",
+        "Tennis",
+        "Netball"
+      ],
+      "correctIndex": 1,
+      "id": 834,
+      "imageUrl": "https://source.unsplash.com/640x420/?Australian+rules+football+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has a “slam dunk”?",
+      "options": [
+        "Basketball",
+        "Netball",
+        "Cricket",
+        "Volleyball"
+      ],
+      "correctIndex": 0,
+      "id": 835,
+      "imageUrl": "https://source.unsplash.com/640x420/?Basketball+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has “serve, set, spike”?",
+      "options": [
+        "Squash",
+        "Badminton",
+        "Volleyball",
+        "Tennis"
+      ],
+      "correctIndex": 2,
+      "id": 836,
+      "imageUrl": "https://source.unsplash.com/640x420/?Volleyball+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport is played with a small rubber ball against walls?",
+      "options": [
+        "Golf",
+        "Badminton",
+        "Squash",
+        "Tennis"
+      ],
+      "correctIndex": 2,
+      "id": 837,
+      "imageUrl": "https://source.unsplash.com/640x420/?Squash+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport uses a pommel horse?",
+      "options": [
+        "Swimming",
+        "Rugby",
+        "Equestrian",
+        "Gymnastics"
+      ],
+      "correctIndex": 3,
+      "id": 838,
+      "imageUrl": "https://source.unsplash.com/640x420/?Gymnastics+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has butterfly stroke?",
+      "options": [
+        "Surfing",
+        "Rowing",
+        "Athletics",
+        "Swimming"
+      ],
+      "correctIndex": 3,
+      "id": 839,
+      "imageUrl": "https://source.unsplash.com/640x420/?Swimming+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has a balance beam, floor, vault, and bars?",
+      "options": [
+        "Golf",
+        "Skating",
+        "Cricket",
+        "Gymnastics"
+      ],
+      "correctIndex": 3,
+      "id": 840,
+      "imageUrl": "https://source.unsplash.com/640x420/?Gymnastics+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport uses a mask and snorkel to explore underwater?",
+      "options": [
+        "Snorkelling",
+        "Curling",
+        "Fencing",
+        "Archery"
+      ],
+      "correctIndex": 0,
+      "id": 841,
+      "imageUrl": "https://source.unsplash.com/640x420/?Snorkelling+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport involves climbing artificial walls with holds?",
+      "options": [
+        "Skateboarding",
+        "Sport climbing",
+        "Surfing",
+        "Gymnastics"
+      ],
+      "correctIndex": 1,
+      "id": 842,
+      "imageUrl": "https://source.unsplash.com/640x420/?Sport+climbing+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has “checkmate”?",
+      "options": [
+        "Darts",
+        "Tennis",
+        "Chess",
+        "Bowling"
+      ],
+      "correctIndex": 2,
+      "id": 843,
+      "imageUrl": "https://source.unsplash.com/640x420/?Chess+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport has a queen, knights, and pawns?",
+      "options": [
+        "Cricket",
+        "Netball",
+        "Chess",
+        "Soccer"
+      ],
+      "correctIndex": 2,
+      "id": 844,
+      "imageUrl": "https://source.unsplash.com/640x420/?Chess+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport uses a table, paddles, and a tiny ball?",
+      "options": [
+        "Table tennis",
+        "Badminton",
+        "Squash",
+        "Volleyball"
+      ],
+      "correctIndex": 0,
+      "id": 845,
+      "imageUrl": "https://source.unsplash.com/640x420/?Table+tennis+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which sport is also called ping pong?",
+      "options": [
+        "Tennis",
+        "Table tennis",
+        "Squash",
+        "Badminton"
+      ],
+      "correctIndex": 1,
+      "id": 846,
+      "imageUrl": "https://source.unsplash.com/640x420/?Table+tennis+sport"
+    },
+    {
+      "category": "Sports",
+      "question": "Which Olympic event includes running, jumping, and throwing competitions?",
+      "options": [
+        "Athletics",
+        "Cycling",
+        "Gymnastics",
+        "Swimming"
+      ],
+      "correctIndex": 0,
+      "id": 847,
+      "imageUrl": "https://source.unsplash.com/640x420/?Athletics+sport"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which player is famous for the “Siuuu” celebration?",
+      "options": [
+        "Lionel Messi",
+        "Kylian Mbappé",
+        "Cristiano Ronaldo",
+        "Erling Haaland"
+      ],
+      "correctIndex": 2,
+      "id": 848,
+      "imageUrl": "https://source.unsplash.com/640x420/?Cristiano+Ronaldo+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which Argentine player won the 2022 FIFA World Cup?",
+      "options": [
+        "Harry Kane",
+        "Lionel Messi",
+        "Jude Bellingham",
+        "Neymar"
+      ],
+      "correctIndex": 1,
+      "id": 849,
+      "imageUrl": "https://source.unsplash.com/640x420/?Lionel+Messi+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which French star is known for incredible speed and played in the 2022 World Cup final?",
+      "options": [
+        "Luka Modrić",
+        "Kylian Mbappé",
+        "Son Heung-min",
+        "Kevin De Bruyne"
+      ],
+      "correctIndex": 1,
+      "id": 850,
+      "imageUrl": "https://source.unsplash.com/640x420/?Kylian+Mbapp%C3%A9+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which Norwegian striker is famous for scoring lots of goals for Manchester City?",
+      "options": [
+        "Pedri",
+        "Phil Foden",
+        "Erling Haaland",
+        "Bukayo Saka"
+      ],
+      "correctIndex": 2,
+      "id": 851,
+      "imageUrl": "https://source.unsplash.com/640x420/?Erling+Haaland+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which English player became a Real Madrid star as a teenager?",
+      "options": [
+        "Marcus Rashford",
+        "Jude Bellingham",
+        "Harry Maguire",
+        "Declan Rice"
+      ],
+      "correctIndex": 1,
+      "id": 852,
+      "imageUrl": "https://source.unsplash.com/640x420/?Jude+Bellingham+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which Brazilian player is known for flair, skills, and playing for Brazil?",
+      "options": [
+        "Toni Kroos",
+        "Neymar",
+        "Luis Suárez",
+        "Luka Modrić"
+      ],
+      "correctIndex": 1,
+      "id": 853,
+      "imageUrl": "https://source.unsplash.com/640x420/?Neymar+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which Spanish midfielder is known as a young Barcelona star?",
+      "options": [
+        "Pedri",
+        "Messi",
+        "Mbappé",
+        "Haaland"
+      ],
+      "correctIndex": 0,
+      "id": 854,
+      "imageUrl": "https://source.unsplash.com/640x420/?Pedri+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which Barcelona teenager is known for wearing number 10 after Messi?",
+      "options": [
+        "Haaland",
+        "Gavi",
+        "Ansu Fati",
+        "Saka"
+      ],
+      "correctIndex": 2,
+      "id": 855,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ansu+Fati+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which Arsenal player is known as “Starboy”?",
+      "options": [
+        "Bukayo Saka",
+        "Phil Foden",
+        "Jude Bellingham",
+        "Harry Kane"
+      ],
+      "correctIndex": 0,
+      "id": 856,
+      "imageUrl": "https://source.unsplash.com/640x420/?Bukayo+Saka+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which Manchester City player is known for creativity and assists from Belgium?",
+      "options": [
+        "Luka Modrić",
+        "Kevin De Bruyne",
+        "Eden Hazard",
+        "Bruno Fernandes"
+      ],
+      "correctIndex": 1,
+      "id": 857,
+      "imageUrl": "https://source.unsplash.com/640x420/?Kevin+De+Bruyne+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which country won the men’s 2022 FIFA World Cup?",
+      "options": [
+        "Argentina",
+        "England",
+        "France",
+        "Brazil"
+      ],
+      "correctIndex": 0,
+      "id": 858,
+      "imageUrl": "https://source.unsplash.com/640x420/?Argentina+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which country won the women’s 2023 FIFA World Cup?",
+      "options": [
+        "USA",
+        "Spain",
+        "England",
+        "Australia"
+      ],
+      "correctIndex": 1,
+      "id": 859,
+      "imageUrl": "https://source.unsplash.com/640x420/?Spain+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which country hosted the 2023 FIFA Women’s World Cup with Australia?",
+      "options": [
+        "Canada",
+        "France",
+        "New Zealand",
+        "Japan"
+      ],
+      "correctIndex": 2,
+      "id": 860,
+      "imageUrl": "https://source.unsplash.com/640x420/?New+Zealand+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "What is the nickname of Australia’s women’s national soccer team?",
+      "options": [
+        "Matildas",
+        "Wallabies",
+        "CommBank Stars",
+        "Socceroos"
+      ],
+      "correctIndex": 0,
+      "id": 861,
+      "imageUrl": "https://source.unsplash.com/640x420/?Matildas+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "What is the nickname of Australia’s men’s national soccer team?",
+      "options": [
+        "Wallabies",
+        "Matildas",
+        "Socceroos",
+        "Kangaroos"
+      ],
+      "correctIndex": 2,
+      "id": 862,
+      "imageUrl": "https://source.unsplash.com/640x420/?Socceroos+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "How many players are on the field for one soccer team?",
+      "options": [
+        "7",
+        "15",
+        "9",
+        "11"
+      ],
+      "correctIndex": 3,
+      "id": 863,
+      "imageUrl": "https://source.unsplash.com/640x420/?11+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "What is it called when a player scores three goals in one match?",
+      "options": [
+        "Triple kick",
+        "Goal storm",
+        "Hat-trick",
+        "Threepeat"
+      ],
+      "correctIndex": 2,
+      "id": 864,
+      "imageUrl": "https://source.unsplash.com/640x420/?Hat-trick+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which position mainly protects the goal?",
+      "options": [
+        "Striker",
+        "Goalkeeper",
+        "Winger",
+        "Midfielder"
+      ],
+      "correctIndex": 1,
+      "id": 865,
+      "imageUrl": "https://source.unsplash.com/640x420/?Goalkeeper+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "What card usually means a player must leave the match?",
+      "options": [
+        "Blue card",
+        "Green card",
+        "Yellow card",
+        "Red card"
+      ],
+      "correctIndex": 3,
+      "id": 866,
+      "imageUrl": "https://source.unsplash.com/640x420/?Red+card+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "What card is usually a warning?",
+      "options": [
+        "Black card",
+        "Yellow card",
+        "White card",
+        "Red card"
+      ],
+      "correctIndex": 1,
+      "id": 867,
+      "imageUrl": "https://source.unsplash.com/640x420/?Yellow+card+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "What is a penalty kick taken from?",
+      "options": [
+        "Goal line",
+        "Corner flag",
+        "Halfway line",
+        "Penalty spot"
+      ],
+      "correctIndex": 3,
+      "id": 868,
+      "imageUrl": "https://source.unsplash.com/640x420/?Penalty+spot+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "What happens when the ball goes over the sideline?",
+      "options": [
+        "Corner kick",
+        "Penalty",
+        "Goal kick only",
+        "Throw-in"
+      ],
+      "correctIndex": 3,
+      "id": 869,
+      "imageUrl": "https://source.unsplash.com/640x420/?Throw-in+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "What is awarded when the defending team kicks the ball over their own goal line?",
+      "options": [
+        "Throw-in",
+        "Penalty",
+        "Corner kick",
+        "Free throw"
+      ],
+      "correctIndex": 2,
+      "id": 870,
+      "imageUrl": "https://source.unsplash.com/640x420/?Corner+kick+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "What is the main global tournament for national teams called?",
+      "options": [
+        "Super Bowl",
+        "Champions League",
+        "Ashes",
+        "FIFA World Cup"
+      ],
+      "correctIndex": 3,
+      "id": 871,
+      "imageUrl": "https://source.unsplash.com/640x420/?FIFA+World+Cup+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which club is strongly linked with Lionel Messi’s early career?",
+      "options": [
+        "Barcelona",
+        "Arsenal",
+        "Chelsea",
+        "Bayern Munich"
+      ],
+      "correctIndex": 0,
+      "id": 872,
+      "imageUrl": "https://source.unsplash.com/640x420/?Barcelona+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which club is famous for the song “You’ll Never Walk Alone”?",
+      "options": [
+        "Tottenham",
+        "Liverpool",
+        "Manchester City",
+        "Chelsea"
+      ],
+      "correctIndex": 1,
+      "id": 873,
+      "imageUrl": "https://source.unsplash.com/640x420/?Liverpool+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which Spanish club wears white and is called Los Blancos?",
+      "options": [
+        "Barcelona",
+        "Sevilla",
+        "Atlético Madrid",
+        "Real Madrid"
+      ],
+      "correctIndex": 3,
+      "id": 874,
+      "imageUrl": "https://source.unsplash.com/640x420/?Real+Madrid+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which Spanish club plays at Camp Nou?",
+      "options": [
+        "Valencia",
+        "Villarreal",
+        "Real Madrid",
+        "Barcelona"
+      ],
+      "correctIndex": 3,
+      "id": 875,
+      "imageUrl": "https://source.unsplash.com/640x420/?Barcelona+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which English club is nicknamed the Red Devils?",
+      "options": [
+        "Arsenal",
+        "Manchester United",
+        "Chelsea",
+        "Liverpool"
+      ],
+      "correctIndex": 1,
+      "id": 876,
+      "imageUrl": "https://source.unsplash.com/640x420/?Manchester+United+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which English club is nicknamed the Gunners?",
+      "options": [
+        "Tottenham",
+        "Chelsea",
+        "Arsenal",
+        "Everton"
+      ],
+      "correctIndex": 2,
+      "id": 877,
+      "imageUrl": "https://source.unsplash.com/640x420/?Arsenal+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which Italian club is nicknamed the Old Lady?",
+      "options": [
+        "Inter Milan",
+        "AC Milan",
+        "Juventus",
+        "Roma"
+      ],
+      "correctIndex": 2,
+      "id": 878,
+      "imageUrl": "https://source.unsplash.com/640x420/?Juventus+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which German club is famous for red kits and many Bundesliga titles?",
+      "options": [
+        "Leverkusen",
+        "Leipzig",
+        "Borussia Dortmund",
+        "Bayern Munich"
+      ],
+      "correctIndex": 3,
+      "id": 879,
+      "imageUrl": "https://source.unsplash.com/640x420/?Bayern+Munich+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which French club is often called PSG?",
+      "options": [
+        "Monaco",
+        "Marseille",
+        "Lyon",
+        "Paris Saint-Germain"
+      ],
+      "correctIndex": 3,
+      "id": 880,
+      "imageUrl": "https://source.unsplash.com/640x420/?Paris+Saint-Germain+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which competition features top European clubs?",
+      "options": [
+        "UEFA Champions League",
+        "FA Cup only",
+        "World Cup",
+        "A-League Women"
+      ],
+      "correctIndex": 0,
+      "id": 881,
+      "imageUrl": "https://source.unsplash.com/640x420/?UEFA+Champions+League+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which Australian league features clubs like Sydney FC and Melbourne Victory?",
+      "options": [
+        "Serie A",
+        "Premier League",
+        "A-League",
+        "La Liga"
+      ],
+      "correctIndex": 2,
+      "id": 882,
+      "imageUrl": "https://source.unsplash.com/640x420/?A-League+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which women’s Australian club competition includes teams like Brisbane Roar Women?",
+      "options": [
+        "Serie A",
+        "A-League Women",
+        "NWSL only",
+        "WSL only"
+      ],
+      "correctIndex": 1,
+      "id": 883,
+      "imageUrl": "https://source.unsplash.com/640x420/?A-League+Women+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which trophy is given to the women’s world champions?",
+      "options": [
+        "Brownlow Medal",
+        "Ashes urn",
+        "FIFA Women’s World Cup Trophy",
+        "Stanley Cup"
+      ],
+      "correctIndex": 2,
+      "id": 884,
+      "imageUrl": "https://source.unsplash.com/640x420/?FIFA+Women%E2%80%99s+World+Cup+Trophy+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which skill means moving the ball past players with little touches?",
+      "options": [
+        "Catching",
+        "Tackling only",
+        "Bowling",
+        "Dribbling"
+      ],
+      "correctIndex": 3,
+      "id": 885,
+      "imageUrl": "https://source.unsplash.com/640x420/?Dribbling+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which player often plays closest to the opponent’s goal?",
+      "options": [
+        "Goalkeeper",
+        "Striker",
+        "Centre-back",
+        "Referee"
+      ],
+      "correctIndex": 1,
+      "id": 886,
+      "imageUrl": "https://source.unsplash.com/640x420/?Striker+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which position often defends in the middle of the back line?",
+      "options": [
+        "Striker",
+        "Centre-back",
+        "Goalkeeper",
+        "Winger"
+      ],
+      "correctIndex": 1,
+      "id": 887,
+      "imageUrl": "https://source.unsplash.com/640x420/?Centre-back+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "What do we call a pass that directly leads to a goal?",
+      "options": [
+        "Assist",
+        "Save",
+        "Throw-in",
+        "Nutmeg"
+      ],
+      "correctIndex": 0,
+      "id": 888,
+      "imageUrl": "https://source.unsplash.com/640x420/?Assist+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "What is a “nutmeg” in soccer?",
+      "options": [
+        "A stadium",
+        "A type of boot",
+        "Kicking the ball through an opponent’s legs",
+        "A goalkeeper save"
+      ],
+      "correctIndex": 2,
+      "id": 889,
+      "imageUrl": "https://source.unsplash.com/640x420/?Kicking+the+ball+through+an+opponent%E2%80%99s+legs+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "What is VAR used for?",
+      "options": [
+        "Making the ball faster",
+        "Selling tickets",
+        "Choosing team colours",
+        "Video review of big decisions"
+      ],
+      "correctIndex": 3,
+      "id": 890,
+      "imageUrl": "https://source.unsplash.com/640x420/?Video+review+of+big+decisions+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "What is extra time?",
+      "options": [
+        "Training time",
+        "Half-time snack",
+        "Additional play after a tied knockout match",
+        "A weather delay only"
+      ],
+      "correctIndex": 2,
+      "id": 891,
+      "imageUrl": "https://source.unsplash.com/640x420/?Additional+play+after+a+tied+knockout+match+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "What decides some tied knockout matches after extra time?",
+      "options": [
+        "Penalty shootout",
+        "Longest pass",
+        "Most corners always",
+        "Coin collection"
+      ],
+      "correctIndex": 0,
+      "id": 892,
+      "imageUrl": "https://source.unsplash.com/640x420/?Penalty+shootout+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which country is famous for the Seleção and five men’s World Cups?",
+      "options": [
+        "Spain",
+        "Netherlands",
+        "Germany",
+        "Brazil"
+      ],
+      "correctIndex": 3,
+      "id": 893,
+      "imageUrl": "https://source.unsplash.com/640x420/?Brazil+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which country is famous for orange kits and “Total Football”?",
+      "options": [
+        "Croatia",
+        "Italy",
+        "Portugal",
+        "Netherlands"
+      ],
+      "correctIndex": 3,
+      "id": 894,
+      "imageUrl": "https://source.unsplash.com/640x420/?Netherlands+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which country is strongly linked with tiki-taka football?",
+      "options": [
+        "Canada",
+        "Norway",
+        "Spain",
+        "Chile"
+      ],
+      "correctIndex": 2,
+      "id": 895,
+      "imageUrl": "https://source.unsplash.com/640x420/?Spain+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which Portuguese star has won many Ballon d’Or awards?",
+      "options": [
+        "Neymar",
+        "Mbappé",
+        "Cristiano Ronaldo",
+        "Haaland"
+      ],
+      "correctIndex": 2,
+      "id": 896,
+      "imageUrl": "https://source.unsplash.com/640x420/?Cristiano+Ronaldo+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which award is often given to the world’s best footballer?",
+      "options": [
+        "Ballon d’Or",
+        "Brownlow",
+        "Oscar",
+        "Grammy"
+      ],
+      "correctIndex": 0,
+      "id": 897,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ballon+d%E2%80%99Or+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which English striker became famous at Tottenham and Bayern Munich?",
+      "options": [
+        "Phil Foden",
+        "Harry Kane",
+        "Jack Grealish",
+        "Bukayo Saka"
+      ],
+      "correctIndex": 1,
+      "id": 898,
+      "imageUrl": "https://source.unsplash.com/640x420/?Harry+Kane+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which Korean star became famous at Tottenham?",
+      "options": [
+        "Hwang Hee-chan",
+        "Son Heung-min",
+        "Park Ji-sung",
+        "Kim Min-jae"
+      ],
+      "correctIndex": 1,
+      "id": 899,
+      "imageUrl": "https://source.unsplash.com/640x420/?Son+Heung-min+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which Croatian midfielder won the Ballon d’Or in 2018?",
+      "options": [
+        "Ivan Rakitić",
+        "Mario Mandžukić",
+        "Mateo Kovačić",
+        "Luka Modrić"
+      ],
+      "correctIndex": 3,
+      "id": 900,
+      "imageUrl": "https://source.unsplash.com/640x420/?Luka+Modri%C4%87+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which Brazilian legend is often called “Pelé”?",
+      "options": [
+        "Ronaldinho",
+        "Neymar Jr",
+        "Ronaldo Nazário",
+        "Edson Arantes do Nascimento"
+      ],
+      "correctIndex": 3,
+      "id": 901,
+      "imageUrl": "https://source.unsplash.com/640x420/?Edson+Arantes+do+Nascimento+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which player was famous for the “Hand of God” goal?",
+      "options": [
+        "Zinedine Zidane",
+        "Lionel Messi",
+        "Diego Maradona",
+        "Pelé"
+      ],
+      "correctIndex": 2,
+      "id": 902,
+      "imageUrl": "https://source.unsplash.com/640x420/?Diego+Maradona+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which French icon scored twice in the 1998 World Cup final?",
+      "options": [
+        "Kylian Mbappé",
+        "Thierry Henry",
+        "Antoine Griezmann",
+        "Zinedine Zidane"
+      ],
+      "correctIndex": 3,
+      "id": 903,
+      "imageUrl": "https://source.unsplash.com/640x420/?Zinedine+Zidane+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which goalkeeper action stops the ball going into the net?",
+      "options": [
+        "Corner",
+        "Save",
+        "Throw-in",
+        "Assist"
+      ],
+      "correctIndex": 1,
+      "id": 904,
+      "imageUrl": "https://source.unsplash.com/640x420/?Save+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which line divides the pitch into two halves?",
+      "options": [
+        "Goal line",
+        "Halfway line",
+        "Penalty line",
+        "Touchline"
+      ],
+      "correctIndex": 1,
+      "id": 905,
+      "imageUrl": "https://source.unsplash.com/640x420/?Halfway+line+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "Which object must fully cross the goal line for a goal?",
+      "options": [
+        "A player",
+        "The referee",
+        "A boot",
+        "The ball"
+      ],
+      "correctIndex": 3,
+      "id": 906,
+      "imageUrl": "https://source.unsplash.com/640x420/?The+ball+soccer"
+    },
+    {
+      "category": "Soccer",
+      "question": "What do soccer players usually wear on their feet?",
+      "options": [
+        "Flippers",
+        "Ballet shoes",
+        "Boots",
+        "Skates"
+      ],
+      "correctIndex": 2,
+      "id": 907,
+      "imageUrl": "https://source.unsplash.com/640x420/?Boots+soccer"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which dog breed is famous for golden fur and being friendly?",
+      "options": [
+        "Border Collie",
+        "Dachshund",
+        "Poodle",
+        "Golden Retriever"
+      ],
+      "correctIndex": 3,
+      "id": 908,
+      "imageUrl": "https://source.unsplash.com/640x420/?Golden+Retriever+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which dog breed is often used as a police or working dog?",
+      "options": [
+        "German Shepherd",
+        "Pug",
+        "Corgi",
+        "Maltese"
+      ],
+      "correctIndex": 0,
+      "id": 909,
+      "imageUrl": "https://source.unsplash.com/640x420/?German+Shepherd+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which small dog breed has a curly coat and is often crossed with other breeds?",
+      "options": [
+        "Husky",
+        "Poodle",
+        "Boxer",
+        "Beagle"
+      ],
+      "correctIndex": 1,
+      "id": 910,
+      "imageUrl": "https://source.unsplash.com/640x420/?Poodle+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which dog breed has very short legs and a long body?",
+      "options": [
+        "Greyhound",
+        "Dalmatian",
+        "Samoyed",
+        "Dachshund"
+      ],
+      "correctIndex": 3,
+      "id": 911,
+      "imageUrl": "https://source.unsplash.com/640x420/?Dachshund+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which dog breed is famous for spots?",
+      "options": [
+        "Poodle",
+        "Corgi",
+        "Beagle",
+        "Dalmatian"
+      ],
+      "correctIndex": 3,
+      "id": 912,
+      "imageUrl": "https://source.unsplash.com/640x420/?Dalmatian+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which dog breed is known for herding sheep and being super smart?",
+      "options": [
+        "Border Collie",
+        "Shih Tzu",
+        "Pug",
+        "Bulldog"
+      ],
+      "correctIndex": 0,
+      "id": 913,
+      "imageUrl": "https://source.unsplash.com/640x420/?Border+Collie+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which fluffy white dog breed is famous for a smiling face?",
+      "options": [
+        "Samoyed",
+        "Beagle",
+        "Doberman",
+        "Whippet"
+      ],
+      "correctIndex": 0,
+      "id": 914,
+      "imageUrl": "https://source.unsplash.com/640x420/?Samoyed+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed has blue eyes often and pulls sleds?",
+      "options": [
+        "Poodle",
+        "Cocker Spaniel",
+        "Pug",
+        "Siberian Husky"
+      ],
+      "correctIndex": 3,
+      "id": 915,
+      "imageUrl": "https://source.unsplash.com/640x420/?Siberian+Husky+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which small breed has a curled tail and wrinkly face?",
+      "options": [
+        "Dalmatian",
+        "Pug",
+        "Greyhound",
+        "Border Collie"
+      ],
+      "correctIndex": 1,
+      "id": 916,
+      "imageUrl": "https://source.unsplash.com/640x420/?Pug+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed is often called a “sausage dog”?",
+      "options": [
+        "Beagle",
+        "Boxer",
+        "Dachshund",
+        "Corgi"
+      ],
+      "correctIndex": 2,
+      "id": 917,
+      "imageUrl": "https://source.unsplash.com/640x420/?Dachshund+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which royal-looking small herding dog is linked with Queen Elizabeth II?",
+      "options": [
+        "Husky",
+        "Poodle",
+        "Corgi",
+        "Mastiff"
+      ],
+      "correctIndex": 2,
+      "id": 918,
+      "imageUrl": "https://source.unsplash.com/640x420/?Corgi+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed is known for being very fast and slim?",
+      "options": [
+        "Bichon Frise",
+        "Bulldog",
+        "Pug",
+        "Greyhound"
+      ],
+      "correctIndex": 3,
+      "id": 919,
+      "imageUrl": "https://source.unsplash.com/640x420/?Greyhound+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed is small, white, and fluffy, often used in companion homes?",
+      "options": [
+        "Boxer",
+        "Maltese",
+        "Rottweiler",
+        "Labrador"
+      ],
+      "correctIndex": 1,
+      "id": 920,
+      "imageUrl": "https://source.unsplash.com/640x420/?Maltese+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed is famous for a wrinkly face and pushed-in nose?",
+      "options": [
+        "Husky",
+        "Greyhound",
+        "Dalmatian",
+        "Bulldog"
+      ],
+      "correctIndex": 3,
+      "id": 921,
+      "imageUrl": "https://source.unsplash.com/640x420/?Bulldog+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed is a popular family dog and often black, yellow, or chocolate?",
+      "options": [
+        "Labrador Retriever",
+        "Shih Tzu",
+        "Pomeranian",
+        "Corgi"
+      ],
+      "correctIndex": 0,
+      "id": 922,
+      "imageUrl": "https://source.unsplash.com/640x420/?Labrador+Retriever+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which tiny dog breed is one of the smallest in the world?",
+      "options": [
+        "Collie",
+        "Great Dane",
+        "Chihuahua",
+        "Mastiff"
+      ],
+      "correctIndex": 2,
+      "id": 923,
+      "imageUrl": "https://source.unsplash.com/640x420/?Chihuahua+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which giant dog breed is famous for being very tall?",
+      "options": [
+        "Chihuahua",
+        "Great Dane",
+        "Maltese",
+        "Pug"
+      ],
+      "correctIndex": 1,
+      "id": 924,
+      "imageUrl": "https://source.unsplash.com/640x420/?Great+Dane+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which dog breed has a lion-like mane and blue-black tongue?",
+      "options": [
+        "Poodle",
+        "Chow Chow",
+        "Whippet",
+        "Beagle"
+      ],
+      "correctIndex": 1,
+      "id": 925,
+      "imageUrl": "https://source.unsplash.com/640x420/?Chow+Chow+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed often has a beard and eyebrows?",
+      "options": [
+        "Schnauzer",
+        "Dalmatian",
+        "Corgi",
+        "Husky"
+      ],
+      "correctIndex": 0,
+      "id": 926,
+      "imageUrl": "https://source.unsplash.com/640x420/?Schnauzer+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed is known for long ears and a strong sense of smell?",
+      "options": [
+        "Pug",
+        "Greyhound",
+        "Samoyed",
+        "Beagle"
+      ],
+      "correctIndex": 3,
+      "id": 927,
+      "imageUrl": "https://source.unsplash.com/640x420/?Beagle+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed is a small fluffy dog with a fox-like face?",
+      "options": [
+        "Boxer",
+        "Great Dane",
+        "Pomeranian",
+        "Border Collie"
+      ],
+      "correctIndex": 2,
+      "id": 928,
+      "imageUrl": "https://source.unsplash.com/640x420/?Pomeranian+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed has a silky coat and is often small with a topknot?",
+      "options": [
+        "Yorkshire Terrier",
+        "Husky",
+        "Dalmatian",
+        "Labrador"
+      ],
+      "correctIndex": 0,
+      "id": 929,
+      "imageUrl": "https://source.unsplash.com/640x420/?Yorkshire+Terrier+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed is a curly, intelligent dog that comes in toy, miniature, and standard sizes?",
+      "options": [
+        "Beagle",
+        "Boxer",
+        "Corgi",
+        "Poodle"
+      ],
+      "correctIndex": 3,
+      "id": 930,
+      "imageUrl": "https://source.unsplash.com/640x420/?Poodle+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed is often reddish-brown and known for a ridge along its back?",
+      "options": [
+        "Rhodesian Ridgeback",
+        "Pug",
+        "Maltese",
+        "Samoyed"
+      ],
+      "correctIndex": 0,
+      "id": 931,
+      "imageUrl": "https://source.unsplash.com/640x420/?Rhodesian+Ridgeback+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed is a strong working dog with black and tan colouring?",
+      "options": [
+        "Poodle",
+        "Rottweiler",
+        "Bichon Frise",
+        "Whippet"
+      ],
+      "correctIndex": 1,
+      "id": 932,
+      "imageUrl": "https://source.unsplash.com/640x420/?Rottweiler+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed is a cheerful, curly white small dog?",
+      "options": [
+        "Bichon Frise",
+        "Doberman",
+        "Husky",
+        "Greyhound"
+      ],
+      "correctIndex": 0,
+      "id": 933,
+      "imageUrl": "https://source.unsplash.com/640x420/?Bichon+Frise+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed has a long silky coat and a sweet face, often seen in families?",
+      "options": [
+        "Rottweiler",
+        "Cocker Spaniel",
+        "Dalmatian",
+        "Great Dane"
+      ],
+      "correctIndex": 1,
+      "id": 934,
+      "imageUrl": "https://source.unsplash.com/640x420/?Cocker+Spaniel+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed is an Australian working dog with lots of energy?",
+      "options": [
+        "Pug",
+        "Chihuahua",
+        "Australian Cattle Dog",
+        "Maltese"
+      ],
+      "correctIndex": 2,
+      "id": 935,
+      "imageUrl": "https://source.unsplash.com/640x420/?Australian+Cattle+Dog+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed is a mix often called a “Spoodle” in Australia?",
+      "options": [
+        "Pug and Corgi mix",
+        "Cocker Spaniel and Poodle mix",
+        "Husky and Beagle mix",
+        "Labrador and Dalmatian mix"
+      ],
+      "correctIndex": 1,
+      "id": 936,
+      "imageUrl": "https://source.unsplash.com/640x420/?Cocker+Spaniel+and+Poodle+mix+dog+breed"
+    },
+    {
+      "category": "Dog Breeds",
+      "question": "Which breed is known for being tall, slim, and very fast but smaller than a greyhound?",
+      "options": [
+        "Samoyed",
+        "Bulldog",
+        "Pomeranian",
+        "Whippet"
+      ],
+      "correctIndex": 3,
+      "id": 937,
+      "imageUrl": "https://source.unsplash.com/640x420/?Whippet+dog+breed"
+    },
+    {
+      "category": "Matildas",
+      "question": "What is the nickname of Australia’s women’s national soccer team?",
+      "options": [
+        "Wallabies",
+        "Matildas",
+        "Diamonds",
+        "Socceroos"
+      ],
+      "correctIndex": 1,
+      "id": 938,
+      "imageUrl": "https://source.unsplash.com/640x420/?Matildas+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which Matildas striker is famous for playing for Chelsea and Australia?",
+      "options": [
+        "Sam Kerr",
+        "Caitlin Foord",
+        "Mary Fowler",
+        "Hayley Raso"
+      ],
+      "correctIndex": 0,
+      "id": 939,
+      "imageUrl": "https://source.unsplash.com/640x420/?Sam+Kerr+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which Matildas player is known for wearing colourful hair ribbons?",
+      "options": [
+        "Hayley Raso",
+        "Mackenzie Arnold",
+        "Ellie Carpenter",
+        "Steph Catley"
+      ],
+      "correctIndex": 0,
+      "id": 940,
+      "imageUrl": "https://source.unsplash.com/640x420/?Hayley+Raso+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which Matildas goalkeeper became famous for big penalty saves in 2023?",
+      "options": [
+        "Mackenzie Arnold",
+        "Mary Fowler",
+        "Sam Kerr",
+        "Kyra Cooney-Cross"
+      ],
+      "correctIndex": 0,
+      "id": 941,
+      "imageUrl": "https://source.unsplash.com/640x420/?Mackenzie+Arnold+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which Matildas player scored a memorable long-range goal against England in the 2023 semi-final?",
+      "options": [
+        "Clare Hunt",
+        "Alanna Kennedy",
+        "Sam Kerr",
+        "Hayley Raso"
+      ],
+      "correctIndex": 2,
+      "id": 942,
+      "imageUrl": "https://source.unsplash.com/640x420/?Sam+Kerr+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which country co-hosted the 2023 Women’s World Cup with Australia?",
+      "options": [
+        "Japan",
+        "England",
+        "New Zealand",
+        "Canada"
+      ],
+      "correctIndex": 2,
+      "id": 943,
+      "imageUrl": "https://source.unsplash.com/640x420/?New+Zealand+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which Australian city hosted the Matildas’ 2023 semi-final against England?",
+      "options": [
+        "Perth",
+        "Brisbane",
+        "Adelaide",
+        "Sydney"
+      ],
+      "correctIndex": 3,
+      "id": 944,
+      "imageUrl": "https://source.unsplash.com/640x420/?Sydney+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which Matildas player is known for creativity and plays as an attacker/midfielder?",
+      "options": [
+        "Mackenzie Arnold",
+        "Mary Fowler",
+        "Lydia Williams",
+        "Clare Hunt"
+      ],
+      "correctIndex": 1,
+      "id": 945,
+      "imageUrl": "https://source.unsplash.com/640x420/?Mary+Fowler+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which Matildas player has played for Arsenal and is known as a defender?",
+      "options": [
+        "Sam Kerr",
+        "Cortnee Vine",
+        "Steph Catley",
+        "Kyra Cooney-Cross"
+      ],
+      "correctIndex": 2,
+      "id": 946,
+      "imageUrl": "https://source.unsplash.com/640x420/?Steph+Catley+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which Matildas player scored the winning penalty against France in 2023?",
+      "options": [
+        "Mary Fowler",
+        "Hayley Raso",
+        "Cortnee Vine",
+        "Sam Kerr"
+      ],
+      "correctIndex": 2,
+      "id": 947,
+      "imageUrl": "https://source.unsplash.com/640x420/?Cortnee+Vine+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Who was the Matildas head coach during the 2023 Women’s World Cup?",
+      "options": [
+        "Alen Stajcic",
+        "Tony Gustavsson",
+        "Ange Postecoglou",
+        "Graham Arnold"
+      ],
+      "correctIndex": 1,
+      "id": 948,
+      "imageUrl": "https://source.unsplash.com/640x420/?Tony+Gustavsson+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which team knocked the Matildas out in the 2023 semi-final?",
+      "options": [
+        "France",
+        "Spain",
+        "England",
+        "USA"
+      ],
+      "correctIndex": 2,
+      "id": 949,
+      "imageUrl": "https://source.unsplash.com/640x420/?England+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which team did the Matildas beat on penalties in the 2023 quarter-final?",
+      "options": [
+        "England",
+        "Brazil",
+        "France",
+        "Canada"
+      ],
+      "correctIndex": 2,
+      "id": 950,
+      "imageUrl": "https://source.unsplash.com/640x420/?France+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which Matildas midfielder is known for calm passing and played for Arsenal?",
+      "options": [
+        "Mackenzie Arnold",
+        "Kyra Cooney-Cross",
+        "Hayley Raso",
+        "Sam Kerr"
+      ],
+      "correctIndex": 1,
+      "id": 951,
+      "imageUrl": "https://source.unsplash.com/640x420/?Kyra+Cooney-Cross+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which Matildas defender is known for powerful runs from full-back?",
+      "options": [
+        "Ellie Carpenter",
+        "Lydia Williams",
+        "Mary Fowler",
+        "Caitlin Foord"
+      ],
+      "correctIndex": 0,
+      "id": 952,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ellie+Carpenter+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which Matildas forward has played for Arsenal and is known for skill on the wing?",
+      "options": [
+        "Clare Hunt",
+        "Caitlin Foord",
+        "Alanna Kennedy",
+        "Mackenzie Arnold"
+      ],
+      "correctIndex": 1,
+      "id": 953,
+      "imageUrl": "https://source.unsplash.com/640x420/?Caitlin+Foord+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which Matildas defender scored with a header against England in 2023?",
+      "options": [
+        "Mary Fowler",
+        "Alanna Kennedy",
+        "Sam Kerr",
+        "Hayley Raso"
+      ],
+      "correctIndex": 1,
+      "id": 954,
+      "imageUrl": "https://source.unsplash.com/640x420/?Alanna+Kennedy+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "What colour is commonly associated with the Matildas home kit?",
+      "options": [
+        "Black only",
+        "Purple",
+        "Gold/yellow",
+        "Pink"
+      ],
+      "correctIndex": 2,
+      "id": 955,
+      "imageUrl": "https://source.unsplash.com/640x420/?Gold%2Fyellow+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which animal is in the song “Waltzing Matilda”?",
+      "options": [
+        "Horse",
+        "Kangaroo",
+        "Koala",
+        "Sheep"
+      ],
+      "correctIndex": 3,
+      "id": 956,
+      "imageUrl": "https://source.unsplash.com/640x420/?Sheep+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which sport do the Matildas play?",
+      "options": [
+        "Rugby",
+        "Cricket",
+        "Netball",
+        "Soccer"
+      ],
+      "correctIndex": 3,
+      "id": 957,
+      "imageUrl": "https://source.unsplash.com/640x420/?Soccer+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "What is a clean sheet in soccer?",
+      "options": [
+        "No goals conceded",
+        "A new uniform",
+        "A goal from halfway",
+        "A yellow card"
+      ],
+      "correctIndex": 0,
+      "id": 958,
+      "imageUrl": "https://source.unsplash.com/640x420/?No+goals+conceded+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which Matildas player is one of Australia’s most famous captains?",
+      "options": [
+        "Ash Barty",
+        "Cathy Freeman",
+        "Ellyse Perry",
+        "Sam Kerr"
+      ],
+      "correctIndex": 3,
+      "id": 959,
+      "imageUrl": "https://source.unsplash.com/640x420/?Sam+Kerr+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which tournament made the Matildas huge household names in Australia in 2023?",
+      "options": [
+        "Olympic swimming",
+        "AFL Grand Final",
+        "FIFA Women’s World Cup",
+        "The Ashes"
+      ],
+      "correctIndex": 2,
+      "id": 960,
+      "imageUrl": "https://source.unsplash.com/640x420/?FIFA+Women%E2%80%99s+World+Cup+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which Matildas player is a goalkeeper and veteran of the team?",
+      "options": [
+        "Ellie Carpenter",
+        "Lydia Williams",
+        "Mary Fowler",
+        "Caitlin Foord"
+      ],
+      "correctIndex": 1,
+      "id": 961,
+      "imageUrl": "https://source.unsplash.com/640x420/?Lydia+Williams+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "What does “Tillies” refer to?",
+      "options": [
+        "A stadium",
+        "A referee",
+        "A nickname for the Matildas",
+        "A type of boot"
+      ],
+      "correctIndex": 2,
+      "id": 962,
+      "imageUrl": "https://source.unsplash.com/640x420/?A+nickname+for+the+Matildas+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which Matildas player has played for Manchester City and is known as a young star?",
+      "options": [
+        "Clare Polkinghorne",
+        "Mary Fowler",
+        "Alanna Kennedy",
+        "Lydia Williams"
+      ],
+      "correctIndex": 1,
+      "id": 963,
+      "imageUrl": "https://source.unsplash.com/640x420/?Mary+Fowler+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Which Australian city is home to Suncorp Stadium, where the Matildas played in 2023?",
+      "options": [
+        "Hobart",
+        "Canberra",
+        "Darwin",
+        "Brisbane"
+      ],
+      "correctIndex": 3,
+      "id": 964,
+      "imageUrl": "https://source.unsplash.com/640x420/?Brisbane+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "What position is Mackenzie Arnold?",
+      "options": [
+        "Centre-back",
+        "Goalkeeper",
+        "Striker",
+        "Winger"
+      ],
+      "correctIndex": 1,
+      "id": 965,
+      "imageUrl": "https://source.unsplash.com/640x420/?Goalkeeper+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "What position is Sam Kerr best known for?",
+      "options": [
+        "Striker",
+        "Referee",
+        "Goalkeeper",
+        "Defender"
+      ],
+      "correctIndex": 0,
+      "id": 966,
+      "imageUrl": "https://source.unsplash.com/640x420/?Striker+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Matildas",
+      "question": "Why did many Australian fans love the Matildas in 2023?",
+      "options": [
+        "They won a cooking show",
+        "They changed sports",
+        "They played basketball",
+        "They inspired the country with teamwork and courage"
+      ],
+      "correctIndex": 3,
+      "id": 967,
+      "imageUrl": "https://source.unsplash.com/640x420/?They+inspired+the+country+with+teamwork+and+courage+Matildas+Australia+soccer"
+    },
+    {
+      "category": "Geography",
+      "question": "Which huge sandstone rock is one of Australia’s most famous landmarks?",
+      "options": [
+        "Bondi Beach",
+        "Daintree River",
+        "Mount Kosciuszko",
+        "Uluru"
+      ],
+      "correctIndex": 3,
+      "id": 968,
+      "imageUrl": "https://source.unsplash.com/640x420/?Uluru+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which colourful Northern Territory cliffs are called Kata Tjuta in Anangu language?",
+      "options": [
+        "The Olgas",
+        "Blue Mountains",
+        "Bungle Bungles",
+        "Twelve Apostles"
+      ],
+      "correctIndex": 0,
+      "id": 969,
+      "imageUrl": "https://source.unsplash.com/640x420/?The+Olgas+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which mountain is the highest on the Australian mainland?",
+      "options": [
+        "Mount Kosciuszko",
+        "Mount Coot-tha",
+        "Uluru",
+        "Mount Warning"
+      ],
+      "correctIndex": 0,
+      "id": 970,
+      "imageUrl": "https://source.unsplash.com/640x420/?Mount+Kosciuszko+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which Queensland reef is the world’s largest coral reef system?",
+      "options": [
+        "Ningaloo Reef",
+        "Bondi Reef",
+        "Great Barrier Reef",
+        "Coral Bay only"
+      ],
+      "correctIndex": 2,
+      "id": 971,
+      "imageUrl": "https://source.unsplash.com/640x420/?Great+Barrier+Reef+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which Western Australian reef is famous for whale sharks?",
+      "options": [
+        "Ningaloo Reef",
+        "Port Phillip Bay",
+        "Batemans Bay",
+        "Great Barrier Reef"
+      ],
+      "correctIndex": 0,
+      "id": 972,
+      "imageUrl": "https://source.unsplash.com/640x420/?Ningaloo+Reef+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which Victorian rock stacks are called the Twelve Apostles?",
+      "options": [
+        "Mountains",
+        "Sand dunes",
+        "Volcanoes",
+        "Limestone sea stacks"
+      ],
+      "correctIndex": 3,
+      "id": 973,
+      "imageUrl": "https://source.unsplash.com/640x420/?Limestone+sea+stacks+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which mountain range runs along much of eastern Australia?",
+      "options": [
+        "Himalayas",
+        "Great Dividing Range",
+        "Andes",
+        "Rockies"
+      ],
+      "correctIndex": 1,
+      "id": 974,
+      "imageUrl": "https://source.unsplash.com/640x420/?Great+Dividing+Range+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which Tasmanian mountain is known for its jagged shape near Dove Lake?",
+      "options": [
+        "Cradle Mountain",
+        "Uluru",
+        "Mount Coot-tha",
+        "Mount Isa"
+      ],
+      "correctIndex": 0,
+      "id": 975,
+      "imageUrl": "https://source.unsplash.com/640x420/?Cradle+Mountain+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which ancient rainforest in Queensland is one of the world’s oldest?",
+      "options": [
+        "Daintree Rainforest",
+        "Sherwood Forest",
+        "Black Forest",
+        "Amazon Rainforest"
+      ],
+      "correctIndex": 0,
+      "id": 976,
+      "imageUrl": "https://source.unsplash.com/640x420/?Daintree+Rainforest+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which desert covers a large part of central Australia?",
+      "options": [
+        "Gobi Desert",
+        "Great Victoria Desert",
+        "Atacama Desert",
+        "Sahara Desert"
+      ],
+      "correctIndex": 1,
+      "id": 977,
+      "imageUrl": "https://source.unsplash.com/640x420/?Great+Victoria+Desert+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which South Australian lake is often dry and can look pink or white from salt?",
+      "options": [
+        "Lake Burley Griffin",
+        "Lake Eyre / Kati Thanda",
+        "Lake Taupō",
+        "Lake Como"
+      ],
+      "correctIndex": 1,
+      "id": 978,
+      "imageUrl": "https://source.unsplash.com/640x420/?Lake+Eyre+%2F+Kati+Thanda+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which blue-hazed mountain region is west of Sydney?",
+      "options": [
+        "Glass House Mountains",
+        "Flinders Ranges",
+        "Snowy Mountains",
+        "Blue Mountains"
+      ],
+      "correctIndex": 3,
+      "id": 979,
+      "imageUrl": "https://source.unsplash.com/640x420/?Blue+Mountains+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which Queensland peaks are volcanic plugs near the Sunshine Coast?",
+      "options": [
+        "The Olgas",
+        "Glass House Mountains",
+        "Twelve Apostles",
+        "Bungle Bungles"
+      ],
+      "correctIndex": 1,
+      "id": 980,
+      "imageUrl": "https://source.unsplash.com/640x420/?Glass+House+Mountains+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which Western Australian range has beehive-shaped striped domes?",
+      "options": [
+        "Grampians",
+        "Bungle Bungles",
+        "Blue Mountains",
+        "Snowy Mountains"
+      ],
+      "correctIndex": 1,
+      "id": 981,
+      "imageUrl": "https://source.unsplash.com/640x420/?Bungle+Bungles+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which Victorian mountain range is also called Gariwerd?",
+      "options": [
+        "Grampians",
+        "Great Dividing Range",
+        "Daintree",
+        "Flinders Ranges"
+      ],
+      "correctIndex": 0,
+      "id": 982,
+      "imageUrl": "https://source.unsplash.com/640x420/?Grampians+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which South Australian ranges are known for Wilpena Pound?",
+      "options": [
+        "Glass House Mountains",
+        "Flinders Ranges",
+        "Snowy Mountains",
+        "Blue Mountains"
+      ],
+      "correctIndex": 1,
+      "id": 983,
+      "imageUrl": "https://source.unsplash.com/640x420/?Flinders+Ranges+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which Australian island is famous for sand dunes and freshwater lakes?",
+      "options": [
+        "Phillip Island",
+        "Rottnest Island",
+        "Kangaroo Island",
+        "K’gari / Fraser Island"
+      ],
+      "correctIndex": 3,
+      "id": 984,
+      "imageUrl": "https://source.unsplash.com/640x420/?K%E2%80%99gari+%2F+Fraser+Island+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which Western Australian island is famous for quokkas?",
+      "options": [
+        "Rottnest Island",
+        "Norfolk Island",
+        "K’gari",
+        "Tasmania"
+      ],
+      "correctIndex": 0,
+      "id": 985,
+      "imageUrl": "https://source.unsplash.com/640x420/?Rottnest+Island+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which river is Australia’s longest?",
+      "options": [
+        "Murray River",
+        "Yarra River",
+        "Swan River",
+        "Brisbane River"
+      ],
+      "correctIndex": 0,
+      "id": 986,
+      "imageUrl": "https://source.unsplash.com/640x420/?Murray+River+Australia+landform"
+    },
+    {
+      "category": "Geography",
+      "question": "Which landform is Bondi best known as?",
+      "options": [
+        "Mountain",
+        "Beach",
+        "Desert",
+        "Cave"
+      ],
+      "correctIndex": 1,
+      "id": 987,
+      "imageUrl": "https://source.unsplash.com/640x420/?Beach+Australia+landform"
     }
   ]
 };
 
+
+
+  /* ========== GAME AUDIO + CONFETTI ========== */
+  const AUDIO_PREF_KEY = 'teenTrivia.soundEnabled.v1';
+  const SOUND = {
+    ctx: null,
+    master: null,
+    musicTimer: null,
+    currentMode: null,
+    enabled: localStorage.getItem(AUDIO_PREF_KEY) !== 'off',
+    lastCountdownTick: null,
+    ensure() {
+      if (!this.enabled) return null;
+      if (!this.ctx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return null;
+        this.ctx = new AudioContext();
+        this.master = this.ctx.createGain();
+        this.master.gain.value = 0.34;
+        this.master.connect(this.ctx.destination);
+      }
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      return this.ctx;
+    },
+    setEnabled(value) {
+      this.enabled = !!value;
+      localStorage.setItem(AUDIO_PREF_KEY, this.enabled ? 'on' : 'off');
+      updateSoundButton();
+      if (!this.enabled) this.stopMusic();
+      else this.playMusic(screenToMusicMode(currentScreenId()));
+    },
+    note(freq, dur = 0.12, at = 0, type = 'square', gain = 0.08, pan = 0) {
+      const ctx = this.ensure();
+      if (!ctx || !this.master) return;
+      const t = ctx.currentTime + at;
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+      const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, t);
+      osc.frequency.exponentialRampToValueAtTime(Math.max(20, freq * 1.006), t + dur);
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(2200, t);
+      filter.Q.value = 1.1;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(gain, t + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      osc.connect(filter); filter.connect(g);
+      if (panner) { panner.pan.value = pan; g.connect(panner); panner.connect(this.master); }
+      else { g.connect(this.master); }
+      osc.start(t); osc.stop(t + dur + 0.04);
+    },
+    chord(freqs, dur = 0.25, at = 0, type = 'triangle', gain = 0.045) {
+      freqs.forEach((f, idx) => this.note(f, dur, at + idx * 0.006, type, gain, (idx - 1) * .18));
+    },
+    perc(at = 0, tone = 'tick') {
+      const ctx = this.ensure(); if (!ctx || !this.master) return;
+      const t = ctx.currentTime + at;
+      const osc = ctx.createOscillator(); const g = ctx.createGain();
+      osc.type = tone === 'kick' ? 'sine' : 'square';
+      osc.frequency.setValueAtTime(tone === 'kick' ? 118 : 980, t);
+      osc.frequency.exponentialRampToValueAtTime(tone === 'kick' ? 42 : 320, t + 0.09);
+      g.gain.setValueAtTime(tone === 'kick' ? 0.10 : 0.035, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.11);
+      osc.connect(g); g.connect(this.master); osc.start(t); osc.stop(t + 0.12);
+    },
+    stopMusic() {
+      if (this.musicTimer) clearInterval(this.musicTimer);
+      this.musicTimer = null; this.currentMode = null; this.lastCountdownTick = null;
+    },
+    playMusic(mode) {
+      if (!mode || !this.enabled) return;
+      this.ensure(); if (!this.ctx) return;
+      if (this.currentMode === mode && this.musicTimer) return;
+      this.stopMusic(); this.currentMode = mode;
+      const patterns = {
+        landing: { step: 185, notes: [523.25,659.25,783.99,987.77,783.99,659.25,587.33,783.99], bass: [130.81,146.83,164.81,196.00], type: 'triangle', gain: 0.035 },
+        category: { step: 170, notes: [392.00,523.25,587.33,783.99,659.25,587.33,523.25,659.25], bass: [98.00,130.81,146.83,164.81], type: 'square', gain: 0.028 },
+        countdown: { step: 150, notes: [659.25,783.99,987.77,880.00,783.99,987.77,1174.66,1046.50], bass: [164.81,196.00,220.00,246.94], type: 'square', gain: 0.032 },
+        podium: { step: 210, notes: [523.25,659.25,783.99,1046.50,987.77,783.99,659.25,783.99,880.00,1046.50], bass: [130.81,164.81,196.00,261.63], type: 'triangle', gain: 0.045 }
+      };
+      const pat = patterns[mode]; if (!pat) return;
+      let i = 0;
+      const playStep = () => {
+        if (!this.enabled || this.currentMode !== mode) return;
+        const n = pat.notes[i % pat.notes.length];
+        const bass = pat.bass[Math.floor(i / 4) % pat.bass.length];
+        this.note(n, mode === 'podium' ? 0.20 : 0.115, 0, pat.type, pat.gain, (i % 2 ? .22 : -.22));
+        if (i % 2 === 0) this.note(n * 1.5, 0.08, 0.02, 'sine', pat.gain * .45, .12);
+        if (i % 4 === 0) this.note(bass, 0.20, 0, 'sine', 0.045, -.12);
+        if (mode === 'countdown' && i % 4 === 0) this.perc(0, 'tick');
+        if ((mode === 'category' || mode === 'podium') && i % 8 === 0) this.perc(0, 'kick');
+        i++;
+      };
+      playStep(); this.musicTimer = setInterval(playStep, pat.step);
+    },
+    playCountdownTick(value) {
+      if (!this.enabled || value === this.lastCountdownTick) return;
+      this.lastCountdownTick = value;
+      const f = value <= 3 ? 1046.5 + (3 - value) * 140 : 740;
+      this.note(f, 0.10, 0, 'square', value <= 3 ? 0.075 : 0.040);
+      if (value <= 3) this.note(f / 2, 0.12, 0.015, 'sine', 0.04);
+    },
+    stinger(type) {
+      if (!this.enabled) return; this.ensure();
+      if (type === 'correct') {
+        this.chord([523.25,659.25,783.99], .16, 0, 'triangle', .055);
+        this.chord([659.25,783.99,1046.50], .20, .15, 'triangle', .060);
+        this.note(1318.51, .16, .34, 'sine', .06);
+      } else if (type === 'wrong') {
+        this.note(220, .16, 0, 'sawtooth', .065); this.note(185, .18, .14, 'sawtooth', .060); this.note(146.83, .28, .30, 'sawtooth', .055);
+      } else if (type === 'timeout') {
+        this.note(880, .11, 0, 'square', .055); this.note(660, .11, .13, 'square', .050); this.note(440, .28, .31, 'triangle', .052);
+      } else if (type === 'start') {
+        this.note(523.25, .10, 0, 'square', .050); this.note(659.25, .10, .12, 'square', .052); this.note(783.99, .18, .24, 'square', .060);
+      } else if (type === 'podium') {
+        this.chord([523.25,659.25,783.99], .24, 0, 'triangle', .055);
+        this.chord([587.33,739.99,880.00], .24, .26, 'triangle', .055);
+        this.chord([659.25,783.99,1046.50], .36, .52, 'triangle', .065);
+      }
+    }
+  };
+
+  function currentScreenId() { return document.querySelector('.screen.active')?.id || 'screen-welcome'; }
+  function screenToMusicMode(screenId) {
+    if (screenId === 'screen-welcome') return 'landing';
+    if (screenId === 'screen-category') return 'category';
+    if (screenId === 'screen-quiz') return 'countdown';
+    if (screenId === 'screen-final') return 'podium';
+    return null;
+  }
+  function updateSoundButton() {
+    const btn = document.getElementById('soundToggle'); if (!btn) return;
+    btn.classList.toggle('muted', !SOUND.enabled);
+    btn.querySelector('.sound-icon').textContent = SOUND.enabled ? '🔊' : '🔇';
+    btn.querySelector('.sound-label').textContent = SOUND.enabled ? 'Sound on' : 'Sound off';
+    btn.setAttribute('aria-label', SOUND.enabled ? 'Turn sound off' : 'Turn sound on');
+  }
+  function toggleSound() { SOUND.setEnabled(!SOUND.enabled); if (SOUND.enabled) SOUND.stinger('start'); }
+  function prepareAudioInteraction(mode) { if (!SOUND.enabled) return; SOUND.ensure(); SOUND.playMusic(mode || screenToMusicMode(currentScreenId())); }
+
+  const CONFETTI = {
+    canvas: null, ctx: null, pieces: [], raf: null,
+    colours: ['#00f0ff','#ff46a2','#fff700','#ee4b2b','#98fbcb','#ffffff'],
+    resize() {
+      if (!this.canvas) return;
+      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      this.canvas.width = Math.floor(window.innerWidth * dpr); this.canvas.height = Math.floor(window.innerHeight * dpr);
+      this.canvas.style.width = window.innerWidth + 'px'; this.canvas.style.height = window.innerHeight + 'px';
+      this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    },
+    init() {
+      this.canvas = document.getElementById('confettiCanvas'); if (!this.canvas) return;
+      this.ctx = this.canvas.getContext('2d'); this.resize(); window.addEventListener('resize', () => this.resize());
+    },
+    burst(amount = 160) {
+      if (!this.canvas || !this.ctx) this.init(); if (!this.canvas) return;
+      this.canvas.classList.add('active'); const w = window.innerWidth, h = window.innerHeight;
+      for (let i = 0; i < amount; i++) this.pieces.push({
+        x: Math.random() * w, y: -20 - Math.random() * h * .28,
+        vx: (Math.random() - .5) * 5 + (i % 2 ? -1.2 : 1.2), vy: 2 + Math.random() * 5,
+        size: 6 + Math.random() * 10, rot: Math.random() * Math.PI, vr: (Math.random() - .5) * .25,
+        colour: this.colours[Math.floor(Math.random() * this.colours.length)], shape: Math.random() > .5 ? 'rect' : 'circle', life: 0, ttl: 190 + Math.random() * 80
+      });
+      this.run();
+    },
+    run() {
+      if (this.raf) return;
+      const step = () => {
+        const w = window.innerWidth, h = window.innerHeight; this.ctx.clearRect(0, 0, w, h);
+        this.pieces = this.pieces.filter(p => p.life < p.ttl && p.y < h + 60);
+        this.pieces.forEach(p => {
+          p.life++; p.x += p.vx + Math.sin(p.life * .045) * 1.2; p.y += p.vy; p.vy += .018; p.rot += p.vr;
+          this.ctx.save(); this.ctx.translate(p.x, p.y); this.ctx.rotate(p.rot); this.ctx.globalAlpha = Math.max(0, 1 - p.life / p.ttl); this.ctx.fillStyle = p.colour;
+          if (p.shape === 'circle') { this.ctx.beginPath(); this.ctx.arc(0, 0, p.size * .45, 0, Math.PI * 2); this.ctx.fill(); }
+          else this.ctx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size * .66);
+          this.ctx.restore();
+        });
+        if (this.pieces.length) this.raf = requestAnimationFrame(step);
+        else { this.ctx.clearRect(0, 0, w, h); this.canvas.classList.remove('active'); this.raf = null; }
+      };
+      this.raf = requestAnimationFrame(step);
+    }
+  };
+
   /* ========== STATE ========== */
-  const STORAGE_KEY = "teenTrivia.questions.v6";
+  const STORAGE_KEY = "teenTrivia.questions.vBigPackAudio1";
   let QUESTIONS = [];
   let game = {
     queue: [],
@@ -7520,6 +14099,8 @@
 
   async function init() {
     loadSyncSettings();
+    updateSoundButton();
+    CONFETTI.init();
 
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
@@ -7762,16 +14343,21 @@
   function show(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+    document.querySelector('.final')?.classList.toggle('celebrating', id === 'screen-final');
+    const mode = screenToMusicMode(id);
+    if (mode) SOUND.playMusic(mode);
+    else if (id === 'screen-result' || id === 'screen-admin') SOUND.stopMusic();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   const ADMIN_PASSWORD = 'Rafa2014';
   let adminUnlocked = sessionStorage.getItem('teenTriviaAdminUnlocked') === 'true';
 
-  function goWelcome()  { stopTimer(); show('screen-welcome'); }
-  function goCategory() { stopTimer(); renderCategories(); show('screen-category'); }
-  function cancelQuiz() { stopTimer(); renderCategories(); show('screen-category'); }
+  function goWelcome()  { stopTimer(); prepareAudioInteraction('landing'); show('screen-welcome'); }
+  function goCategory() { stopTimer(); prepareAudioInteraction('category'); renderCategories(); show('screen-category'); }
+  function cancelQuiz() { stopTimer(); prepareAudioInteraction('category'); renderCategories(); show('screen-category'); }
   function goAdmin() {
     stopTimer();
+    prepareAudioInteraction(null);
     if (!adminUnlocked) {
       const password = window.prompt('Enter admin password');
       if (password !== ADMIN_PASSWORD) {
@@ -7806,7 +14392,13 @@
     "Bulimba State School": "🎒",
     "Flags of the World": "🚩",
     "Disney & Pixar": "🏰",
-    "Brands": "🏷️"
+    "Brands": "🏷️",
+    "Pop Culture and Viral Trends and Kids TV Shows": "📱",
+    "History": "🏛️",
+    "Sports": "🏅",
+    "Soccer": "⚽",
+    "Dog Breeds": "🐶",
+    "Matildas": "🇦🇺⚽"
   };
 
   function getCategories() {
@@ -7858,6 +14450,8 @@
     game.wrong = 0;
     game.perQuestionTime = Math.max(5, Math.min(60, tpq));
 
+    prepareAudioInteraction('countdown');
+    SOUND.stinger('start');
     show('screen-quiz');
     presentQuestion();
   }
@@ -7915,6 +14509,7 @@
         </button>`;
     }).join('');
 
+    SOUND.playMusic('countdown');
     startTimer(game.perQuestionTime);
   }
 
@@ -7932,8 +14527,10 @@
       text.textContent = game.timeLeft;
       const offset = C * (1 - game.timeLeft / total);
       circle.style.strokeDashoffset = offset;
-      if (game.timeLeft <= Math.ceil(total * 0.25)) ring.classList.add('warn');
-      else ring.classList.remove('warn');
+      if (game.timeLeft <= Math.ceil(total * 0.25)) {
+        ring.classList.add('warn');
+        if (game.timeLeft > 0) SOUND.playCountdownTick(game.timeLeft);
+      } else ring.classList.remove('warn');
 
       if (game.timeLeft <= 0) {
         stopTimer();
@@ -7956,8 +14553,10 @@
     game.selectedIndex = i;
     const remaining = game.timeLeft;
     stopTimer();
+    SOUND.stopMusic();
 
     const isCorrect = game.currentShuffled[i].isCorrect;
+    SOUND.stinger(isCorrect ? 'correct' : 'wrong');
     const buttons = document.querySelectorAll('.answer');
     buttons.forEach((b, idx) => {
       b.disabled = true;
@@ -7984,6 +14583,8 @@
     if (game.answered) return;
     game.answered = true;
     game.wrong++;
+    SOUND.stopMusic();
+    SOUND.stinger('timeout');
     const buttons = document.querySelectorAll('.answer');
     buttons.forEach((b, idx) => {
       b.disabled = true;
@@ -8067,7 +14668,9 @@
     document.getElementById('finalHeadline').textContent = head;
     document.getElementById('crownEmoji').textContent = crown;
 
+    SOUND.stinger('podium');
     show('screen-final');
+    CONFETTI.burst(acc >= 70 ? 220 : 150);
   }
 
   /* ========== ADMIN ========== */
