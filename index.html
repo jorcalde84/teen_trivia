@@ -757,6 +757,58 @@
     .qcat { grid-column: 1 / -1; order: -1; }
   }
 
+
+  /* ---------- LANDING ADMIN / GAME CONTROLS ---------- */
+  .welcome-main-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 4px;
+  }
+  .btn-play-large {
+    font-size: clamp(1.25rem, 3.4vw, 1.6rem);
+    padding: 24px 54px;
+    min-width: min(360px, 82vw);
+    box-shadow: 0 10px 0 rgba(0,0,0,0.18), var(--shadow-soft);
+  }
+  .welcome-admin-footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 20px;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .welcome-admin-footer .btn {
+    pointer-events: auto;
+  }
+  .quiz-actions {
+    display: flex;
+    justify-content: center;
+    margin: -4px 0 16px;
+  }
+  .quiz-actions .btn {
+    padding: 12px 24px;
+    font-size: 0.92rem;
+  }
+  @media (max-width: 600px) {
+    .btn-play-large {
+      width: 100%;
+      padding: 22px 28px;
+    }
+    .welcome-admin-footer {
+      bottom: 14px;
+    }
+    .quiz-actions {
+      justify-content: stretch;
+      margin: 8px 0 16px;
+    }
+    .quiz-actions .btn {
+      width: 100%;
+    }
+  }
+
   /* Small helpers */
   .muted { color: var(--mint-mid); }
   .row-flex { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
@@ -785,13 +837,13 @@
         <p class="brand-sub">A bright, fast-paced trivia game inspired by Kahoot. Pick a category, race the clock, and rack up points.</p>
       </div>
 
-      <div class="pill-row">
-        <button class="btn btn-primary" onclick="goCategory()">Play Now</button>
-        <button class="btn btn-secondary" onclick="goAdmin()">Admin Panel</button>
+      <div class="welcome-main-actions">
+        <button class="btn btn-primary btn-play-large" onclick="goCategory()">Play Now</button>
       </div>
 
-      <button class="btn btn-ghost" onclick="document.getElementById('jsonInputWelcome').click()">Import question pack (JSON)</button>
-      <input type="file" id="jsonInputWelcome" accept="application/json" onchange="importJSON(event)" />
+      <div class="welcome-admin-footer">
+        <button class="btn btn-ghost" onclick="goAdmin()">Admin Panel</button>
+      </div>
     </div>
   </section>
 
@@ -825,6 +877,10 @@
       <div class="qscore" id="qscore">0 pts</div>
     </div>
 
+    <div class="quiz-actions">
+      <button class="btn btn-secondary" onclick="cancelQuiz()">Cancel</button>
+    </div>
+
     <div class="timer-wrap">
       <div class="timer-ring" id="timerRing">
         <svg>
@@ -852,6 +908,10 @@
       <div class="qprogress" id="qprogress2">1 / 10</div>
       <div class="qcat" id="qcat2">Category</div>
       <div class="qscore" id="qscore2">0 pts</div>
+    </div>
+
+    <div class="quiz-actions">
+      <button class="btn btn-secondary" onclick="cancelQuiz()">Cancel</button>
     </div>
 
     <div class="result-banner" id="resultBanner">
@@ -1084,7 +1144,8 @@
   /* These ship with the app so it works out-of-the-box even without uploading the JSON file. */
   const DEFAULT_PACK = {
   "version": "1.1",
-  "title": "Teen Trivia – Default Question Pack (with AU/Brisbane/Bulimba)",
+  "title": "Teen Trivia – Embedded Question Pack",
+  "exportedAt": "2026-05-01T10:56:18.173Z",
   "questions": [
     {
       "category": "Pop Music",
@@ -1132,7 +1193,8 @@
         "Future Nostalgia"
       ],
       "correctIndex": 1,
-      "id": 4
+      "id": 4,
+      "imageUrl": "https://ilarge.lisimg.com/image/28561813/1118full-olivia-rodrigo.jpg"
     },
     {
       "category": "Pop Music",
@@ -1168,7 +1230,8 @@
         "Ferris"
       ],
       "correctIndex": 0,
-      "id": 7
+      "id": 7,
+      "imageUrl": "https://i.natgeofe.com/n/1b640990-d3be-4e1c-b81f-c61fdc866137/MM10588_260416_00077.jpg"
     },
     {
       "category": "Pop Music",
@@ -1228,7 +1291,8 @@
         "Club Future Nostalgia"
       ],
       "correctIndex": 0,
-      "id": 12
+      "id": 12,
+      "imageUrl": "https://cdn.britannica.com/17/222717-050-EDF09670/Dua-Lipa-American-Music-Awards-2019.jpg?w=400&h=300&c=crop"
     },
     {
       "category": "Pop Music",
@@ -1276,7 +1340,8 @@
         "Madge"
       ],
       "correctIndex": 0,
-      "id": 16
+      "id": 16,
+      "imageUrl": "https://occ-0-8407-90.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABQuEia4zh4NHzLQM1Exi2TKmNIxD20hS4gC2TU7kGGHhuDUczVb2T_p5esuv811pnOZlvf6Ikc82x7OijWkg5lhRMVSZrhvibth6plo2-g.jpg?r=c93"
     },
     {
       "category": "Movies",
@@ -1288,7 +1353,8 @@
         "Tiana"
       ],
       "correctIndex": 0,
-      "id": 17
+      "id": 17,
+      "imageUrl": "https://www.animationmagazine.net/wordpress/wp-content/uploads/disney-movie-chronology.jpg"
     },
     {
       "category": "Movies",
@@ -1360,7 +1426,8 @@
         "South Hill High"
       ],
       "correctIndex": 0,
-      "id": 23
+      "id": 23,
+      "imageUrl": "https://assets.londonist.com/uploads/2019/05/i875/mean_girls2.jpg"
     },
     {
       "category": "Movies",
@@ -1372,7 +1439,8 @@
         "Jennifer Lawrence"
       ],
       "correctIndex": 0,
-      "id": 24
+      "id": 24,
+      "imageUrl": "https://m.media-amazon.com/images/S/pv-target-images/178c2a0f654a66eda07ca098fa243728b6bc7c5f4359863860e12c50be3b8e39.jpg"
     },
     {
       "category": "Movies",
@@ -1396,7 +1464,8 @@
         "Turning Red"
       ],
       "correctIndex": 0,
-      "id": 26
+      "id": 26,
+      "imageUrl": "https://static.wikia.nocookie.net/thq/images/1/1e/Disney_Pixar_background.png/revision/latest/thumbnail/width/360/height/450?cb=20180811112651"
     },
     {
       "category": "TV Shows",
@@ -1444,7 +1513,8 @@
         "Coco"
       ],
       "correctIndex": 0,
-      "id": 30
+      "id": 30,
+      "imageUrl": "https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/52dae4c7-2ab1-4bb9-ab1c-8100fd54e2f9/5406c807-d062-4484-a6ae-54aaf6806b03?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=500"
     },
     {
       "category": "TV Shows",
@@ -1468,7 +1538,8 @@
         "Monk's"
       ],
       "correctIndex": 0,
-      "id": 32
+      "id": 32,
+      "imageUrl": "https://static0.srcdn.com/wordpress/wp-content/uploads/2019/07/The-Friends-Central-Perk-coffee-table.jpg"
     },
     {
       "category": "TV Shows",
@@ -1480,7 +1551,8 @@
         "Riverdale"
       ],
       "correctIndex": 0,
-      "id": 33
+      "id": 33,
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/en/5/55/Gilmore_girls_title_screen.jpg"
     },
     {
       "category": "TV Shows",
@@ -1516,7 +1588,8 @@
         "Maude Apatow"
       ],
       "correctIndex": 0,
-      "id": 36
+      "id": 36,
+      "imageUrl": "https://m.media-amazon.com/images/S/pv-target-images/7385e8406175eff0df87f6d965ec83301019bea87582aa975e0be5906c5e451a.jpg"
     },
     {
       "category": "TV Shows",
@@ -1624,7 +1697,8 @@
         "Drunk Elephant"
       ],
       "correctIndex": 0,
-      "id": 45
+      "id": 45,
+      "imageUrl": "https://media.allure.com/photos/5c6e08bd4bd18866b1b3a65a/16:9/w_2560%2Cc_limit/hailey%2520bieber%2520bareminerals%25201.JPG"
     },
     {
       "category": "Fashion & Beauty",
@@ -1672,7 +1746,8 @@
         "Alexander Wang"
       ],
       "correctIndex": 0,
-      "id": 49
+      "id": 49,
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcNZApuTVNWEE935U1sSQERVtnr9sM_nniLw&s"
     },
     {
       "category": "Fashion & Beauty",
@@ -1696,7 +1771,8 @@
         "Cassandra Clare"
       ],
       "correctIndex": 0,
-      "id": 51
+      "id": 51,
+      "imageUrl": "https://trail.pugetsound.edu/wp-content/uploads/2010/11/harry-potter-wallpaper2.jpg"
     },
     {
       "category": "Books",
@@ -1708,7 +1784,8 @@
         "1"
       ],
       "correctIndex": 0,
-      "id": 52
+      "id": 52,
+      "imageUrl": "https://sky-show.ch/wp-content/uploads/2024/09/TheHungerGamesSaga.jpg"
     },
     {
       "category": "Books",
@@ -1720,7 +1797,8 @@
         "Virginia Woolf"
       ],
       "correctIndex": 0,
-      "id": 53
+      "id": 53,
+      "imageUrl": "https://www.themusichall.org/wp-content/uploads/2025/05/Pride-Prejudice.jpg"
     },
     {
       "category": "Books",
@@ -1732,7 +1810,8 @@
         "Taylor Jenkins Reid"
       ],
       "correctIndex": 0,
-      "id": 54
+      "id": 54,
+      "imageUrl": "https://www.hollywoodreporter.com/wp-content/uploads/2024/08/Blake-Lively-It-Ends-With-Us-publicity-H-2024.jpg"
     },
     {
       "category": "Books",
@@ -1744,7 +1823,8 @@
         "Durmstrang"
       ],
       "correctIndex": 0,
-      "id": 55
+      "id": 55,
+      "imageUrl": "https://wallpaper.dog/large/11050366.jpg"
     },
     {
       "category": "Books",
@@ -1780,7 +1860,8 @@
         "Berlin"
       ],
       "correctIndex": 0,
-      "id": 58
+      "id": 58,
+      "imageUrl": "https://lumiere-a.akamaihd.net/v1/images/fault_in_our_stars_1600x686_v2_6fe42385.jpeg"
     },
     {
       "category": "Books",
@@ -1792,7 +1873,8 @@
         "Malala Yousafzai"
       ],
       "correctIndex": 0,
-      "id": 59
+      "id": 59,
+      "imageUrl": "https://thehistorypress.co.uk/wp-content/uploads/media/1464/anne_frank.jpg"
     },
     {
       "category": "Books",
@@ -1828,7 +1910,8 @@
         "The Last Olympian"
       ],
       "correctIndex": 0,
-      "id": 62
+      "id": 62,
+      "imageUrl": "https://m.media-amazon.com/images/M/MV5BMTI3YmIzNzYtOTcwNy00ZTZiLTg5NmQtMTUyNGY1ZWVmZDJiXkEyXkFqcGc@._V1_.jpg"
     },
     {
       "category": "Animals",
@@ -1852,7 +1935,8 @@
         "4"
       ],
       "correctIndex": 0,
-      "id": 64
+      "id": 64,
+      "imageUrl": "https://images.indianexpress.com/2025/06/Octopus.jpg?w=1200"
     },
     {
       "category": "Animals",
@@ -1876,7 +1960,8 @@
         "Calf"
       ],
       "correctIndex": 0,
-      "id": 66
+      "id": 66,
+      "imageUrl": "https://www.worldanimalprotection.us/cdn-cgi/image/width=800,format=auto,fit=cover/siteassets/images/wildlife/kangaroos/kangaroo-joey-getty.jpg"
     },
     {
       "category": "Animals",
@@ -1900,7 +1985,8 @@
         "12"
       ],
       "correctIndex": 0,
-      "id": 68
+      "id": 68,
+      "imageUrl": "https://ucanr.edu/sites/default/files/styles/social_media_facebook/public/2025-09/jumping%20spider.jpg.webp?h=aa63ec3a&itok=CLSdTp-c"
     },
     {
       "category": "Animals",
@@ -1912,7 +1998,8 @@
         "Flock"
       ],
       "correctIndex": 0,
-      "id": 69
+      "id": 69,
+      "imageUrl": "https://www.worldanimalprotection.ca/siteassets/shutterstock_2487817339.jpg"
     },
     {
       "category": "Animals",
@@ -1948,7 +2035,8 @@
         "Grey"
       ],
       "correctIndex": 0,
-      "id": 72
+      "id": 72,
+      "imageUrl": "https://cdn.wcs.org/2024/12/17/13/04/57/276bbd38-6a3b-4559-a9bc-26fde089eccb/hans-jurgen-mager-bySoVNCijy4-unsplash%20(1).jpg"
     },
     {
       "category": "Animals",
@@ -2044,7 +2132,8 @@
         "About 8 litres"
       ],
       "correctIndex": 0,
-      "id": 80
+      "id": 80,
+      "imageUrl": "https://saltsoftheearth.com.au/wp-content/uploads/2021/05/water.jpg"
     },
     {
       "category": "Health & Wellness",
@@ -2140,7 +2229,8 @@
         "Brisbane"
       ],
       "correctIndex": 0,
-      "id": 88
+      "id": 88,
+      "imageUrl": "https://res.klook.com/images/fl_lossy.progressive,q_65/c_fill,w_1200,h_630/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/pv961n3zmadtvwvwzql3/CanberraPrivateDayTour-KlookAustralia.jpg"
     },
     {
       "category": "Geography",
@@ -2152,7 +2242,8 @@
         "Mississippi"
       ],
       "correctIndex": 0,
-      "id": 89
+      "id": 89,
+      "imageUrl": "https://www.pyramidsdaytour.com/wp-content/uploads/2025/07/Nile-River-Egypt.jpg"
     },
     {
       "category": "Geography",
@@ -2188,7 +2279,8 @@
         "Berlin"
       ],
       "correctIndex": 0,
-      "id": 92
+      "id": 92,
+      "imageUrl": "https://www.qantas.com/content/dam/travelinsider/images/trending/eiffel-tower-park/eiffel-one.jpg"
     },
     {
       "category": "Geography",
@@ -2212,7 +2304,8 @@
         "Liechtenstein"
       ],
       "correctIndex": 0,
-      "id": 94
+      "id": 94,
+      "imageUrl": "https://s3.amazonaws.com/iexplore_web/images/assets/000/006/471/original/vatican_city.jpg?1443531051"
     },
     {
       "category": "Geography",
@@ -2224,7 +2317,8 @@
         "Arctic"
       ],
       "correctIndex": 0,
-      "id": 95
+      "id": 95,
+      "imageUrl": "https://t3.ftcdn.net/jpg/02/36/12/24/360_F_236122432_Y8NBzen6KtGssppNNrK85N8FJPr2JLkh.jpg"
     },
     {
       "category": "Geography",
@@ -2236,7 +2330,8 @@
         "New Zealand"
       ],
       "correctIndex": 0,
-      "id": 96
+      "id": 96,
+      "imageUrl": "https://s3-ap-southeast-2.amazonaws.com/os-data-2/tnqdev/images/pageattached/146/blogskale_-reef-ecologic-moua-aerial-3-custom.jpg"
     },
     {
       "category": "Geography",
@@ -2248,7 +2343,8 @@
         "Seoul"
       ],
       "correctIndex": 0,
-      "id": 97
+      "id": 97,
+      "imageUrl": "https://content.olympics.com.au/public/styles/landscape_header_section/s3/2019-09/Tokyo%202020%20Hero%20Image.jpg.webp?itok=SDmCYHzu"
     },
     {
       "category": "Geography",
@@ -2272,7 +2368,8 @@
         "Venezuela"
       ],
       "correctIndex": 0,
-      "id": 99
+      "id": 99,
+      "imageUrl": "https://th.bing.com/th/id/R.6ca92663015563e9485a1d8c936b5983?rik=thn60u1OhgCE5g&riu=http%3a%2f%2fgetwallpapers.com%2fwallpaper%2ffull%2f7%2ff%2f4%2f1386352-amazon-rainforest-wallpaper-1920x1080-ipad-pro.jpg&ehk=j6CWD%2bYZDeYBbUhMuOt%2bBPLeA1a724VrfM7xsd7efEA%3d&risl=&pid=ImgRaw&r=0"
     },
     {
       "category": "Science & Space",
@@ -2284,7 +2381,8 @@
         "10"
       ],
       "correctIndex": 0,
-      "id": 100
+      "id": 100,
+      "imageUrl": "https://replogleglobes.com/app/uploads/2022/08/how-many-planets-in-our-solar-system.jpg"
     },
     {
       "category": "Science & Space",
@@ -2296,7 +2394,8 @@
         "Go"
       ],
       "correctIndex": 0,
-      "id": 101
+      "id": 101,
+      "imageUrl": "https://www.thoughtco.com/thmb/QjFYmqeC_tsWT2bsXHP0WC8gwrA=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/closeup-of-big-gold-nugget-511603038-5ad92a97fa6bcc00362b919b.jpg"
     },
     {
       "category": "Science & Space",
@@ -2308,7 +2407,8 @@
         "Mercury"
       ],
       "correctIndex": 0,
-      "id": 102
+      "id": 102,
+      "imageUrl": "https://aws.cricketmedia.com/media/20151007132801/Mars-Shutterstock-scaled.jpg"
     },
     {
       "category": "Science & Space",
@@ -2428,7 +2528,8 @@
         "Thailand"
       ],
       "correctIndex": 0,
-      "id": 112
+      "id": 112,
+      "imageUrl": "https://cookingwithdog.com/wp-content/uploads/2017/08/nigirizushi-00.jpg"
     },
     {
       "category": "Food & Cuisine",
@@ -2464,7 +2565,8 @@
         "Peas"
       ],
       "correctIndex": 0,
-      "id": 115
+      "id": 115,
+      "imageUrl": "https://assets.tmecosys.com/image/upload/t_web_rdp_recipe_584x480/img/recipe/ras/Assets/e9964c08-1177-4cb9-880a-185e1eeee576/Derivates/22085e12-5a3b-4b0b-bf0e-5ad1c9a05017.jpg"
     },
     {
       "category": "Food & Cuisine",
@@ -2500,7 +2602,8 @@
         "Sakura"
       ],
       "correctIndex": 0,
-      "id": 118
+      "id": 118,
+      "imageUrl": "https://photos.smugmug.com/Kyoto/Kyoto-Tea-Ceremony/i-QQP2wzG/0/L/kyoto-tea-ceremony-2-L.jpg"
     },
     {
       "category": "Food & Cuisine",
@@ -2572,7 +2675,8 @@
         "Donatello"
       ],
       "correctIndex": 0,
-      "id": 124
+      "id": 124,
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Mona_Lisa.jpg"
     },
     {
       "category": "Art & Culture",
@@ -2596,7 +2700,8 @@
         "Surrealism"
       ],
       "correctIndex": 0,
-      "id": 126
+      "id": 126,
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Andy_Warhol_at_the_Jewish_Museum_%28by_Bernard_Gotfryd%29_%E2%80%93_LOC.jpg/960px-Andy_Warhol_at_the_Jewish_Museum_%28by_Bernard_Gotfryd%29_%E2%80%93_LOC.jpg"
     },
     {
       "category": "Art & Culture",
@@ -2620,7 +2725,8 @@
         "Vienna"
       ],
       "correctIndex": 0,
-      "id": 128
+      "id": 128,
+      "imageUrl": "https://www.franceguide.info/wp-content/uploads/sites/18/paris-louvre-pyramid-hd.jpg"
     },
     {
       "category": "Art & Culture",
@@ -2632,7 +2738,8 @@
         "Paul Cézanne"
       ],
       "correctIndex": 0,
-      "id": 129
+      "id": 129,
+      "imageUrl": "https://sanctuarymentalhealth.org/wp-content/uploads/2021/03/The-Starry-Night-1200x630-1-979x514.jpg.webp"
     },
     {
       "category": "Art & Culture",
@@ -2668,7 +2775,8 @@
         "Prado"
       ],
       "correctIndex": 0,
-      "id": 132
+      "id": 132,
+      "imageUrl": "https://cdn.britannica.com/87/2087-050-8B2A01CD/Mona-Lisa-oil-wood-panel-Leonardo-da.jpg"
     },
     {
       "category": "Art & Culture",
@@ -2680,7 +2788,8 @@
         "Vietnam"
       ],
       "correctIndex": 0,
-      "id": 133
+      "id": 133,
+      "imageUrl": "https://images.twinkl.co.uk/tw1n/image/private/t_630/u/ux/origami-3584204-1280_ver_1.jpg"
     },
     {
       "category": "Art & Culture",
@@ -2716,7 +2825,8 @@
         "8"
       ],
       "correctIndex": 0,
-      "id": 136
+      "id": 136,
+      "imageUrl": "https://cdn2.system1.com/eyJidWNrZXQiOiJvbS1wdWItc3RvcmFnZSIsImtleSI6ImRldmVsb3Blcm1hcHF1ZXN0L3dwLWNvbnRlbnQvdXBsb2Fkcy8yMDI0LzA1L0dldHR5SW1hZ2VzLTE0NzQ4NjMyNTEtc2NhbGVkLmpwZyIsImVkaXRzIjp7IndlYnAiOnsicXVhbGl0eSI6ODB9fX0="
     },
     {
       "category": "General Knowledge",
@@ -2776,7 +2886,8 @@
         "Caravaggio"
       ],
       "correctIndex": 0,
-      "id": 141
+      "id": 141,
+      "imageUrl": "https://static.wixstatic.com/media/e41b5c_dbd08d0839594c9aa37fa290eddc4204~mv2.jpg/v1/fill/w_2500,h_1891,al_c/e41b5c_dbd08d0839594c9aa37fa290eddc4204~mv2.jpg"
     },
     {
       "category": "General Knowledge",
@@ -2788,7 +2899,8 @@
         "Web World Wide"
       ],
       "correctIndex": 0,
-      "id": 142
+      "id": 142,
+      "imageUrl": "https://disenowebakus.net/en/images/articles/world-wide-web-www-meaning-history-origin.jpg"
     },
     {
       "category": "General Knowledge",
@@ -2896,7 +3008,8 @@
         "5"
       ],
       "correctIndex": 0,
-      "id": 151
+      "id": 151,
+      "imageUrl": "https://www.mapsbookstravelguides.com.au/wp-content/uploads/2023/07/Australia-Physical-Map-scaled.jpeg"
     },
     {
       "category": "Australia",
@@ -2956,7 +3069,8 @@
         "Mount Ossa"
       ],
       "correctIndex": 0,
-      "id": 156
+      "id": 156,
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Mount_Feathertop_and_Razorback.jpg/1280px-Mount_Feathertop_and_Razorback.jpg"
     },
     {
       "category": "Australia",
@@ -3004,7 +3118,8 @@
         "11 November"
       ],
       "correctIndex": 0,
-      "id": 160
+      "id": 160,
+      "imageUrl": "https://ipa.org.au/wp-content/uploads/Australia-Day_Resized.jpg"
     },
     {
       "category": "Australia",
@@ -3016,7 +3131,8 @@
         "Brisbane River"
       ],
       "correctIndex": 0,
-      "id": 161
+      "id": 161,
+      "imageUrl": "https://www.theroadtripoz.com.au/wp-content/uploads/2025/02/the-murray-river-01.webp"
     },
     {
       "category": "Australia",
@@ -3040,7 +3156,8 @@
         "Townsville"
       ],
       "correctIndex": 0,
-      "id": 163
+      "id": 163,
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/dc/River_views_of_Brisbane_CBD_seen_from_Kangaroo_Point%2C_Queensland_in_April_2019%2C_04.jpg"
     },
     {
       "category": "States & Capitals (AU)",
@@ -3052,7 +3169,8 @@
         "Bendigo"
       ],
       "correctIndex": 0,
-      "id": 164
+      "id": 164,
+      "imageUrl": "https://businessevents.australia.com/content/dam/digital/be/images/melbourne-vic-1092057.jpg"
     },
     {
       "category": "States & Capitals (AU)",
@@ -3064,7 +3182,8 @@
         "Canberra"
       ],
       "correctIndex": 0,
-      "id": 165
+      "id": 165,
+      "imageUrl": "https://www.virginaustralia.com/content/dam/vaa/img/destinations/sydney/where-to-stay/Where-to-stay-in-Sydney-darling-harbour-and-pyrmont.jpg/_jcr_content/renditions/vaacore.web.720.0.jpg"
     },
     {
       "category": "States & Capitals (AU)",
@@ -3076,7 +3195,8 @@
         "Bunbury"
       ],
       "correctIndex": 0,
-      "id": 166
+      "id": 166,
+      "imageUrl": "https://images.trvl-media.com/place/553248621593151427/ffa3044e-03de-4748-8599-8aef955dbd0f.jpg"
     },
     {
       "category": "States & Capitals (AU)",
@@ -3088,7 +3208,8 @@
         "Whyalla"
       ],
       "correctIndex": 0,
-      "id": 167
+      "id": 167,
+      "imageUrl": "https://i0.wp.com/hearitfromlocals.com/wp-content/uploads/2019/01/Adelaide-riverbank-1.jpg?w=1560&ssl=1"
     },
     {
       "category": "States & Capitals (AU)",
@@ -3100,7 +3221,8 @@
         "Burnie"
       ],
       "correctIndex": 0,
-      "id": 168
+      "id": 168,
+      "imageUrl": "https://www.discovertasmania.com.au/siteassets/places-to-go/hobart-and-south/128717-2.jpg?resize=_IP3LCxMdKCkvmnKMXjQlFmfC-2uFKnGLL2pYtaQkHdzMCMo_8A6FC-0zbpVuSOc7W356KsG7BGsMhM-R63VBA"
     },
     {
       "category": "States & Capitals (AU)",
@@ -3112,7 +3234,8 @@
         "Tennant Creek"
       ],
       "correctIndex": 0,
-      "id": 169
+      "id": 169,
+      "imageUrl": "https://i3.au.reastatic.net/800x600/21287b1ec698ae05b9336470809e8d7e37d0e9584c237f63ef177867f13bba9e/main.jpg"
     },
     {
       "category": "States & Capitals (AU)",
@@ -3184,7 +3307,8 @@
         "South Australia"
       ],
       "correctIndex": 0,
-      "id": 175
+      "id": 175,
+      "imageUrl": "https://res.klook.com/image/upload/w_750,h_469,c_fill,q_85/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/dpv03akm1aum2i9ispun.jpg"
     },
     {
       "category": "Brisbane",
@@ -3208,7 +3332,8 @@
         "1925"
       ],
       "correctIndex": 0,
-      "id": 177
+      "id": 177,
+      "imageUrl": "https://i0.wp.com/blogs.archives.qld.gov.au/wp-content/uploads/2021/05/ITM1249494-edited.jpg?resize=664%2C369&ssl=1"
     },
     {
       "category": "Brisbane",
@@ -3220,7 +3345,8 @@
         "Leslie Wilson"
       ],
       "correctIndex": 0,
-      "id": 178
+      "id": 178,
+      "imageUrl": "https://newfarmhistorical.org.au/wp-content/uploads/2017/08/story_bridge.jpg"
     },
     {
       "category": "Brisbane",
@@ -3232,7 +3358,8 @@
         "Woolloongabba"
       ],
       "correctIndex": 0,
-      "id": 179
+      "id": 179,
+      "imageUrl": "https://t3.ftcdn.net/jpg/01/19/19/84/360_F_119198419_toO8goSJJcFC1zzAVJqYOOfLNKJq7mZr.jpg"
     },
     {
       "category": "Brisbane",
@@ -3244,7 +3371,8 @@
         "Roger Hawken"
       ],
       "correctIndex": 0,
-      "id": 180
+      "id": 180,
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Inspection_of_the_Story_Bridge.png/250px-Inspection_of_the_Story_Bridge.png"
     },
     {
       "category": "Brisbane",
@@ -3316,7 +3444,8 @@
         "Sky Bridge"
       ],
       "correctIndex": 0,
-      "id": 186
+      "id": 186,
+      "imageUrl": "https://queensland.com/content/dam/teq/corporate/images/news-and-media/news-images/corporate-news-images/Riverfire.jpg"
     },
     {
       "category": "Brisbane",
@@ -3400,7 +3529,8 @@
         "Hamilton"
       ],
       "correctIndex": 0,
-      "id": 193
+      "id": 193,
+      "imageUrl": "https://assets.atdw-online.com.au/images/6a68869ff2d93b7d4021d3d2dccfb867.jpeg?rect=0%2C0%2C2048%2C1536&w=2048&h=1536&rot=360&q=eyJ0eXBlIjoibGlzdGluZyIsImxpc3RpbmdJZCI6IjU2YjI2MjBlMmNiY2JlNzA3M2FkYzc4MCIsImRpc3RyaWJ1dG9ySWQiOiI1NmIxZWI5MzQ0ZmVjYTNkZjJlMzIwY2IiLCJhcGlrZXlJZCI6IjU2YjFlZmVlMGNmMjEzYWQyMGRkMjE3MCJ9"
     },
     {
       "category": "Bulimba",
@@ -3460,7 +3590,8 @@
         "1937"
       ],
       "correctIndex": 0,
-      "id": 198
+      "id": 198,
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTqItU_0zRBCpCGaF0om4ydyvBPFPeWfp2LQ&s"
     },
     {
       "category": "Bulimba State School",
@@ -3472,7 +3603,8 @@
         "25 December"
       ],
       "correctIndex": 0,
-      "id": 199
+      "id": 199,
+      "imageUrl": "https://live.staticflickr.com/65535/48720262942_faff040c0f_b.jpg"
     },
     {
       "category": "Bulimba State School",
@@ -3496,7 +3628,8 @@
         "12"
       ],
       "correctIndex": 0,
-      "id": 201
+      "id": 201,
+      "imageUrl": "https://warwicktoday.com.au/wp-content/uploads/2022/10/452943_301733_01.jpg"
     },
     {
       "category": "Bulimba State School",
@@ -3520,7 +3653,8 @@
         "Barton Parade"
       ],
       "correctIndex": 0,
-      "id": 203
+      "id": 203,
+      "imageUrl": "https://www.e-architect.com/wp-content/uploads/2018/08/bulimba-state-school-library-and-classroom-building-brisbane-b220818-p1-520x347.jpg"
     },
     {
       "category": "Bulimba State School",
@@ -3568,7 +3702,8 @@
         "2000"
       ],
       "correctIndex": 0,
-      "id": 207
+      "id": 207,
+      "imageUrl": "https://content.api.news/v3/images/bin/993ff9026a2bbc8a8f7bb30b8d6cfbc3"
     },
     {
       "category": "Bulimba State School",
@@ -3592,7 +3727,8 @@
         "1970s"
       ],
       "correctIndex": 0,
-      "id": 209
+      "id": 209,
+      "imageUrl": "https://cdn.newsapi.com.au/image/v1/07438f01bcd4ea90b5c65fbfb3234a6f?width=1024"
     },
     {
       "category": "Flags of the World",
@@ -3723,12 +3859,3541 @@
       "correctIndex": 0,
       "imageUrl": "https://flagcdn.com/w320/in.png",
       "id": 219
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "United States",
+        "Malaysia",
+        "Liberia",
+        "Puerto Rico"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/us.png",
+      "id": 220
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "United Kingdom",
+        "Australia",
+        "New Zealand",
+        "Fiji"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/gb.png",
+      "id": 221
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Chile",
+        "Texas",
+        "Cuba",
+        "Panama"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/cl.png",
+      "id": 222
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Spain",
+        "Portugal",
+        "Germany",
+        "Belgium"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/es.png",
+      "id": 223
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Germany",
+        "Belgium",
+        "Spain",
+        "Austria"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/de.png",
+      "id": 224
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "China",
+        "Vietnam",
+        "Turkey",
+        "Morocco"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/cn.png",
+      "id": 225
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Mexico",
+        "Italy",
+        "Ireland",
+        "Hungary"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/mx.png",
+      "id": 226
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Argentina",
+        "Uruguay",
+        "Greece",
+        "Finland"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/ar.png",
+      "id": 227
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Colombia",
+        "Ecuador",
+        "Venezuela",
+        "Romania"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/co.png",
+      "id": 228
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "South Africa",
+        "Jamaica",
+        "Kenya",
+        "Zimbabwe"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/za.png",
+      "id": 229
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Sweden",
+        "Norway",
+        "Finland",
+        "Denmark"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/se.png",
+      "id": 230
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Denmark",
+        "Norway",
+        "Switzerland",
+        "England"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/dk.png",
+      "id": 231
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Greece",
+        "Argentina",
+        "Uruguay",
+        "Israel"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/gr.png",
+      "id": 232
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Portugal",
+        "Spain",
+        "Brazil",
+        "Mexico"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/pt.png",
+      "id": 233
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Netherlands",
+        "France",
+        "Russia",
+        "Luxembourg"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/nl.png",
+      "id": 234
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Switzerland",
+        "Denmark",
+        "Georgia",
+        "Canada"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/ch.png",
+      "id": 235
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Jamaica",
+        "South Africa",
+        "Brazil",
+        "Ghana"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/jm.png",
+      "id": 236
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Thailand",
+        "France",
+        "Russia",
+        "Costa Rica"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/th.png",
+      "id": 237
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Philippines",
+        "Czechia",
+        "Cuba",
+        "Puerto Rico"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/ph.png",
+      "id": 238
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Indonesia",
+        "Monaco",
+        "Poland",
+        "Singapore"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/id.png",
+      "id": 239
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Vietnam",
+        "China",
+        "Morocco",
+        "Turkey"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/vn.png",
+      "id": 240
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Singapore",
+        "Indonesia",
+        "Malaysia",
+        "Poland"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/sg.png",
+      "id": 241
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Turkey",
+        "Tunisia",
+        "Pakistan",
+        "Algeria"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/tr.png",
+      "id": 242
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Egypt",
+        "Iraq",
+        "Syria",
+        "Yemen"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/eg.png",
+      "id": 243
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Morocco",
+        "Vietnam",
+        "Turkey",
+        "China"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/ma.png",
+      "id": 244
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Kenya",
+        "South Africa",
+        "Jamaica",
+        "Uganda"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/ke.png",
+      "id": 245
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Peru",
+        "Canada",
+        "Austria",
+        "Poland"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/pe.png",
+      "id": 246
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Fiji",
+        "Australia",
+        "New Zealand",
+        "United Kingdom"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/fj.png",
+      "id": 247
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Ireland",
+        "Italy",
+        "Ivory Coast",
+        "India"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/ie.png",
+      "id": 248
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "United Arab Emirates",
+        "Jordan",
+        "Kuwait",
+        "Palestine"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/ae.png",
+      "id": 249
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In 'Toy Story', what is the name of the cowboy toy?",
+      "options": [
+        "Woody",
+        "Buzz",
+        "Rex",
+        "Andy"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Toy_Story.jpg",
+      "id": 250
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Pixar character says, 'To infinity and beyond!'?",
+      "options": [
+        "Buzz Lightyear",
+        "Lightning McQueen",
+        "Mike Wazowski",
+        "Wall-E"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Toy_Story.jpg",
+      "id": 251
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In 'Finding Nemo', what kind of fish is Nemo?",
+      "options": [
+        "Clownfish",
+        "Goldfish",
+        "Angelfish",
+        "Seahorse"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Finding_Nemo.jpg",
+      "id": 252
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Who is the forgetful blue fish in 'Finding Nemo' and 'Finding Dory'?",
+      "options": [
+        "Dory",
+        "Coral",
+        "Destiny",
+        "Bailey"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Finding_Dory.jpg",
+      "id": 253
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Pixar movie is mostly set inside a girl's mind?",
+      "options": [
+        "Inside Out",
+        "Brave",
+        "Luca",
+        "Cars"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Inside_Out_%282015_film%29_poster.jpg",
+      "id": 254
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In 'Inside Out', which emotion is yellow and full of energy?",
+      "options": [
+        "Joy",
+        "Sadness",
+        "Anger",
+        "Fear"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Inside_Out_%282015_film%29_poster.jpg",
+      "id": 255
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In 'Turning Red', what animal does Mei turn into when she gets too emotional?",
+      "options": [
+        "Red panda",
+        "Tiger",
+        "Fox",
+        "Koala"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Turning_Red_poster.jpg",
+      "id": 256
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "What is the name of the main girl in 'Turning Red'?",
+      "options": [
+        "Mei",
+        "Riley",
+        "Boo",
+        "Mirabel"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Turning_Red_poster.jpg",
+      "id": 257
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Pixar movie follows a young musician named Miguel?",
+      "options": [
+        "Coco",
+        "Soul",
+        "Up",
+        "Onward"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Coco_%282017_film%29_poster.jpg",
+      "id": 258
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In 'Coco', what is Miguel's favourite thing to do?",
+      "options": [
+        "Play music",
+        "Cook pasta",
+        "Race cars",
+        "Train dragons"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Coco_%282017_film%29_poster.jpg",
+      "id": 259
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Pixar movie is about a rat who dreams of becoming a chef in Paris?",
+      "options": [
+        "Ratatouille",
+        "Cars",
+        "The Incredibles",
+        "A Bug's Life"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/RatatouillePoster.jpg",
+      "id": 260
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "What is the name of the young chef who works with Remy in 'Ratatouille'?",
+      "options": [
+        "Linguini",
+        "Alfredo",
+        "Gusteau",
+        "Anton"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/RatatouillePoster.jpg",
+      "id": 261
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Pixar movie features the superhero family called the Parrs?",
+      "options": [
+        "The Incredibles",
+        "Monsters, Inc.",
+        "Up",
+        "Elemental"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/The_Incredibles.jpg",
+      "id": 262
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In 'The Incredibles', what is Violet's superpower?",
+      "options": [
+        "Force fields and invisibility",
+        "Talking to animals",
+        "Flying with wings",
+        "Freezing water"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/The_Incredibles.jpg",
+      "id": 263
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Pixar movie has a floating house lifted by thousands of balloons?",
+      "options": [
+        "Up",
+        "Soul",
+        "Brave",
+        "Wall-E"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Up_%282009_film%29.jpg",
+      "id": 264
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In 'Monsters, Inc.', what is the little girl's nickname?",
+      "options": [
+        "Boo",
+        "Dot",
+        "Jessie",
+        "Ellie"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Monsters_Inc.jpg",
+      "id": 265
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Pixar princess is famous for her archery skills and curly red hair?",
+      "options": [
+        "Merida",
+        "Elsa",
+        "Moana",
+        "Rapunzel"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Brave_Poster.jpg",
+      "id": 266
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Pixar movie stars a lonely robot cleaning up Earth?",
+      "options": [
+        "Wall-E",
+        "Cars",
+        "Luca",
+        "Onward"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/WALL-Eposter.jpg",
+      "id": 267
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In 'Cars', what is the name of the famous red racing car?",
+      "options": [
+        "Lightning McQueen",
+        "Doc Hudson",
+        "Mater",
+        "Chick Hicks"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Cars_2006.jpg",
+      "id": 268
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Pixar movie is about fire and water characters learning to understand each other?",
+      "options": [
+        "Elemental",
+        "Luca",
+        "Soul",
+        "Onward"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Elemental_%282023_film%29_poster.jpg",
+      "id": 269
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Belgium",
+        "Germany",
+        "France",
+        "Netherlands"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/be.png",
+      "id": 270
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "DR Congo",
+        "Republic of the Congo",
+        "Cameroon",
+        "Ghana"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/cd.png",
+      "id": 271
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Cameroon",
+        "Ghana",
+        "Senegal",
+        "Mali"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/cm.png",
+      "id": 272
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Costa Rica",
+        "Thailand",
+        "Paraguay",
+        "Panama"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/cr.png",
+      "id": 273
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Czechia",
+        "Slovakia",
+        "Slovenia",
+        "Croatia"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/cz.png",
+      "id": 274
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Finland",
+        "Sweden",
+        "Norway",
+        "Iceland"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/fi.png",
+      "id": 275
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "England",
+        "United Kingdom",
+        "Scotland",
+        "Wales"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/gb-eng.png",
+      "id": 276
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Scotland",
+        "England",
+        "Wales",
+        "Ireland"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/gb-sct.png",
+      "id": 277
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Ghana",
+        "Cameroon",
+        "Senegal",
+        "Ethiopia"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/gh.png",
+      "id": 278
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Greenland",
+        "Denmark",
+        "Iceland",
+        "Norway"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/gl.png",
+      "id": 279
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Croatia",
+        "Slovenia",
+        "Serbia",
+        "Slovakia"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/hr.png",
+      "id": 280
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Israel",
+        "Greece",
+        "Finland",
+        "Argentina"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/il.png",
+      "id": 281
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Iran",
+        "India",
+        "Mexico",
+        "Italy"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/ir.png",
+      "id": 282
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Cambodia",
+        "Thailand",
+        "Laos",
+        "Vietnam"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/kh.png",
+      "id": 283
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Kazakhstan",
+        "Mongolia",
+        "Uzbekistan",
+        "Kyrgyzstan"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/kz.png",
+      "id": 284
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Mongolia",
+        "Kazakhstan",
+        "China",
+        "South Korea"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/mn.png",
+      "id": 285
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Pakistan",
+        "Saudi Arabia",
+        "Bangladesh",
+        "Turkey"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/pk.png",
+      "id": 286
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Russia",
+        "France",
+        "Netherlands",
+        "Slovenia"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/ru.png",
+      "id": 287
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Saudi Arabia",
+        "Pakistan",
+        "Iran",
+        "Turkey"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/sa.png",
+      "id": 288
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Tanzania",
+        "Kenya",
+        "South Africa",
+        "Uganda"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/tz.png",
+      "id": 289
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Ukraine",
+        "Sweden",
+        "Kazakhstan",
+        "Romania"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/ua.png",
+      "id": 290
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Uruguay",
+        "Argentina",
+        "Greece",
+        "Paraguay"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/uy.png",
+      "id": 291
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country or nation's flag is this?",
+      "options": [
+        "Wales",
+        "England",
+        "Scotland",
+        "Ireland"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/gb-wls.png",
+      "id": 292
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In Disney’s Frozen, which character sings “Let It Go”?",
+      "options": [
+        "Elsa",
+        "Anna",
+        "Olaf",
+        "Kristoff"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://m.media-amazon.com/images/M/MV5BNzE1OTkwOTkwMV5BMl5BanBnXkFtZTgwNTcwMDk4NTE@._V1_.jpg",
+      "id": 293
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Disney movie features a young girl named Mirabel and the magical Madrigal family?",
+      "options": [
+        "Encanto",
+        "Moana",
+        "Tangled",
+        "Coco"
+      ],
+      "correctIndex": 0,
+      "id": 294
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In Moana, what is the name of the demigod who travels with Moana?",
+      "options": [
+        "Maui",
+        "Hercules",
+        "Kuzco",
+        "Flynn"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://i.guim.co.uk/img/media/02ead39acb4736ba78725b143fd101e604f91720/283_0_1340_804/master/1340.jpg?width=465&dpr=1&s=none&crop=none",
+      "id": 295
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Disney princess has super long magical hair?",
+      "options": [
+        "Rapunzel",
+        "Ariel",
+        "Belle",
+        "Mulan"
+      ],
+      "correctIndex": 0,
+      "id": 296
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In The Little Mermaid, what kind of creature is Ariel?",
+      "options": [
+        "Mermaid",
+        "Fairy",
+        "Dragon",
+        "Unicorn"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://wallpapercat.com/w/full/d/0/0/1085227-2048x1439-desktop-hd-prince-eric-the-little-mermaid-background-photo.jpg",
+      "id": 297
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Disney movie has the song “Hakuna Matata”?",
+      "options": [
+        "The Lion King",
+        "Aladdin",
+        "Mulan",
+        "Pocahontas"
+      ],
+      "correctIndex": 0,
+      "id": 298
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In Beauty and the Beast, what does Belle love doing?",
+      "options": [
+        "Reading books",
+        "Playing football",
+        "Painting cars",
+        "Flying planes"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://i0.wp.com/www.thewrap.com/wp-content/uploads/2016/11/Beauty.jpg?resize=618%2C412&quality=89&ssl=1",
+      "id": 299
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Disney heroine disguises herself as a soldier to help her family?",
+      "options": [
+        "Mulan",
+        "Tiana",
+        "Jasmine",
+        "Merida"
+      ],
+      "correctIndex": 0,
+      "id": 300
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In Aladdin, what is the name of Princess Jasmine’s pet tiger?",
+      "options": [
+        "Rajah",
+        "Abu",
+        "Iago",
+        "Simba"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://www.hollywoodreporter.com/wp-content/uploads/2016/02/aladdin_1992_0.jpg?w=1296&h=730&crop=1",
+      "id": 301
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Disney movie is about a girl who dreams of opening her own restaurant in New Orleans?",
+      "options": [
+        "The Princess and the Frog",
+        "Cinderella",
+        "Brave",
+        "Sleeping Beauty"
+      ],
+      "correctIndex": 0,
+      "id": 302
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Disney princess lives under the sea before becoming human?",
+      "options": [
+        "Ariel",
+        "Aurora",
+        "Snow White",
+        "Elsa"
+      ],
+      "correctIndex": 0,
+      "id": 303
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Disney character loses a glass slipper at a royal ball?",
+      "options": [
+        "Cinderella",
+        "Belle",
+        "Tiana",
+        "Moana"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://static.wikia.nocookie.net/disney/images/8/8c/Glass_Slipper.png/revision/latest?cb=20200311214831",
+      "id": 304
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Disney movie is set in ancient China and includes a tiny dragon named Mushu?",
+      "options": [
+        "Mulan",
+        "Raya and the Last Dragon",
+        "Brave",
+        "Turning Red"
+      ],
+      "correctIndex": 0,
+      "id": 305
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Disney movie features a magical house called Casita?",
+      "options": [
+        "Encanto",
+        "Frozen",
+        "Tangled",
+        "Wish"
+      ],
+      "correctIndex": 0,
+      "id": 306
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In Pixar’s Turning Red, Mei turns into which animal when she gets emotional?",
+      "options": [
+        "Red panda",
+        "Tiger",
+        "Koala",
+        "Fox"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://media.wired.com/photos/622aaa9ae5e91991368ff669/1:1/w_1350,h_1350,c_limit/Turning-Red-Pixar-Still-Culture.jpeg",
+      "id": 307
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Pixar movie follows Miguel into the colourful Land of the Dead?",
+      "options": [
+        "Coco",
+        "Soul",
+        "Luca",
+        "Up"
+      ],
+      "correctIndex": 0,
+      "id": 308
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In Pixar’s Inside Out, which emotion is blue?",
+      "options": [
+        "Sadness",
+        "Joy",
+        "Anger",
+        "Disgust"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://cdn.theatlantic.com/thumbor/9s9oa5rV0yvOsw29zawlL9Qd934=/0x156:3000x1844/960x540/media/img/mt/2015/06/inside_out_personality_islands/original.jpg",
+      "id": 309
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Pixar movie has a house lifted by balloons?",
+      "options": [
+        "Up",
+        "Brave",
+        "Cars",
+        "Onward"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://d23.com/app/uploads/2019/05/1180w-600h_052919_up-anniversary-facts-780x440.jpg",
+      "id": 310
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In Toy Story, what kind of toy is Woody?",
+      "options": [
+        "Cowboy doll",
+        "Space robot",
+        "Dinosaur",
+        "Race car"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://cdn.mos.cms.futurecdn.net/4eDUCBMjA9qgwWyCpjkGa3.jpg",
+      "id": 311
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Pixar character famously says “To infinity and beyond!”?",
+      "options": [
+        "Buzz Lightyear",
+        "Woody",
+        "Nemo",
+        "Lightning McQueen"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Toy_Story.jpg",
+      "id": 312
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Pixar movie is about a young sea monster who dreams of exploring the human world?",
+      "options": [
+        "Luca",
+        "Finding Nemo",
+        "Elemental",
+        "Brave"
+      ],
+      "correctIndex": 0,
+      "id": 313
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Pixar movie is set in a world where feelings live inside a girl’s mind?",
+      "options": [
+        "Inside Out",
+        "Soul",
+        "WALL-E",
+        "Ratatouille"
+      ],
+      "correctIndex": 0,
+      "id": 314
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In Finding Nemo, what kind of fish is Nemo?",
+      "options": [
+        "Clownfish",
+        "Goldfish",
+        "Shark",
+        "Seahorse"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Finding_Nemo.jpg",
+      "id": 315
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Pixar movie stars a rat who loves cooking in Paris?",
+      "options": [
+        "Ratatouille",
+        "Coco",
+        "Brave",
+        "Cars"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://gcp-na-images.contentstack.com/v3/assets/bltea6093859af6183b/blt79e8b780e8a9ada6/698a45ddcabb1dddcde525c9/360_arat_0618.jpg?branch=production&width=3840&quality=75&auto=webp&crop=3:2",
+      "id": 316
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Disney and Pixar movie is about music, family, and remembering loved ones?",
+      "options": [
+        "Coco",
+        "Soul",
+        "Encanto",
+        "Up"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Coco_(2017_film)_poster.jpg",
+      "id": 317
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In Brave, what is the name of the Scottish princess with curly red hair?",
+      "options": [
+        "Merida",
+        "Anna",
+        "Riley",
+        "Violet"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Brave_Poster.jpg",
+      "id": 318
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Pixar movie features superheroes called the Parr family?",
+      "options": [
+        "The Incredibles",
+        "Cars",
+        "Onward",
+        "Elemental"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/The_Incredibles.jpg",
+      "id": 319
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "In The Incredibles, what is Violet’s superpower?",
+      "options": [
+        "Invisibility and force fields",
+        "Talking to animals",
+        "Flying on a broom",
+        "Shooting ice"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/The_Incredibles.jpg",
+      "id": 320
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Disney movie features a wishing star and a girl named Asha?",
+      "options": [
+        "Wish",
+        "Frozen",
+        "Moana",
+        "Tangled"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Wish_2023_poster.jpg",
+      "id": 321
+    },
+    {
+      "category": "Disney & Pixar",
+      "question": "Which Disney movie has a young woman named Raya searching for the last dragon?",
+      "options": [
+        "Raya and the Last Dragon",
+        "Mulan",
+        "Moana",
+        "Brave"
+      ],
+      "correctIndex": 0,
+      "id": 322
+    },
+    {
+      "category": "Brands",
+      "question": "Which car brand uses this logo?",
+      "options": [
+        "Volkswagen",
+        "Mitsubishi",
+        "Mercedes-Benz",
+        "Jaguar"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://www.freepnglogos.com/uploads/mercedes-logo-png/mercedes-logo-take-care-novembro-2.png",
+      "id": 323
+    },
+    {
+      "category": "Brands",
+      "question": "Which car brand uses this logo?",
+      "options": [
+        "Bentley",
+        "Chevrolet",
+        "Volkswagen",
+        "BMW"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLl1J3vW4hHlPs6z7Vk4vEUenDO1VvLUIE1A&s",
+      "id": 324
+    },
+    {
+      "category": "Brands",
+      "question": "Which car brand uses this logo?",
+      "options": [
+        "Renault",
+        "Ferrari",
+        "Mitsubishi",
+        "Audi"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://cdn.simpleicons.org/audi",
+      "id": 325
+    },
+    {
+      "category": "Brands",
+      "question": "Which car brand uses this logo?",
+      "options": [
+        "Mazda",
+        "Mercedes-Benz",
+        "Ferrari",
+        "Lamborghini"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://fullsend.agency/wp-content/uploads/2024/10/ferrari-overview.jpg",
+      "id": 326
+    },
+    {
+      "category": "Brands",
+      "question": "Which car brand uses this logo?",
+      "options": [
+        "Renault",
+        "Ferrari",
+        "Lamborghini",
+        "Chevrolet"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://i.redd.it/lego-lamborghini-logo-v0-fzijohhjyy291.png?width=339&format=png&auto=webp&s=d583068f8b6cedd4a8099841894cd0a1ff0fab32",
+      "id": 327
+    },
+    {
+      "category": "Brands",
+      "question": "Which car brand uses this logo?",
+      "options": [
+        "Alfa Romeo",
+        "Mazda",
+        "Volkswagen",
+        "Chevrolet"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://privatefleet.com.au/wp-content/uploads/2013/08/Mazda_logo.png",
+      "id": 328
+    },
+    {
+      "category": "Brands",
+      "question": "Which car brand uses this logo?",
+      "options": [
+        "Chevrolet",
+        "Alfa Romeo",
+        "Mitsubishi",
+        "Renault"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://cdn.simpleicons.org/mitsubishi",
+      "id": 329
+    },
+    {
+      "category": "Brands",
+      "question": "Which car brand uses this logo?",
+      "options": [
+        "Bentley",
+        "Tesla",
+        "Volkswagen",
+        "Mitsubishi"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://cdn.simpleicons.org/volkswagen",
+      "id": 330
+    },
+    {
+      "category": "Brands",
+      "question": "Which car brand uses this logo?",
+      "options": [
+        "BMW",
+        "Peugeot",
+        "Tesla",
+        "Renault"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://cdn.simpleicons.org/tesla",
+      "id": 331
+    },
+    {
+      "category": "Brands",
+      "question": "Which car brand uses this logo?",
+      "options": [
+        "BMW",
+        "Peugeot",
+        "Renault",
+        "Tesla"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://static.designboom.com/cms/images/-andy/peu3.jpg",
+      "id": 332
+    },
+    {
+      "category": "Brands",
+      "question": "Which car brand uses this logo?",
+      "options": [
+        "Jaguar",
+        "Audi",
+        "Mazda",
+        "Tesla"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYISq3ZElnkBLLUBcWl4T8ZuYLNVJQ8bB8Ng&s",
+      "id": 333
+    },
+    {
+      "category": "Brands",
+      "question": "Which car brand uses this logo?",
+      "options": [
+        "Mazda",
+        "Chevrolet",
+        "Renault",
+        "Ferrari"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://cdn.simpleicons.org/renault",
+      "id": 334
+    },
+    {
+      "category": "Brands",
+      "question": "Which car brand uses this logo?",
+      "options": [
+        "Renault",
+        "BMW",
+        "Bentley",
+        "Jaguar"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://cdn.simpleicons.org/bentley",
+      "id": 335
+    },
+    {
+      "category": "Brands",
+      "question": "Which car brand uses this logo?",
+      "options": [
+        "Audi",
+        "Tesla",
+        "Ferrari",
+        "Alfa Romeo"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://www.jetpunk.com/img/user-img/f1/f10f0041a2-450.webp",
+      "id": 336
+    },
+    {
+      "category": "Brands",
+      "question": "Which car brand uses this logo?",
+      "options": [
+        "Jaguar",
+        "Mercedes-Benz",
+        "Renault",
+        "Chevrolet"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://cdn.simpleicons.org/chevrolet",
+      "id": 337
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion brand uses this logo?",
+      "options": [
+        "Lululemon",
+        "Lacoste",
+        "Chanel",
+        "Puma"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://www.freepnglogos.com/uploads/chanel-logo-black-image-4.png",
+      "id": 338
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion brand uses this logo?",
+      "options": [
+        "Louis Vuitton",
+        "Nike",
+        "Lacoste",
+        "Converse"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://1000logos.net/wp-content/uploads/2017/03/Symbol-Louis-Vuitton.jpg",
+      "id": 339
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion brand uses this logo?",
+      "options": [
+        "Chanel",
+        "Gucci",
+        "New Balance",
+        "Fendi"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://www.businessdailymedia.com/images/04/lo.png",
+      "id": 340
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion brand uses this logo?",
+      "options": [
+        "Lacoste",
+        "Converse",
+        "Versace",
+        "Fendi"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://logos-world.net/wp-content/uploads/2021/08/Fendi-Logo.png",
+      "id": 341
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion brand uses this logo?",
+      "options": [
+        "Lacoste",
+        "Adidas",
+        "Chanel",
+        "Yves Saint Laurent"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://logos-world.net/wp-content/uploads/2021/11/YSL-Logo.png",
+      "id": 342
+    },
+    {
+      "category": "Brands",
+      "question": "Which sportswear brand uses this logo?",
+      "options": [
+        "Adidas",
+        "Puma",
+        "Nike",
+        "Chanel"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://cdn.simpleicons.org/adidas",
+      "id": 343
+    },
+    {
+      "category": "Brands",
+      "question": "Which sportswear brand uses this logo?",
+      "options": [
+        "Lululemon",
+        "Gucci",
+        "Nike",
+        "Yves Saint Laurent"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://cdn.simpleicons.org/nike",
+      "id": 344
+    },
+    {
+      "category": "Brands",
+      "question": "Which sportswear brand uses this logo?",
+      "options": [
+        "Louis Vuitton",
+        "Gucci",
+        "Puma",
+        "Lacoste"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://cdn.simpleicons.org/puma",
+      "id": 345
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion brand uses this logo?",
+      "options": [
+        "Lacoste",
+        "Fendi",
+        "Louis Vuitton",
+        "Yves Saint Laurent"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://i.pinimg.com/originals/ca/c9/4a/cac94a580df3e30be7238fd1b920a884.jpg",
+      "id": 346
+    },
+    {
+      "category": "Brands",
+      "question": "Which activewear brand uses this logo?",
+      "options": [
+        "Louis Vuitton",
+        "Chanel",
+        "Lululemon",
+        "Lacoste"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://logos-world.net/wp-content/uploads/2020/09/Lululemon-Emblem.png",
+      "id": 347
+    },
+    {
+      "category": "Brands",
+      "question": "Which sportswear brand uses this logo?",
+      "options": [
+        "Under Armour",
+        "Louis Vuitton",
+        "Yves Saint Laurent",
+        "Versace"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://cdn.simpleicons.org/underarmour",
+      "id": 348
+    },
+    {
+      "category": "Brands",
+      "question": "Which sneaker brand uses this logo?",
+      "options": [
+        "Adidas",
+        "New Balance",
+        "Yves Saint Laurent",
+        "Versace"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://cdn.simpleicons.org/newbalance",
+      "id": 349
+    },
+    {
+      "category": "Brands",
+      "question": "Which luxury brand uses this logo?",
+      "options": [
+        "New Balance",
+        "Fendi",
+        "Under Armour",
+        "Rolex"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://cdn.prod.website-files.com/64c794410a6c56562470f505/699d51761b510f9d04b6592c_The%20History%20of%20Rolex%20Logo.png",
+      "id": 350
+    },
+    {
+      "category": "Brands",
+      "question": "Which sneaker brand uses this logo?",
+      "options": [
+        "Converse",
+        "Nike",
+        "Louis Vuitton",
+        "Puma"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://www.pngitem.com/pimgs/m/485-4853948_converse-star-chevron-logo-png-download-transparent-converse.png",
+      "id": 351
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion brand uses this logo?",
+      "options": [
+        "Adidas",
+        "Rolex",
+        "Lululemon",
+        "Versace"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://crystalpng.com/wp-content/uploads/2025/03/versace-logo-png.png",
+      "id": 352
+    },
+    {
+      "category": "Brands",
+      "question": "Which technology brand uses this logo?",
+      "options": [
+        "Discord",
+        "Apple",
+        "Microsoft",
+        "PlayStation"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://cdn.simpleicons.org/apple",
+      "id": 353
+    },
+    {
+      "category": "Brands",
+      "question": "Which technology brand uses this logo?",
+      "options": [
+        "Microsoft",
+        "Spotify",
+        "Discord",
+        "Dropbox"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://www.svgrepo.com/show/452062/microsoft.svg",
+      "id": 354
+    },
+    {
+      "category": "Brands",
+      "question": "Which tech brand uses this logo?",
+      "options": [
+        "Microsoft",
+        "Discord",
+        "Dropbox",
+        "Android"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://cdn.simpleicons.org/android",
+      "id": 355
+    },
+    {
+      "category": "Brands",
+      "question": "Which gaming brand uses this logo?",
+      "options": [
+        "Airbnb",
+        "PlayStation",
+        "Spotify",
+        "Dropbox"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://cdn.simpleicons.org/playstation",
+      "id": 356
+    },
+    {
+      "category": "Brands",
+      "question": "Which gaming brand uses this logo?",
+      "options": [
+        "Airbnb",
+        "Xbox",
+        "Microsoft",
+        "OpenAI"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Xbox_one_logo.svg/1280px-Xbox_one_logo.svg.png",
+      "id": 357
+    },
+    {
+      "category": "Brands",
+      "question": "Which app or tech brand uses this logo?",
+      "options": [
+        "Reddit",
+        "Microsoft",
+        "Discord",
+        "Spotify"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://cdn.simpleicons.org/spotify",
+      "id": 358
+    },
+    {
+      "category": "Brands",
+      "question": "Which tech brand uses this logo?",
+      "options": [
+        "Dropbox",
+        "PlayStation",
+        "Reddit",
+        "Apple"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://cdn.simpleicons.org/dropbox",
+      "id": 359
+    },
+    {
+      "category": "Brands",
+      "question": "Which app brand uses this logo?",
+      "options": [
+        "PlayStation",
+        "Airbnb",
+        "Dropbox",
+        "Xbox"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://cdn.simpleicons.org/airbnb",
+      "id": 360
+    },
+    {
+      "category": "Brands",
+      "question": "Which tech brand uses this logo?",
+      "options": [
+        "Airbnb",
+        "Discord",
+        "OpenAI",
+        "Reddit"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://www.svgrepo.com/show/306500/openai.svg",
+      "id": 361
+    },
+    {
+      "category": "Brands",
+      "question": "Which app brand uses this logo?",
+      "options": [
+        "Discord",
+        "Microsoft",
+        "Dropbox",
+        "Xbox"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://cdn.simpleicons.org/discord",
+      "id": 362
+    },
+    {
+      "category": "Brands",
+      "question": "Which app brand uses this logo?",
+      "options": [
+        "Airbnb",
+        "Android",
+        "Instagram",
+        "Apple"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://cdn.simpleicons.org/instagram",
+      "id": 363
+    },
+    {
+      "category": "Brands",
+      "question": "Which app brand uses this logo?",
+      "options": [
+        "Discord",
+        "Instagram",
+        "Spotify",
+        "Reddit"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://cdn.simpleicons.org/reddit",
+      "id": 364
+    },
+    {
+      "category": "Brands",
+      "question": "Which food franchise uses this logo?",
+      "options": [
+        "Nando's",
+        "Pepsi",
+        "Red Bull",
+        "McDonald's"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://cdn.simpleicons.org/mcdonalds",
+      "id": 365
+    },
+    {
+      "category": "Brands",
+      "question": "Which food or drink brand uses this logo?",
+      "options": [
+        "Starbucks",
+        "Red Bull",
+        "McDonald's",
+        "Domino's"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://cdn.simpleicons.org/starbucks",
+      "id": 366
+    },
+    {
+      "category": "Brands",
+      "question": "Which food franchise uses this logo?",
+      "options": [
+        "Domino's",
+        "Starbucks",
+        "Red Bull",
+        "Pizza Hut"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://play-lh.googleusercontent.com/sY1hNsIpwDQzNxIcXLI5znH3sTLJ0VaU6wMU92DPeaNiWCh4apinL1YCUDTC9xiW4tg",
+      "id": 367
+    },
+    {
+      "category": "Brands",
+      "question": "Which food franchise uses this logo?",
+      "options": [
+        "Nando's",
+        "Pizza Hut",
+        "Pringles",
+        "Taco Bell"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://cdn.simpleicons.org/tacobell",
+      "id": 368
+    },
+    {
+      "category": "Brands",
+      "question": "Which drink brand uses this logo?",
+      "options": [
+        "Taco Bell",
+        "Pizza Hut",
+        "Baskin-Robbins",
+        "Pepsi"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://www.freeiconspng.com/uploads/pepsi-logo-transparent-8.png",
+      "id": 369
+    },
+    {
+      "category": "Brands",
+      "question": "Which snack brand uses this logo?",
+      "options": [
+        "Taco Bell",
+        "Baskin-Robbins",
+        "Red Bull",
+        "Pringles"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://sp-ao.shortpixel.ai/client/to_webp,q_lossless,ret_img,w_332,h_332/https://graphicdesignergeeks.com/wp-content/uploads/2024/05/Pringles-2.jpg",
+      "id": 370
+    },
+    {
+      "category": "Brands",
+      "question": "Which ice cream brand uses this logo?",
+      "options": [
+        "Baskin-Robbins",
+        "Starbucks",
+        "Taco Bell",
+        "Domino's"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://cdn.worldvectorlogo.com/logos/br31-3.svg",
+      "id": 371
+    },
+    {
+      "category": "Brands",
+      "question": "Which food franchise uses this logo?",
+      "options": [
+        "Domino's",
+        "Pizza Hut",
+        "Pringles",
+        "Red Bull"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://www.pngitem.com/pimgs/m/63-633047_red-emblem-pizza-hut-png-logo-pizza-hut.png",
+      "id": 372
+    },
+    {
+      "category": "Brands",
+      "question": "Which drink brand uses this logo?",
+      "options": [
+        "Starbucks",
+        "Pringles",
+        "Taco Bell",
+        "Red Bull"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://cdn.simpleicons.org/redbull",
+      "id": 373
+    },
+    {
+      "category": "Brands",
+      "question": "Which food franchise uses this logo?",
+      "options": [
+        "Red Bull",
+        "Starbucks",
+        "Pepsi",
+        "Nando's"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://logos-world.net/wp-content/uploads/2022/12/Nandos-Symbol.png",
+      "id": 374
+    },
+    {
+      "category": "Brands",
+      "question": "Which Australian brand uses this logo?",
+      "options": [
+        "Bunnings",
+        "Telstra",
+        "Woolworths",
+        "Commonwealth Bank"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://play-lh.googleusercontent.com/BFup0y0U_i4Gr69xrhowoHqE--sMVS40o86EbsGE7hAkIKiVjL0_R_T7sPQAuMX6NA",
+      "id": 375
+    },
+    {
+      "category": "Brands",
+      "question": "Which Australian brand uses this logo?",
+      "options": [
+        "Target",
+        "Commonwealth Bank",
+        "Qantas",
+        "Holden"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://cdn.simpleicons.org/qantas",
+      "id": 376
+    },
+    {
+      "category": "Brands",
+      "question": "Which Australian brand uses this logo?",
+      "options": [
+        "Commonwealth Bank",
+        "Target",
+        "Telstra",
+        "Westpac"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://logos-world.net/wp-content/uploads/2021/04/Telstra-Logo.png",
+      "id": 377
+    },
+    {
+      "category": "Brands",
+      "question": "Which Australian brand uses this logo?",
+      "options": [
+        "Bunnings",
+        "Target",
+        "Holden",
+        "Commonwealth Bank"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://logos-world.net/wp-content/uploads/2021/03/Commonwealth-Bank-Symbol.png",
+      "id": 378
+    },
+    {
+      "category": "Brands",
+      "question": "Which Australian brand uses this logo?",
+      "options": [
+        "Woolworths",
+        "Qantas",
+        "Westpac",
+        "Holden"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://www.australianimages.com.au/wp-content/uploads/2021/08/Holden-Emblem.jpg",
+      "id": 379
+    },
+    {
+      "category": "Brands",
+      "question": "Which Australian brand uses this logo?",
+      "options": [
+        "Holden",
+        "Bunnings",
+        "Telstra",
+        "Qantas"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://jpd.net.au/wp-content/uploads/2023/03/20756-JPD-Website_HOME-PAGE_BANNER_BUNNINGS_V1.jpg",
+      "id": 380
+    },
+    {
+      "category": "Brands",
+      "question": "Which retail brand uses this logo?",
+      "options": [
+        "Holden",
+        "Target",
+        "Qantas",
+        "Woolworths"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://cdn.simpleicons.org/target",
+      "id": 381
+    },
+    {
+      "category": "Brands",
+      "question": "Which Australian brand uses this logo?",
+      "options": [
+        "Target",
+        "Telstra",
+        "Woolworths",
+        "Westpac"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://www.westpac.com.au/content/dam/public/wbc/images/home/westpac-logo-social.jpg",
+      "id": 382
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Land Rover",
+        "Bugatti",
+        "Honda",
+        "Fiat"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://cdn.simpleicons.org/honda",
+      "id": 383
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Ford",
+        "MINI",
+        "Cadillac",
+        "Jeep"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://www.duetsblog.com/files/2009/09/sideloadimage-2017-10-30-17-35-57.jpg",
+      "id": 384
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Lincoln",
+        "Subaru",
+        "Aston Martin",
+        "Kia"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://cdn.simpleicons.org/kia",
+      "id": 385
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Maserati",
+        "Honda",
+        "Hyundai",
+        "Volvo"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://cdn.simpleicons.org/hyundai",
+      "id": 386
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Škoda",
+        "Maserati",
+        "Porsche",
+        "Nissan"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://www.jetpunk.com/img/user-img/e4/e402d7a448-450.webp",
+      "id": 387
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Opel",
+        "Subaru",
+        "Kia",
+        "Aston Martin"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1b23BWSUoHa_vQusc0HBhMG00glcA_PNQ4w&s",
+      "id": 388
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "MINI",
+        "Ford",
+        "Cadillac",
+        "Suzuki"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://cdn.simpleicons.org/suzuki",
+      "id": 389
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Infiniti",
+        "Volvo",
+        "Ford",
+        "Citroën"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://www.jetpunk.com/img/user-img/ac/acf922eb05-450.webp",
+      "id": 390
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Suzuki",
+        "Porsche",
+        "Infiniti",
+        "Hyundai"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://i.pinimg.com/474x/c0/a7/60/c0a760148ee9bf60c4bc7fc9d033c747.jpg",
+      "id": 391
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Maserati",
+        "Nissan",
+        "Bugatti",
+        "Buick"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://www.proprofs.com/quiz-school/user_upload/ckeditor/maserati.jpg",
+      "id": 392
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Aston Martin",
+        "Suzuki",
+        "McLaren",
+        "Volvo"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://yt3.googleusercontent.com/aANbge0Yv7PfmDWtJyjldJU-8yDGBWyUiF_o720Qs2hW68npIW_wru0fidljC-wdIFejmeSo=s900-c-k-c0x00ffffff-no-rj",
+      "id": 393
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "MINI",
+        "Hyundai",
+        "Bugatti",
+        "Opel"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://cdn.simpleicons.org/bugatti",
+      "id": 394
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Subaru",
+        "Buick",
+        "Suzuki",
+        "Aston Martin"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://quiz.com/image-cache/uploads/c8a52972-2cc6-4bb3-87c9-335b2ececb13/82447d10f2a7b6e981b0c115a90c7e09a63e0e75.webp.jpg?width=332&height=249&x=0.000&y=0.000&z=1.000",
+      "id": 395
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Opel",
+        "Ford",
+        "MINI",
+        "Land Rover"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://pbs.twimg.com/media/FKsYlhUX0AcwW_c.png",
+      "id": 396
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Lexus",
+        "Bugatti",
+        "Jeep",
+        "Acura"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://www.car-brand-names.com/wp-content/uploads/2015/05/Lexus-symbol-history.jpg",
+      "id": 398
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Ford",
+        "Opel",
+        "Cadillac",
+        "SEAT"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://1000logos.net/wp-content/uploads/2020/04/Cadillac-Logo-2000.png",
+      "id": 399
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Porsche",
+        "Polestar",
+        "Jeep",
+        "Dodge"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://png.pngitem.com/pimgs/s/270-2704584_logo-dodge-ram-hd-png-download.png",
+      "id": 400
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Lexus",
+        "Maserati",
+        "Honda",
+        "Buick"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://www.buick.com/content/dam/buick/na/us/en/index/owners/discover-buick/news/timeless-style/01-images/buick-news-timeless-style-2000x1000-2016.jpg?imwidth=1200",
+      "id": 401
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Fiat",
+        "Land Rover",
+        "Bugatti",
+        "Ford"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://www.jetpunk.com/img/user-img/80/8088e47ddd-450.webp",
+      "id": 402
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Cadillac",
+        "Nissan",
+        "Citroën",
+        "Porsche"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://www.pngitem.com/pimgs/m/46-462493_transparent-citroen-logo-png-citroen-logo-without-name.png",
+      "id": 403
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Kia",
+        "Nissan",
+        "Škoda",
+        "Jeep"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://wallpapercave.com/wp/wp6910087.png",
+      "id": 404
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Opel",
+        "Suzuki",
+        "Kia",
+        "Maserati"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Opel-Logo_2017.png",
+      "id": 405
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "SEAT",
+        "Honda",
+        "MINI",
+        "Hyundai"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://img.buzzfeed.com/store-an-image-prod-us-east-1/f0ApENamj.png?downsize=625%3A*&output-format=jpg&output-quality=auto",
+      "id": 406
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Rolls-Royce",
+        "Hyundai",
+        "Maserati",
+        "Porsche"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://cdn.simpleicons.org/rollsroyce",
+      "id": 407
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Polestar",
+        "Porsche",
+        "Nissan",
+        "McLaren"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://cdn.simpleicons.org/polestar",
+      "id": 408
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Jeep",
+        "Hyundai",
+        "Maserati",
+        "Acura"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://logos-world.net/wp-content/uploads/2021/03/Acura-Emblem.png",
+      "id": 409
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Rolls-Royce",
+        "Infiniti",
+        "Honda",
+        "Opel"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://1000logos.net/wp-content/uploads/2020/03/Infiniti-Emblem.jpg",
+      "id": 410
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Lexus",
+        "Lincoln",
+        "Nissan",
+        "Opel"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjX4cGGze8FI9Y1VCtNyjEKA6pNXwi3AkxfQ&s",
+      "id": 411
+    },
+    {
+      "category": "Brands",
+      "question": "Which car make uses this logo?",
+      "options": [
+        "Land Rover",
+        "SEAT",
+        "Nissan",
+        "Infiniti"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://logos-world.net/wp-content/uploads/2021/10/SEAT-Logo.png",
+      "id": 412
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Prada",
+        "Burberry",
+        "Jordan",
+        "Speedo"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://www.jetpunk.com/img/user-img/1a/1ae7a8bc9b-450.webp",
+      "id": 413
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Birkenstock",
+        "Dior",
+        "Chloé",
+        "Calvin Klein"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://logos-world.net/wp-content/uploads/2021/08/Christian-Dior-Emblem.png",
+      "id": 414
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Fila",
+        "Levi’s",
+        "Burberry",
+        "Moncler"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://cdn.quizly.co/wp-content/uploads/2025/02/14143029/Burberry-logo.webp",
+      "id": 415
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Tommy Hilfiger",
+        "Burberry",
+        "Balenciaga",
+        "Speedo"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://logos-world.net/wp-content/uploads/2021/08/Balenciaga-Logo.png",
+      "id": 416
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Dr. Martens",
+        "Calvin Klein",
+        "Crocs",
+        "UNIQLO"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://goodlogo.com/images/logos/calvin_klein_logo_2623.gif",
+      "id": 417
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Tommy Hilfiger",
+        "Vans",
+        "Reebok",
+        "Dior"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://1000logos.net/wp-content/uploads/2017/06/Symbol-Tommy-Hilfiger.jpg",
+      "id": 418
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Levi’s",
+        "Chloé",
+        "Patagonia",
+        "Vans"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://www.jetpunk.com/img/user-img/28/289bca7da5-450.webp",
+      "id": 419
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Chloé",
+        "Reebok",
+        "Supreme",
+        "Vans"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://stiahnut.sk/data/mujsoubor.cz/uploadimages/quizlogo/l1-VmFucw.png",
+      "id": 420
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "MAC Cosmetics",
+        "Reebok",
+        "Supreme",
+        "Dr. Martens"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://cdn.simpleicons.org/reebok",
+      "id": 421
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Reebok",
+        "ASICS",
+        "Supreme",
+        "The North Face"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://quizbash.com/assets/img/games/logo-asics.jpg",
+      "id": 422
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Fila",
+        "H&M",
+        "Sephora",
+        "Dior"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZ-zS6ELVsKhTh9RrzVgaujjQlNbhcDnXjMw&s",
+      "id": 423
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Fila",
+        "Crocs",
+        "Jordan",
+        "Champion"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://cdn.simpleicons.org/jordan",
+      "id": 424
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Supreme",
+        "Birkenstock",
+        "The North Face",
+        "Zara"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://media.baamboozle.com/uploads/images/541919/1638560493_29861.jpeg",
+      "id": 425
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Crocs",
+        "H&M",
+        "Patagonia",
+        "Zara"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://media.baamboozle.com/uploads/images/335045/1618453782_18309.jpeg",
+      "id": 426
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Prada",
+        "Patagonia",
+        "Maybelline",
+        "Crocs"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://1000logos.net/wp-content/uploads/2018/11/Crocs-emblem.jpg",
+      "id": 427
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Moncler",
+        "Tommy Hilfiger",
+        "H&M",
+        "The North Face"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://logosquiz.net/data/logosquiz-aticod/images/hm.png",
+      "id": 429
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Chloé",
+        "Zara",
+        "Crocs",
+        "Birkenstock"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://media.baamboozle.com/uploads/images/399958/1631163900_1506.png",
+      "id": 430
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Champion",
+        "Chloé",
+        "Birkenstock",
+        "UNIQLO"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/UNIQLO_logo_%28Japanese%29.svg/1280px-UNIQLO_logo_%28Japanese%29.svg.png",
+      "id": 431
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Fila",
+        "Supreme",
+        "Swarovski",
+        "UNIQLO"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://quiz.com/image-cache/uploads/f9d61645-2d3b-4b2d-80ed-0e7c006ff067/f4a5983f92779ecb3259a50df6bbb0800c33a1cd.jpg.jpg?width=332&height=249&x=0.000&y=0.000&z=1.000",
+      "id": 433
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Zara",
+        "Sephora",
+        "Prada",
+        "Vans"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://media.baamboozle.com/uploads/images/410104/1640756836_2230.jpeg",
+      "id": 434
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Chloé",
+        "Moncler",
+        "Patagonia",
+        "ASICS"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://1000logos.net/wp-content/uploads/2020/02/Moncler-symbol.jpg",
+      "id": 438
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Reebok",
+        "MAC Cosmetics",
+        "Champion",
+        "Speedo"
+      ],
+      "correctIndex": 2,
+      "imageUrl": "https://logos-world.net/wp-content/uploads/2021/08/Champion-Logo.png",
+      "id": 439
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Chloé",
+        "Speedo",
+        "Jordan",
+        "UNIQLO"
+      ],
+      "correctIndex": 1,
+      "imageUrl": "https://pbs.twimg.com/media/B_CO3wFW4AAQoZF.jpg",
+      "id": 440
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Sephora",
+        "Swarovski",
+        "Maybelline",
+        "Timberland"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://media.baamboozle.com/uploads/images/524309/1672638250_31076.jpeg",
+      "id": 441
+    },
+    {
+      "category": "Brands",
+      "question": "Which fashion or lifestyle brand uses this logo?",
+      "options": [
+        "Prada",
+        "Tommy Hilfiger",
+        "Levi’s",
+        "Supreme"
+      ],
+      "correctIndex": 3,
+      "imageUrl": "https://cdn.simpleicons.org/supreme",
+      "id": 442
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the capital city of France?",
+      "options": [
+        "Madrid",
+        "Paris",
+        "Berlin",
+        "Rome"
+      ],
+      "correctIndex": 1,
+      "id": 443
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which planet is famous for its rings?",
+      "options": [
+        "Mars",
+        "Venus",
+        "Saturn",
+        "Mercury"
+      ],
+      "correctIndex": 2,
+      "id": 444
+    },
+    {
+      "category": "General Knowledge",
+      "question": "How many minutes are in one hour?",
+      "options": [
+        "100",
+        "90",
+        "60",
+        "30"
+      ],
+      "correctIndex": 2,
+      "id": 445
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which animal is known for changing colour to blend in?",
+      "options": [
+        "Horse",
+        "Koala",
+        "Penguin",
+        "Chameleon"
+      ],
+      "correctIndex": 3,
+      "id": 446
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What do bees collect from flowers to make honey?",
+      "options": [
+        "Leaves",
+        "Salt",
+        "Sand",
+        "Nectar"
+      ],
+      "correctIndex": 3,
+      "id": 447
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which instrument has black and white keys?",
+      "options": [
+        "Piano",
+        "Flute",
+        "Trumpet",
+        "Drums"
+      ],
+      "correctIndex": 0,
+      "id": 448
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the freezing point of water in degrees Celsius?",
+      "options": [
+        "32°C",
+        "10°C",
+        "0°C",
+        "100°C"
+      ],
+      "correctIndex": 2,
+      "id": 449
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which shape has three sides?",
+      "options": [
+        "Triangle",
+        "Pentagon",
+        "Circle",
+        "Square"
+      ],
+      "correctIndex": 0,
+      "id": 450
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the largest ocean on Earth?",
+      "options": [
+        "Pacific Ocean",
+        "Atlantic Ocean",
+        "Arctic Ocean",
+        "Indian Ocean"
+      ],
+      "correctIndex": 0,
+      "id": 451
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which country is famous for the Eiffel Tower?",
+      "options": [
+        "Japan",
+        "Brazil",
+        "France",
+        "Italy"
+      ],
+      "correctIndex": 2,
+      "id": 452
+    },
+    {
+      "category": "General Knowledge",
+      "question": "How many players are on the court for one netball team?",
+      "options": [
+        "11",
+        "7",
+        "6",
+        "5"
+      ],
+      "correctIndex": 1,
+      "id": 453
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the main language spoken in Brazil?",
+      "options": [
+        "Spanish",
+        "English",
+        "Portuguese",
+        "French"
+      ],
+      "correctIndex": 2,
+      "id": 454
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which bird is often associated with peace?",
+      "options": [
+        "Eagle",
+        "Dove",
+        "Ostrich",
+        "Magpie"
+      ],
+      "correctIndex": 1,
+      "id": 455
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What colour do you get when you mix red and white?",
+      "options": [
+        "Purple",
+        "Pink",
+        "Green",
+        "Black"
+      ],
+      "correctIndex": 1,
+      "id": 456
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which month comes after August?",
+      "options": [
+        "October",
+        "September",
+        "June",
+        "July"
+      ],
+      "correctIndex": 1,
+      "id": 457
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the name of the galaxy we live in?",
+      "options": [
+        "Whirlpool",
+        "Sombrero",
+        "Andromeda",
+        "Milky Way"
+      ],
+      "correctIndex": 3,
+      "id": 458
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which device is used to take photographs?",
+      "options": [
+        "Compass",
+        "Microscope",
+        "Camera",
+        "Calculator"
+      ],
+      "correctIndex": 2,
+      "id": 459
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which natural object gives Earth most of its light?",
+      "options": [
+        "A comet",
+        "The Moon",
+        "Mars",
+        "The Sun"
+      ],
+      "correctIndex": 3,
+      "id": 460
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the opposite of “ancient”?",
+      "options": [
+        "Noisy",
+        "Heavy",
+        "Modern",
+        "Tiny"
+      ],
+      "correctIndex": 2,
+      "id": 461
+    },
+    {
+      "category": "General Knowledge",
+      "question": "How many legs does a butterfly have?",
+      "options": [
+        "6",
+        "4",
+        "10",
+        "8"
+      ],
+      "correctIndex": 0,
+      "id": 462
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which sport uses a shuttlecock?",
+      "options": [
+        "Badminton",
+        "Tennis",
+        "Cricket",
+        "Soccer"
+      ],
+      "correctIndex": 0,
+      "id": 463
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the capital city of New Zealand?",
+      "options": [
+        "Christchurch",
+        "Auckland",
+        "Queenstown",
+        "Wellington"
+      ],
+      "correctIndex": 3,
+      "id": 464
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which of these is a renewable energy source?",
+      "options": [
+        "Natural gas",
+        "Solar power",
+        "Coal",
+        "Petrol"
+      ],
+      "correctIndex": 1,
+      "id": 465
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What do you call a scientist who studies weather?",
+      "options": [
+        "Architect",
+        "Dentist",
+        "Historian",
+        "Meteorologist"
+      ],
+      "correctIndex": 3,
+      "id": 466
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which continent is Egypt in?",
+      "options": [
+        "Africa",
+        "South America",
+        "Europe",
+        "Asia"
+      ],
+      "correctIndex": 0,
+      "id": 467
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which number is a dozen?",
+      "options": [
+        "12",
+        "10",
+        "20",
+        "100"
+      ],
+      "correctIndex": 0,
+      "id": 468
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What do plants need from the sun to grow?",
+      "options": [
+        "Sound",
+        "Light",
+        "Metal",
+        "Plastic"
+      ],
+      "correctIndex": 1,
+      "id": 469
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which ocean is between Australia and South America?",
+      "options": [
+        "Arctic Ocean",
+        "Indian Ocean",
+        "Southern Ocean",
+        "Pacific Ocean"
+      ],
+      "correctIndex": 3,
+      "id": 470
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the name for a baby cat?",
+      "options": [
+        "Joey",
+        "Kitten",
+        "Cub",
+        "Puppy"
+      ],
+      "correctIndex": 1,
+      "id": 471
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which fairy-tale character loses a glass slipper?",
+      "options": [
+        "Cinderella",
+        "Rapunzel",
+        "Mulan",
+        "Moana"
+      ],
+      "correctIndex": 0,
+      "id": 472
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the fastest way sound travels through?",
+      "options": [
+        "Only air",
+        "Solids",
+        "Empty space",
+        "Only water"
+      ],
+      "correctIndex": 1,
+      "id": 473
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which organ pumps blood around the body?",
+      "options": [
+        "Liver",
+        "Heart",
+        "Stomach",
+        "Brain"
+      ],
+      "correctIndex": 1,
+      "id": 474
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the capital city of the United Kingdom?",
+      "options": [
+        "London",
+        "Dublin",
+        "Edinburgh",
+        "Paris"
+      ],
+      "correctIndex": 0,
+      "id": 475
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which punctuation mark ends a question?",
+      "options": [
+        "Full stop",
+        "Comma",
+        "Question mark",
+        "Apostrophe"
+      ],
+      "correctIndex": 2,
+      "id": 476
+    },
+    {
+      "category": "General Knowledge",
+      "question": "How many colours are usually named in a rainbow?",
+      "options": [
+        "7",
+        "6",
+        "5",
+        "9"
+      ],
+      "correctIndex": 0,
+      "id": 477
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which animal is the tallest land animal?",
+      "options": [
+        "Kangaroo",
+        "Camel",
+        "Elephant",
+        "Giraffe"
+      ],
+      "correctIndex": 3,
+      "id": 478
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which country is famous for pizza and pasta?",
+      "options": [
+        "Mexico",
+        "Canada",
+        "Italy",
+        "China"
+      ],
+      "correctIndex": 2,
+      "id": 479
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the main ingredient in bread?",
+      "options": [
+        "Flour",
+        "Cheese",
+        "Rice",
+        "Chocolate"
+      ],
+      "correctIndex": 0,
+      "id": 480
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What do you call water when it becomes a gas?",
+      "options": [
+        "Steam",
+        "Ice",
+        "Snow",
+        "Juice"
+      ],
+      "correctIndex": 0,
+      "id": 481
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which app is known for short videos and trends?",
+      "options": [
+        "Spotify",
+        "Google Maps",
+        "TikTok",
+        "Zoom"
+      ],
+      "correctIndex": 2,
+      "id": 482
+    },
+    {
+      "category": "General Knowledge",
+      "question": "How many wheels does a standard bicycle have?",
+      "options": [
+        "1",
+        "3",
+        "4",
+        "2"
+      ],
+      "correctIndex": 3,
+      "id": 483
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the name of the Australian animal that looks like a small bear but is not a bear?",
+      "options": [
+        "Koala",
+        "Platypus",
+        "Wombat",
+        "Dingo"
+      ],
+      "correctIndex": 0,
+      "id": 484
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which subject studies maps, countries, and places?",
+      "options": [
+        "Geography",
+        "Drama",
+        "Music",
+        "Biology"
+      ],
+      "correctIndex": 0,
+      "id": 485
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which of these is a string instrument?",
+      "options": [
+        "Trumpet",
+        "Drum",
+        "Violin",
+        "Recorder"
+      ],
+      "correctIndex": 2,
+      "id": 486
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What do you call the person who writes a book?",
+      "options": [
+        "Author",
+        "Chef",
+        "Coach",
+        "Pilot"
+      ],
+      "correctIndex": 0,
+      "id": 487
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which day comes after Friday?",
+      "options": [
+        "Monday",
+        "Sunday",
+        "Thursday",
+        "Saturday"
+      ],
+      "correctIndex": 3,
+      "id": 488
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which planet is closest to the Sun?",
+      "options": [
+        "Saturn",
+        "Mercury",
+        "Earth",
+        "Neptune"
+      ],
+      "correctIndex": 1,
+      "id": 489
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which material is made by spinning cotton or wool into thread?",
+      "options": [
+        "Glass",
+        "Metal",
+        "Concrete",
+        "Fabric"
+      ],
+      "correctIndex": 3,
+      "id": 490
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the name of a triangle with all sides equal?",
+      "options": [
+        "Scalene",
+        "Equilateral",
+        "Right-angled",
+        "Obtuse"
+      ],
+      "correctIndex": 1,
+      "id": 491
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which country has cities called Tokyo, Kyoto, and Osaka?",
+      "options": [
+        "Thailand",
+        "China",
+        "Korea",
+        "Japan"
+      ],
+      "correctIndex": 3,
+      "id": 492
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which animal is famous for black and white stripes?",
+      "options": [
+        "Tiger",
+        "Zebra",
+        "Panda",
+        "Skunk"
+      ],
+      "correctIndex": 1,
+      "id": 493
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the main job of roots on a plant?",
+      "options": [
+        "Catch insects",
+        "Make fruit instantly",
+        "Take in water and hold the plant",
+        "Make flowers only"
+      ],
+      "correctIndex": 2,
+      "id": 494
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What do you use to measure temperature?",
+      "options": [
+        "Thermometer",
+        "Ruler",
+        "Stopwatch",
+        "Compass"
+      ],
+      "correctIndex": 0,
+      "id": 495
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which is the smallest even prime number?",
+      "options": [
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "correctIndex": 2,
+      "id": 496
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which food is made from cacao beans?",
+      "options": [
+        "Chocolate",
+        "Cheese",
+        "Yoghurt",
+        "Bread"
+      ],
+      "correctIndex": 0,
+      "id": 497
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which sea creature has eight arms?",
+      "options": [
+        "Octopus",
+        "Shark",
+        "Dolphin",
+        "Turtle"
+      ],
+      "correctIndex": 0,
+      "id": 498
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the name for a word that has the opposite meaning?",
+      "options": [
+        "Antonym",
+        "Synonym",
+        "Noun",
+        "Verb"
+      ],
+      "correctIndex": 0,
+      "id": 499
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which continent is Australia part of?",
+      "options": [
+        "Africa",
+        "Oceania",
+        "North America",
+        "Europe"
+      ],
+      "correctIndex": 1,
+      "id": 500
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What do we call a group of stars that forms a pattern?",
+      "options": [
+        "Continent",
+        "Volcano",
+        "Ecosystem",
+        "Constellation"
+      ],
+      "correctIndex": 3,
+      "id": 501
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which household item keeps food cold?",
+      "options": [
+        "Oven",
+        "Toaster",
+        "Fridge",
+        "Kettle"
+      ],
+      "correctIndex": 2,
+      "id": 502
     }
   ]
 };
 
   /* ========== STATE ========== */
-  const STORAGE_KEY = "teenTrivia.questions.v1";
+  const STORAGE_KEY = "teenTrivia.questions.v5";
   let QUESTIONS = [];
   let game = {
     queue: [],
@@ -3823,6 +7488,23 @@
     return trimmed;
   }
 
+
+  function cleanQuestion(q, id) {
+    const cleaned = {
+      id,
+      category: String(q.category).trim(),
+      question: String(q.question).trim(),
+      options: q.options.map(o => String(o)),
+      correctIndex: q.correctIndex
+    };
+    // Preserve image URLs from imported/synced JSON. The previous version removed this field,
+    // so images were never available to presentQuestion(), even though the display code was correct.
+    if (typeof q.imageUrl === 'string' && q.imageUrl.trim()) {
+      cleaned.imageUrl = q.imageUrl.trim();
+    }
+    return cleaned;
+  }
+
   async function fetchSyncedQuestions(url) {
     const fetchUrl = buildFetchUrl(url);
     if (!fetchUrl) throw new Error('No URL provided.');
@@ -3857,13 +7539,7 @@
 
     if (validated.length === 0) throw new Error('No valid questions found in the file.');
 
-    return validated.map((q, i) => ({
-      id: i + 1,
-      category: q.category,
-      question: q.question,
-      options: q.options.slice(),
-      correctIndex: q.correctIndex
-    }));
+    return validated.map((q, i) => cleanQuestion(q, i + 1));
   }
 
   function setSyncPill(state, label) {
@@ -4002,9 +7678,26 @@
     document.getElementById(id).classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  const ADMIN_PASSWORD = 'Rafa2014';
+  let adminUnlocked = sessionStorage.getItem('teenTriviaAdminUnlocked') === 'true';
+
   function goWelcome()  { stopTimer(); show('screen-welcome'); }
   function goCategory() { stopTimer(); renderCategories(); show('screen-category'); }
-  function goAdmin()    { stopTimer(); renderAdminList(); show('screen-admin'); }
+  function cancelQuiz() { stopTimer(); renderCategories(); show('screen-category'); }
+  function goAdmin() {
+    stopTimer();
+    if (!adminUnlocked) {
+      const password = window.prompt('Enter admin password');
+      if (password !== ADMIN_PASSWORD) {
+        toast('Incorrect password.', true);
+        return;
+      }
+      adminUnlocked = true;
+      sessionStorage.setItem('teenTriviaAdminUnlocked', 'true');
+    }
+    renderAdminList();
+    show('screen-admin');
+  }
 
   /* ========== CATEGORY SCREEN ========== */
   const CAT_ICONS = {
@@ -4025,7 +7718,9 @@
     "Brisbane": "🌉",
     "Bulimba": "🏘️",
     "Bulimba State School": "🎒",
-    "Flags of the World": "🚩"
+    "Flags of the World": "🚩",
+    "Disney & Pixar": "🏰",
+    "Brands": "🏷️"
   };
 
   function getCategories() {
@@ -4435,7 +8130,7 @@
   }
 
   function resetToDefaults() {
-    if (!confirm('Replace your current library with the default 150 questions? This will overwrite your custom changes (export first if you want to keep them).')) return;
+    if (!confirm('Replace your current library with the latest built-in question pack? This will overwrite your custom changes (export first if you want to keep them).')) return;
     QUESTIONS = JSON.parse(JSON.stringify(DEFAULT_PACK.questions));
     persist();
     renderAdminList();
@@ -4484,23 +8179,11 @@
           `Found ${validated.length} valid questions.\n\nClick OK to REPLACE your current library.\nClick Cancel to MERGE with your current library.`
         );
         if (choice) {
-          QUESTIONS = validated.map((q, i) => ({
-            id: i + 1,
-            category: q.category,
-            question: q.question,
-            options: q.options,
-            correctIndex: q.correctIndex
-          }));
+          QUESTIONS = validated.map((q, i) => cleanQuestion(q, i + 1));
         } else {
           let nextId = QUESTIONS.length === 0 ? 1 : Math.max(...QUESTIONS.map(q => q.id)) + 1;
           validated.forEach(q => {
-            QUESTIONS.push({
-              id: nextId++,
-              category: q.category,
-              question: q.question,
-              options: q.options,
-              correctIndex: q.correctIndex
-            });
+            QUESTIONS.push(cleanQuestion(q, nextId++));
           });
         }
         persist();
