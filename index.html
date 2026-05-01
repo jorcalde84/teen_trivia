@@ -1,0 +1,4578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Teen Trivia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  /* ---------- DESIGN TOKENS ---------- */
+  :root {
+    /* Mint palette (main app) */
+    --mint-pale: #bfffed;
+    --mint:      #98fbcb;
+    --mint-mid:  #7fcfa8;
+    --mint-deep: #558b72;
+    --mint-ink:  #1f3a30;
+
+    /* Pop-art palette (answer buttons & accents) */
+    --pop-blue:   #00f0ff;
+    --pop-pink:   #ff46a2;
+    --pop-yellow: #fff700;
+    --pop-red:    #ee4b2b;
+
+    --bg-soft: #eafff5;
+    --white:   #ffffff;
+    --shadow-soft: 0 10px 30px -10px rgba(85, 139, 114, 0.35);
+    --shadow-pop:  0 8px 0 rgba(0,0,0,0.18);
+
+    --radius-lg: 28px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Raleway', sans-serif;
+    color: var(--mint-ink);
+    background:
+      radial-gradient(1100px 600px at 12% -10%, var(--mint-pale) 0%, transparent 60%),
+      radial-gradient(900px 500px at 95% 10%, #d6fff0 0%, transparent 55%),
+      radial-gradient(700px 700px at 50% 110%, var(--mint) 0%, transparent 55%),
+      var(--bg-soft);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Subtle floating decorative shapes */
+  body::before, body::after {
+    content: "";
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::before {
+    width: 320px; height: 320px;
+    background: var(--mint);
+    top: -80px; left: -80px;
+    animation: drift 18s ease-in-out infinite;
+  }
+  body::after {
+    width: 280px; height: 280px;
+    background: var(--mint-pale);
+    bottom: -100px; right: -60px;
+    animation: drift 22s ease-in-out infinite reverse;
+  }
+  @keyframes drift {
+    0%, 100% { transform: translate(0,0); }
+    50% { transform: translate(40px, 30px); }
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+    min-height: 100vh;
+  }
+
+  .screen { display: none; animation: fadeUp 0.5s ease forwards; }
+  .screen.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- WELCOME SCREEN ---------- */
+  .welcome {
+    min-height: calc(100vh - 48px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 28px;
+    padding: 24px 12px;
+  }
+  .brand-wrap { position: relative; }
+  .brand-tag {
+    display: inline-block;
+    font-weight: 600;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    background: var(--mint-deep);
+    color: var(--white);
+    padding: 8px 18px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+  }
+  .brand-title {
+    font-size: clamp(3.5rem, 12vw, 7.5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--mint-deep);
+    position: relative;
+    display: inline-block;
+  }
+  .brand-title .accent {
+    color: var(--pop-pink);
+    display: inline-block;
+    transform: rotate(-3deg);
+  }
+  .brand-sub {
+    max-width: 520px;
+    margin: 4px auto 0;
+    font-size: 1.05rem;
+    color: var(--mint-deep);
+    opacity: 0.85;
+    line-height: 1.55;
+  }
+
+  .pill-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .btn {
+    font-family: inherit;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    border-radius: 999px;
+    padding: 18px 36px;
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+    box-shadow: var(--shadow-soft);
+  }
+  .btn-primary {
+    background: var(--mint-deep);
+    color: var(--white);
+  }
+  .btn-primary:hover { transform: translateY(-2px); background: #426e5a; }
+  .btn-secondary {
+    background: var(--white);
+    color: var(--mint-deep);
+    border: 2px solid var(--mint-mid);
+  }
+  .btn-secondary:hover { transform: translateY(-2px); background: var(--mint-pale); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--mint-deep);
+    box-shadow: none;
+    text-decoration: underline;
+    padding: 10px 18px;
+  }
+  .btn-pop {
+    background: var(--pop-pink);
+    color: var(--white);
+    box-shadow: var(--shadow-pop);
+  }
+  .btn-pop:hover { transform: translateY(-2px); }
+
+  .deco-shapes {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .shape { position: absolute; opacity: 0.85; }
+  .shape.tri  { left: 8%;  top: 18%; width: 42px; }
+  .shape.dia  { right: 9%; top: 12%; width: 38px; }
+  .shape.cir  { left: 12%; bottom: 22%; width: 36px; }
+  .shape.sqr  { right: 10%; bottom: 26%; width: 36px; }
+  @media (max-width: 720px) {
+    .shape { display: none; }
+  }
+
+  /* ---------- CATEGORY SCREEN ---------- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .topbar h2 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 800;
+    color: var(--mint-deep);
+    letter-spacing: -0.02em;
+  }
+  .topbar h2 small { display: block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--mint-mid); margin-bottom: 4px; }
+
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .cat-card {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: 22px 20px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: var(--shadow-soft);
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+  .cat-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--mint);
+  }
+  .cat-card .icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: var(--mint-pale);
+    display: grid; place-items: center;
+    margin-bottom: 14px;
+    font-size: 1.4rem;
+  }
+  .cat-card h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--mint-deep);
+    margin-bottom: 4px;
+  }
+  .cat-card p {
+    font-size: 0.85rem;
+    color: var(--mint-mid);
+  }
+  .cat-card.all { background: linear-gradient(135deg, var(--mint-mid), var(--mint-deep)); color: var(--white); }
+  .cat-card.all h3, .cat-card.all p { color: var(--white); }
+  .cat-card.all .icon { background: rgba(255,255,255,0.25); }
+
+  .settings-row {
+    margin: 26px 0 8px;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    box-shadow: var(--shadow-soft);
+  }
+  .settings-row label { font-size: 0.85rem; font-weight: 600; color: var(--mint-deep); margin-right: 8px; }
+  .settings-row input[type="number"] {
+    font-family: inherit;
+    font-weight: 700;
+    color: var(--mint-deep);
+    border: 2px solid var(--mint);
+    background: var(--mint-pale);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    width: 80px;
+    font-size: 1rem;
+    text-align: center;
+  }
+  .settings-row input[type="number"]:focus { outline: none; border-color: var(--mint-deep); }
+
+  /* ---------- QUIZ SCREEN ---------- */
+  .quiz-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .qprogress {
+    background: var(--white);
+    color: var(--mint-deep);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: var(--shadow-soft);
+  }
+  .qcat {
+    text-align: center;
+    font-weight: 700;
+    color: var(--mint-deep);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.78rem;
+  }
+  .qscore {
+    background: var(--mint-deep);
+    color: var(--white);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .timer-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 8px 0 22px;
+  }
+  .timer-ring {
+    position: relative;
+    width: 72px; height: 72px;
+  }
+  .timer-ring svg { transform: rotate(-90deg); width: 72px; height: 72px; }
+  .timer-ring circle {
+    fill: none;
+    stroke-width: 8;
+  }
+  .timer-bg { stroke: var(--mint-pale); }
+  .timer-fg { stroke: var(--mint-deep); stroke-linecap: round; transition: stroke-dashoffset 1s linear, stroke 0.3s ease; }
+  .timer-text {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    font-weight: 800; font-size: 1.3rem; color: var(--mint-deep);
+  }
+  .timer-ring.warn .timer-fg { stroke: var(--pop-red); }
+  .timer-ring.warn .timer-text { color: var(--pop-red); }
+
+  .question-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 36px 28px;
+    box-shadow: var(--shadow-soft);
+    text-align: center;
+    margin-bottom: 22px;
+    min-height: 160px;
+    display: grid; place-items: center;
+  }
+  .question-card .q {
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-weight: 700;
+    color: var(--mint-ink);
+    line-height: 1.35;
+    max-width: 800px;
+  }
+
+  .answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .answer {
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    padding: 22px 18px;
+    color: var(--white);
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 92px;
+    box-shadow: var(--shadow-pop);
+    transition: transform 0.15s ease, opacity 0.2s ease, filter 0.2s ease;
+    position: relative;
+  }
+  .answer:hover:not(:disabled) { transform: translateY(-3px); }
+  .answer:disabled { cursor: default; }
+  .answer .shape-icon {
+    width: 32px; height: 32px;
+    flex-shrink: 0;
+    display: grid; place-items: center;
+  }
+  .answer .label { line-height: 1.3; word-break: break-word; }
+
+  .answer.a-red    { background: var(--pop-red); }
+  .answer.a-blue   { background: var(--pop-blue); color: #002b30; }
+  .answer.a-yellow { background: var(--pop-yellow); color: #4a3a00; }
+  .answer.a-pink   { background: var(--pop-pink); }
+
+  .answer.dim { opacity: 0.35; filter: saturate(0.7); }
+  .answer.correct {
+    outline: 4px solid var(--mint-deep);
+    outline-offset: 3px;
+    transform: translateY(-3px);
+  }
+  .answer.wrong {
+    outline: 4px solid #6b1a0c;
+    outline-offset: 3px;
+  }
+
+  /* ---------- RESULT SCREEN ---------- */
+  .result-banner {
+    text-align: center;
+    padding: 30px 20px;
+    border-radius: var(--radius-lg);
+    margin: 24px 0;
+    background: var(--white);
+    box-shadow: var(--shadow-soft);
+  }
+  .result-banner.right { background: linear-gradient(135deg, var(--mint), var(--mint-mid)); color: var(--white); }
+  .result-banner.wrong { background: linear-gradient(135deg, #ffd0c4, #ff8a78); color: #4a1207; }
+  .result-banner.timeup { background: linear-gradient(135deg, #fff7a3, var(--pop-yellow)); color: #5b4a00; }
+  .result-banner h3 {
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .result-banner p { font-weight: 600; opacity: 0.92; }
+  .result-banner .gain { display: inline-block; margin-top: 14px; font-size: 1.5rem; font-weight: 800; }
+
+  /* ---------- FINAL SCREEN ---------- */
+  .final {
+    text-align: center;
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 40px 28px;
+    box-shadow: var(--shadow-soft);
+    margin-top: 30px;
+  }
+  .final .crown { font-size: 3rem; margin-bottom: 8px; }
+  .final h2 { font-size: clamp(2rem, 6vw, 3.4rem); font-weight: 900; color: var(--mint-deep); letter-spacing: -0.02em; }
+  .final .score-big {
+    font-size: clamp(3rem, 12vw, 6rem);
+    font-weight: 900;
+    color: var(--pop-pink);
+    line-height: 1;
+    margin: 18px 0 8px;
+    letter-spacing: -0.04em;
+  }
+  .final .score-sub { color: var(--mint-mid); font-weight: 600; margin-bottom: 24px; }
+  .final-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 18px auto 30px;
+    max-width: 520px;
+  }
+  .final-stat {
+    background: var(--mint-pale);
+    border-radius: var(--radius-md);
+    padding: 16px 8px;
+  }
+  .final-stat .num { font-size: 1.5rem; font-weight: 800; color: var(--mint-deep); }
+  .final-stat .lbl { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mint-mid); }
+
+  /* ---------- ADMIN SCREEN ---------- */
+  .admin-head {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    align-items: center; justify-content: space-between;
+    margin-bottom: 22px;
+  }
+  .admin-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .admin-actions .btn { padding: 12px 20px; font-size: 0.9rem; }
+
+  .question-list {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+  }
+  .q-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 140px 110px;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--mint-pale);
+    font-size: 0.92rem;
+  }
+  .q-row:last-child { border-bottom: none; }
+  .q-row .id { font-weight: 800; color: var(--mint-mid); }
+  .q-row .q { font-weight: 600; color: var(--mint-ink); }
+  .q-row .cat {
+    font-size: 0.75rem; font-weight: 700;
+    background: var(--mint-pale); color: var(--mint-deep);
+    padding: 6px 10px; border-radius: 999px;
+    text-align: center;
+  }
+  .q-row .actions { display: flex; gap: 6px; justify-content: flex-end; }
+  .q-row button {
+    border: none; cursor: pointer;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.82rem; font-weight: 700;
+    padding: 6px 10px; border-radius: var(--radius-sm);
+  }
+  .q-row .edit  { background: var(--mint); color: var(--mint-ink); }
+  .q-row .del   { background: #ffd6d0; color: #8a200f; }
+
+  @media (max-width: 720px) {
+    .q-row { grid-template-columns: 36px 1fr; row-gap: 6px; }
+    .q-row .cat, .q-row .actions { grid-column: 2; justify-self: start; }
+    .q-row .actions { justify-content: flex-start; }
+  }
+
+  /* Modal */
+  .modal-back {
+    position: fixed; inset: 0;
+    background: rgba(31,58,48,0.5);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 20px;
+    z-index: 100;
+  }
+  .modal-back.active { display: flex; }
+  .modal {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 620px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 28px;
+    box-shadow: 0 20px 60px -20px rgba(0,0,0,0.4);
+  }
+  .modal h3 { font-size: 1.4rem; color: var(--mint-deep); margin-bottom: 16px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mint-mid); margin-bottom: 6px; }
+  .field input[type="text"], .field select, .field textarea {
+    width: 100%;
+    border: 2px solid var(--mint);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--mint-ink);
+    background: var(--bg-soft);
+    resize: vertical;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none; border-color: var(--mint-deep);
+  }
+  .opts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .opt-block {
+    border: 2px solid var(--mint);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    background: var(--bg-soft);
+  }
+  .opt-block.correct { border-color: var(--mint-deep); background: var(--mint-pale); }
+  .opt-block label { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; font-weight: 700; color: var(--mint-deep); margin-bottom: 6px; cursor: pointer; }
+  .opt-block input[type="text"] {
+    width: 100%; border: none; background: transparent;
+    font-family: inherit; font-size: 0.95rem; color: var(--mint-ink);
+    padding: 4px 0;
+  }
+  .opt-block input[type="text"]:focus { outline: none; }
+
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+  .modal-actions .btn { padding: 12px 24px; font-size: 0.92rem; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--mint-deep);
+    color: var(--white);
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-weight: 700;
+    box-shadow: 0 12px 30px -10px rgba(0,0,0,0.4);
+    z-index: 200;
+    transition: transform 0.4s cubic-bezier(.2,.8,.2,1.2);
+    font-size: 0.92rem;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error { background: var(--pop-red); }
+
+  /* ---------- CLOUD SYNC ---------- */
+  .sync-card {
+    background: linear-gradient(135deg, #ffffff 0%, var(--mint-pale) 100%);
+    border: 2px solid var(--mint);
+    border-radius: var(--radius-md);
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow-soft);
+  }
+  .sync-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px; flex-wrap: wrap; gap: 10px;
+  }
+  .sync-title { display: flex; align-items: center; gap: 10px; }
+  .sync-title h3 { font-size: 1.2rem; color: var(--mint-deep); font-weight: 800; letter-spacing: -0.01em; }
+  .cloud-icon { font-size: 1.5rem; }
+  .sync-pill {
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 6px 12px; border-radius: 999px;
+    background: var(--mint); color: var(--mint-ink);
+    transition: background 0.2s ease;
+  }
+  .sync-pill.ok      { background: var(--mint-deep); color: white; }
+  .sync-pill.err     { background: var(--pop-red);   color: white; }
+  .sync-pill.syncing { background: var(--pop-yellow); color: #5b4a00; }
+
+  .toggle-row {
+    display: flex; align-items: center; gap: 12px;
+    margin: 14px 0; cursor: pointer; user-select: none;
+  }
+  .toggle-row input[type="checkbox"] { position: absolute; opacity: 0; pointer-events: none; }
+  .toggle-track {
+    width: 44px; height: 24px;
+    background: var(--bg-soft);
+    border: 1px solid var(--mint-mid);
+    border-radius: 12px;
+    position: relative;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    flex-shrink: 0;
+  }
+  .toggle-knob {
+    position: absolute; top: 1px; left: 1px;
+    width: 20px; height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: left 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  }
+  .toggle-row input:checked + .toggle-track { background: var(--mint-deep); border-color: var(--mint-deep); }
+  .toggle-row input:checked + .toggle-track .toggle-knob { left: 22px; }
+  .toggle-label { font-weight: 600; color: var(--mint-deep); font-size: 0.92rem; }
+
+  .sync-meta {
+    font-size: 0.82rem; color: var(--mint-mid);
+    margin-top: 10px; padding-top: 10px;
+    border-top: 1px dashed var(--mint);
+  }
+  .sync-help { margin-top: 14px; }
+  .sync-help summary {
+    cursor: pointer; font-weight: 700; color: var(--mint-deep);
+    padding: 10px 0; font-size: 0.88rem; list-style: none;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .sync-help summary::before {
+    content: '▸'; transition: transform 0.2s ease; display: inline-block;
+  }
+  .sync-help[open] summary::before { transform: rotate(90deg); }
+  .sync-help-body {
+    padding: 12px 0 4px; font-size: 0.86rem; line-height: 1.6;
+    color: var(--mint-ink);
+  }
+  .sync-help-body h4 {
+    color: var(--mint-deep);
+    margin-top: 14px; margin-bottom: 6px;
+    font-size: 0.95rem; font-weight: 800;
+  }
+  .sync-help-body h4:first-child { margin-top: 4px; }
+  .sync-help-body ol, .sync-help-body ul { padding-left: 22px; margin: 6px 0; }
+  .sync-help-body li { margin: 4px 0; }
+  .sync-help-body code {
+    background: var(--bg-soft); padding: 2px 6px; border-radius: 4px;
+    font-family: 'SF Mono', Consolas, 'Courier New', monospace;
+    font-size: 0.85em; color: var(--mint-deep);
+  }
+  .sync-help-body pre {
+    background: var(--mint-ink); color: var(--mint-pale);
+    padding: 12px 14px; border-radius: var(--radius-sm);
+    overflow-x: auto; margin: 8px 0;
+    font-family: 'SF Mono', Consolas, 'Courier New', monospace;
+    font-size: 0.78rem; line-height: 1.5;
+  }
+  .sync-help-body .badge {
+    display: inline-block;
+    padding: 2px 8px; border-radius: 999px;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    margin-left: 6px;
+  }
+  .badge.recommended { background: var(--mint-deep); color: white; }
+  .badge.simple      { background: var(--pop-yellow); color: #5b4a00; }
+  .badge.flexible    { background: var(--pop-pink); color: white; }
+
+  .sync-buttons {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .sync-buttons .btn { padding: 12px 20px; font-size: 0.9rem; }
+
+
+  /* ---------- QUESTION IMAGES ---------- */
+  .q-image-wrap {
+    text-align: center;
+    margin-bottom: 16px;
+    min-height: 0;
+  }
+  .q-image-wrap img {
+    max-width: min(320px, 90vw);
+    max-height: 200px;
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 20px rgba(0,0,0,.18);
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    background: white;
+  }
+  /* Image preview in admin modal */
+  .img-preview-wrap {
+    margin-top: 10px;
+    text-align: center;
+    border: 2px dashed var(--mint);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    background: var(--bg-soft);
+    display: none;
+  }
+  .img-preview-wrap.has-img { display: block; }
+  .img-preview-wrap img {
+    max-height: 160px;
+    max-width: 100%;
+    border-radius: var(--radius-sm);
+    object-fit: contain;
+  }
+  /* Image badge in admin list */
+  .img-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.72rem; font-weight: 700;
+    padding: 3px 8px; border-radius: 999px;
+    background: var(--mint); color: var(--mint-deep);
+  }
+  /* Image URL help in modal */
+  .img-url-help {
+    font-size: 0.78rem; color: var(--mint-mid); margin-top: 6px; line-height: 1.5;
+  }
+  .img-url-help code {
+    background: var(--bg-soft); padding: 1px 5px; border-radius: 4px;
+    font-family: monospace; font-size: 0.85em; color: var(--mint-deep);
+  }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    .app { padding: 16px; }
+    .answers { grid-template-columns: 1fr; }
+    .answer { min-height: 76px; padding: 18px; }
+    .opts-grid { grid-template-columns: 1fr; }
+    .final-stats { grid-template-columns: 1fr; max-width: 280px; }
+    .quiz-head { grid-template-columns: 1fr 1fr; }
+    .qcat { grid-column: 1 / -1; order: -1; }
+  }
+
+  /* Small helpers */
+  .muted { color: var(--mint-mid); }
+  .row-flex { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .hidden { display: none !important; }
+  input[type="file"] { display: none; }
+
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===================== WELCOME SCREEN ===================== -->
+  <section id="screen-welcome" class="screen active">
+    <div class="welcome">
+      <div class="deco-shapes" aria-hidden="true">
+        <svg class="shape tri" viewBox="0 0 100 100"><polygon points="50,10 95,90 5,90" fill="#ee4b2b"/></svg>
+        <svg class="shape dia" viewBox="0 0 100 100"><polygon points="50,5 95,50 50,95 5,50" fill="#00f0ff"/></svg>
+        <svg class="shape cir" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#ff46a2"/></svg>
+        <svg class="shape sqr" viewBox="0 0 100 100"><rect x="8" y="8" width="84" height="84" fill="#fff700"/></svg>
+      </div>
+
+      <div class="brand-wrap">
+        <span class="brand-tag">Live Trivia · Pop Edition</span>
+        <h1 class="brand-title">Teen<span class="accent">·</span>Trivia</h1>
+        <p class="brand-sub">A bright, fast-paced trivia game inspired by Kahoot. Pick a category, race the clock, and rack up points.</p>
+      </div>
+
+      <div class="pill-row">
+        <button class="btn btn-primary" onclick="goCategory()">Play Now</button>
+        <button class="btn btn-secondary" onclick="goAdmin()">Admin Panel</button>
+      </div>
+
+      <button class="btn btn-ghost" onclick="document.getElementById('jsonInputWelcome').click()">Import question pack (JSON)</button>
+      <input type="file" id="jsonInputWelcome" accept="application/json" onchange="importJSON(event)" />
+    </div>
+  </section>
+
+  <!-- ===================== CATEGORY SCREEN ===================== -->
+  <section id="screen-category" class="screen">
+    <div class="topbar">
+      <h2><small>Step 1 of 2</small>Pick a category</h2>
+      <button class="btn btn-secondary" onclick="goWelcome()">← Home</button>
+    </div>
+
+    <div class="settings-row">
+      <div class="row-flex">
+        <label for="numQuestions">Questions per round:</label>
+        <input type="number" id="numQuestions" min="1" max="150" value="10" />
+      </div>
+      <div class="row-flex">
+        <label for="timePerQ">Seconds per question:</label>
+        <input type="number" id="timePerQ" min="5" max="60" value="20" />
+      </div>
+      <div class="muted" id="dbCount" style="font-size:.85rem;"></div>
+    </div>
+
+    <div class="cat-grid" id="catGrid"></div>
+  </section>
+
+  <!-- ===================== QUIZ SCREEN ===================== -->
+  <section id="screen-quiz" class="screen">
+    <div class="quiz-head">
+      <div class="qprogress" id="qprogress">1 / 10</div>
+      <div class="qcat" id="qcat">Category</div>
+      <div class="qscore" id="qscore">0 pts</div>
+    </div>
+
+    <div class="timer-wrap">
+      <div class="timer-ring" id="timerRing">
+        <svg>
+          <circle class="timer-bg" cx="36" cy="36" r="30"></circle>
+          <circle class="timer-fg" id="timerCircle" cx="36" cy="36" r="30"
+                  stroke-dasharray="188.5" stroke-dashoffset="0"></circle>
+        </svg>
+        <div class="timer-text" id="timerText">20</div>
+      </div>
+    </div>
+
+    <div class="q-image-wrap" id="qImageWrap" style="display:none;">
+      <img id="qImage" alt="Question image" onerror="document.getElementById('qImageWrap').style.display='none'" />
+    </div>
+    <div class="question-card">
+      <div class="q" id="qText">Loading…</div>
+    </div>
+
+    <div class="answers" id="answers"></div>
+  </section>
+
+  <!-- ===================== PER-QUESTION RESULT SCREEN ===================== -->
+  <section id="screen-result" class="screen">
+    <div class="quiz-head">
+      <div class="qprogress" id="qprogress2">1 / 10</div>
+      <div class="qcat" id="qcat2">Category</div>
+      <div class="qscore" id="qscore2">0 pts</div>
+    </div>
+
+    <div class="result-banner" id="resultBanner">
+      <h3 id="resultHeadline">Correct!</h3>
+      <p id="resultSub">Nice one. The answer was…</p>
+      <div class="gain" id="resultGain"></div>
+    </div>
+
+    <div class="q-image-wrap" id="rImageWrap" style="display:none;">
+      <img id="rImage" alt="Question image" onerror="document.getElementById('rImageWrap').style.display='none'" />
+    </div>
+    <div class="question-card">
+      <div class="q" id="rText">…</div>
+    </div>
+
+    <div style="text-align:center; margin-top: 22px;">
+      <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Next question →</button>
+    </div>
+  </section>
+
+  <!-- ===================== FINAL SCREEN ===================== -->
+  <section id="screen-final" class="screen">
+    <div class="final">
+      <div class="crown" id="crownEmoji">👑</div>
+      <h2 id="finalHeadline">Brilliant!</h2>
+      <div class="score-big" id="finalScore">0</div>
+      <div class="score-sub" id="finalSub">total points</div>
+
+      <div class="final-stats">
+        <div class="final-stat">
+          <div class="num" id="statCorrect">0</div>
+          <div class="lbl">Correct</div>
+        </div>
+        <div class="final-stat">
+          <div class="num" id="statWrong">0</div>
+          <div class="lbl">Wrong</div>
+        </div>
+        <div class="final-stat">
+          <div class="num" id="statAccuracy">0%</div>
+          <div class="lbl">Accuracy</div>
+        </div>
+      </div>
+
+      <div class="pill-row" style="justify-content:center;">
+        <button class="btn btn-primary" onclick="goCategory()">Play again</button>
+        <button class="btn btn-secondary" onclick="goWelcome()">Home</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ADMIN SCREEN ===================== -->
+  <section id="screen-admin" class="screen">
+    <div class="admin-head">
+      <h2 style="font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800; color: var(--mint-deep);">
+        <small style="display:block; font-size:.75rem; font-weight:600; letter-spacing:.3em; text-transform:uppercase; color:var(--mint-mid); margin-bottom:4px;">Manage</small>
+        Question Library
+      </h2>
+      <div class="admin-actions">
+        <button class="btn btn-primary" onclick="openModal()">+ New question</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('jsonInputAdmin').click()">Import JSON</button>
+        <button class="btn btn-secondary" onclick="exportJSON()">Export JSON</button>
+        <button class="btn btn-ghost" onclick="resetToDefaults()">Reset to defaults</button>
+        <button class="btn btn-ghost" onclick="goWelcome()">← Home</button>
+        <input type="file" id="jsonInputAdmin" accept="application/json" onchange="importJSON(event)" />
+      </div>
+    </div>
+
+    <!-- ===================== CLOUD SYNC ===================== -->
+    <div class="sync-card">
+      <div class="sync-head">
+        <div class="sync-title">
+          <span class="cloud-icon">☁️</span>
+          <h3>Cloud Sync</h3>
+        </div>
+        <span class="sync-pill" id="syncPill">Not configured</span>
+      </div>
+
+      <div class="field" style="margin-bottom: 10px;">
+        <label for="syncUrl" style="font-weight:700; color:var(--mint-deep); display:block; margin-bottom:6px; font-size:0.9rem;">Source URL</label>
+        <input type="text" id="syncUrl"
+               placeholder="Paste a Google Drive share link, Apps Script URL, or direct JSON URL"
+               style="width:100%; font-family:inherit; font-weight:500; color:var(--mint-ink); border:2px solid var(--mint); background:white; border-radius:var(--radius-sm); padding:10px 14px; box-sizing:border-box;" />
+        <div class="muted" style="font-size:0.78rem; margin-top:6px;">
+          Drive share links are auto-converted. The app reads JSON from this URL.
+        </div>
+      </div>
+
+      <label class="toggle-row" for="syncAuto">
+        <input type="checkbox" id="syncAuto" />
+        <span class="toggle-track"><span class="toggle-knob"></span></span>
+        <span class="toggle-label">Auto-sync every time the app opens</span>
+      </label>
+
+      <div class="sync-buttons">
+        <button class="btn btn-primary" onclick="syncNow()">⟳ Sync now</button>
+        <button class="btn btn-secondary" onclick="testSync()">Test connection</button>
+        <button class="btn btn-ghost" onclick="clearSync()">Clear settings</button>
+      </div>
+
+      <div class="sync-meta" id="syncMeta">No sync yet.</div>
+
+      <details class="sync-help">
+        <summary>How do I set this up?</summary>
+        <div class="sync-help-body">
+          <p style="margin-bottom: 10px;">Pick the option that matches your comfort level. <strong>Option B</strong> is the most reliable — it works for any file size and avoids browser security blocks.</p>
+
+          <h4>Option A: Drive share link <span class="badge simple">Simple</span></h4>
+          <ol>
+            <li>Upload <code>questions.json</code> to your Google Drive.</li>
+            <li>Right-click → <strong>Share</strong> → set to <em>"Anyone with the link"</em>.</li>
+            <li>Copy the share link and paste it above.</li>
+          </ol>
+          <p style="font-size:0.82rem; color:var(--mint-mid); margin-top:6px;">⚠ Browsers may block this approach due to cross-origin restrictions. If it fails, use Option B.</p>
+
+          <h4>Option B: Apps Script Web App <span class="badge recommended">Recommended</span></h4>
+          <ol>
+            <li>Upload <code>questions.json</code> to Drive (no special sharing needed).</li>
+            <li>Go to <code>script.google.com</code> → <strong>New project</strong>.</li>
+            <li>Replace the default code with:</li>
+          </ol>
+<pre>function doGet() {
+  var FILE_ID = 'YOUR_FILE_ID_HERE';
+  var content = DriveApp
+    .getFileById(FILE_ID)
+    .getBlob()
+    .getDataAsString();
+  return ContentService
+    .createTextOutput(content)
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre>
+          <ol start="4">
+            <li>Replace <code>YOUR_FILE_ID_HERE</code> with the file ID from your Drive link (the long string after <code>/d/</code> in the URL).</li>
+            <li>Click <strong>Save</strong>, then <strong>Deploy → New deployment</strong>.</li>
+            <li>Set type to <strong>Web app</strong>, "Execute as: <em>Me</em>", "Who has access: <em>Anyone</em>".</li>
+            <li>Click <strong>Deploy</strong>, copy the URL (ends with <code>/exec</code>), and paste it above.</li>
+          </ol>
+
+          <h4>Option C: Any direct JSON URL <span class="badge flexible">Flexible</span></h4>
+          <p>Paste any URL that returns valid JSON — a GitHub Gist raw URL, your own server, etc. Same format as the export from this app.</p>
+
+          <h4 style="color:var(--pop-red);">⚠ Important</h4>
+          <ul>
+            <li><strong>Sync replaces local edits.</strong> If you edit questions in this admin panel, export them and re-upload to Drive — otherwise your next sync will overwrite them.</li>
+            <li>The app caches the last-synced data, so it works offline after a successful sync.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <div class="settings-row" style="margin-bottom: 20px;">
+      <div class="row-flex" style="flex:1;">
+        <label for="filterCat">Filter:</label>
+        <select id="filterCat" onchange="renderAdminList()" style="font-family:inherit;font-weight:600;color:var(--mint-deep);border:2px solid var(--mint);background:var(--mint-pale);border-radius:var(--radius-sm);padding:8px 12px;">
+          <option value="">All categories</option>
+        </select>
+        <input type="text" id="filterText" placeholder="Search question text…" oninput="renderAdminList()"
+               style="flex:1; min-width:160px; font-family:inherit; font-weight:500; color:var(--mint-ink); border:2px solid var(--mint); background:var(--mint-pale); border-radius:var(--radius-sm); padding:8px 12px;" />
+      </div>
+      <div class="muted" id="adminCount" style="font-size:.85rem;"></div>
+    </div>
+
+    <div class="question-list" id="qList"></div>
+  </section>
+
+</div>
+
+<!-- ===================== MODAL ===================== -->
+<div class="modal-back" id="modalBack">
+  <div class="modal">
+    <h3 id="modalTitle">New question</h3>
+
+    <div class="field">
+      <label>Category</label>
+      <input type="text" id="m_category" list="catList" placeholder="e.g. Pop Music" />
+      <datalist id="catList"></datalist>
+    </div>
+
+    <div class="field">
+      <label>Question</label>
+      <textarea id="m_question" rows="2" placeholder="Type the question…"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Answer options (tick the correct one)</label>
+      <div class="opts-grid" id="optsGrid">
+        <div class="opt-block" data-i="0">
+          <label><input type="radio" name="correct" value="0" /> Option A</label>
+          <input type="text" data-opt="0" placeholder="Type option A" />
+        </div>
+        <div class="opt-block" data-i="1">
+          <label><input type="radio" name="correct" value="1" /> Option B</label>
+          <input type="text" data-opt="1" placeholder="Type option B" />
+        </div>
+        <div class="opt-block" data-i="2">
+          <label><input type="radio" name="correct" value="2" /> Option C</label>
+          <input type="text" data-opt="2" placeholder="Type option C" />
+        </div>
+        <div class="opt-block" data-i="3">
+          <label><input type="radio" name="correct" value="3" /> Option D</label>
+          <input type="text" data-opt="3" placeholder="Type option D" />
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Image URL <span style="font-weight:400; opacity:.7;">(optional)</span></label>
+      <input type="text" id="m_imageUrl"
+             placeholder="https://flagcdn.com/w320/au.png  or  Google Drive share link"
+             oninput="previewModalImage()" />
+      <div class="img-preview-wrap" id="imgPreviewWrap">
+        <img id="imgPreviewImg" alt="Preview" onerror="this.parentElement.classList.remove('has-img')" />
+      </div>
+      <div class="img-url-help">
+        <strong>Google Drive:</strong> Upload image → Share → "Anyone with the link" → paste the share link here. 🏳 
+        <strong>Free flag CDN:</strong> <code>https://flagcdn.com/w320/au.png</code> (replace <code>au</code> with any 2-letter country code).
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveQuestion()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Saved!</div>
+
+<script>
+  /* ========== EMBEDDED DEFAULT QUESTIONS ========== */
+  /* These ship with the app so it works out-of-the-box even without uploading the JSON file. */
+  const DEFAULT_PACK = {
+  "version": "1.1",
+  "title": "Teen Trivia – Default Question Pack (with AU/Brisbane/Bulimba)",
+  "questions": [
+    {
+      "category": "Pop Music",
+      "question": "Which artist released the album 'Midnights' in 2022?",
+      "options": [
+        "Taylor Swift",
+        "Olivia Rodrigo",
+        "Billie Eilish",
+        "Dua Lipa"
+      ],
+      "correctIndex": 0,
+      "id": 1
+    },
+    {
+      "category": "Pop Music",
+      "question": "Who sings the hit song 'Espresso'?",
+      "options": [
+        "Sabrina Carpenter",
+        "Ariana Grande",
+        "Doja Cat",
+        "Charli XCX"
+      ],
+      "correctIndex": 0,
+      "id": 2
+    },
+    {
+      "category": "Pop Music",
+      "question": "Which K-pop group has members named Jennie, Lisa, Rosé, and Jisoo?",
+      "options": [
+        "TWICE",
+        "BLACKPINK",
+        "ITZY",
+        "NewJeans"
+      ],
+      "correctIndex": 1,
+      "id": 3
+    },
+    {
+      "category": "Pop Music",
+      "question": "What is Olivia Rodrigo's debut album called?",
+      "options": [
+        "GUTS",
+        "SOUR",
+        "Folklore",
+        "Future Nostalgia"
+      ],
+      "correctIndex": 1,
+      "id": 4
+    },
+    {
+      "category": "Pop Music",
+      "question": "Who released the song 'Flowers' in 2023?",
+      "options": [
+        "Miley Cyrus",
+        "Selena Gomez",
+        "Demi Lovato",
+        "Camila Cabello"
+      ],
+      "correctIndex": 0,
+      "id": 5
+    },
+    {
+      "category": "Pop Music",
+      "question": "Which singer is known as the 'Queen of Pop'?",
+      "options": [
+        "Beyoncé",
+        "Madonna",
+        "Lady Gaga",
+        "Rihanna"
+      ],
+      "correctIndex": 1,
+      "id": 6
+    },
+    {
+      "category": "Pop Music",
+      "question": "Billie Eilish's older brother and producer is named?",
+      "options": [
+        "Finneas",
+        "Felix",
+        "Frankie",
+        "Ferris"
+      ],
+      "correctIndex": 0,
+      "id": 7
+    },
+    {
+      "category": "Pop Music",
+      "question": "Which song made Lil Nas X famous overnight?",
+      "options": [
+        "Industry Baby",
+        "Old Town Road",
+        "Montero",
+        "Panini"
+      ],
+      "correctIndex": 1,
+      "id": 8
+    },
+    {
+      "category": "Pop Music",
+      "question": "Who sang 'Shake It Off' and '22'?",
+      "options": [
+        "Katy Perry",
+        "Taylor Swift",
+        "Ariana Grande",
+        "Selena Gomez"
+      ],
+      "correctIndex": 1,
+      "id": 9
+    },
+    {
+      "category": "Pop Music",
+      "question": "What instrument does Phoebe Bridgers most often play?",
+      "options": [
+        "Piano",
+        "Guitar",
+        "Drums",
+        "Violin"
+      ],
+      "correctIndex": 1,
+      "id": 10
+    },
+    {
+      "category": "Pop Music",
+      "question": "Which group performs 'Dynamite' and 'Butter'?",
+      "options": [
+        "BTS",
+        "Stray Kids",
+        "TXT",
+        "Seventeen"
+      ],
+      "correctIndex": 0,
+      "id": 11
+    },
+    {
+      "category": "Pop Music",
+      "question": "Dua Lipa's hit song 'Levitating' is from which album?",
+      "options": [
+        "Future Nostalgia",
+        "Radical Optimism",
+        "Dua Lipa",
+        "Club Future Nostalgia"
+      ],
+      "correctIndex": 0,
+      "id": 12
+    },
+    {
+      "category": "Pop Music",
+      "question": "Who is the lead singer of Paramore?",
+      "options": [
+        "Hayley Williams",
+        "Avril Lavigne",
+        "Lzzy Hale",
+        "Amy Lee"
+      ],
+      "correctIndex": 0,
+      "id": 13
+    },
+    {
+      "category": "Movies",
+      "question": "Which 2023 film featured Margot Robbie as the title character in pink?",
+      "options": [
+        "Barbie",
+        "Saltburn",
+        "Poor Things",
+        "Wonka"
+      ],
+      "correctIndex": 0,
+      "id": 14
+    },
+    {
+      "category": "Movies",
+      "question": "Who directed the Twilight saga's first film?",
+      "options": [
+        "Catherine Hardwicke",
+        "Greta Gerwig",
+        "Sofia Coppola",
+        "Patty Jenkins"
+      ],
+      "correctIndex": 0,
+      "id": 15
+    },
+    {
+      "category": "Movies",
+      "question": "In 'The Hunger Games', what is the name of Katniss's sister?",
+      "options": [
+        "Prim",
+        "Rue",
+        "Effie",
+        "Madge"
+      ],
+      "correctIndex": 0,
+      "id": 16
+    },
+    {
+      "category": "Movies",
+      "question": "Which Disney princess has a pet chameleon named Pascal?",
+      "options": [
+        "Rapunzel",
+        "Mulan",
+        "Moana",
+        "Tiana"
+      ],
+      "correctIndex": 0,
+      "id": 17
+    },
+    {
+      "category": "Movies",
+      "question": "What is the highest-grossing film of all time as of 2024?",
+      "options": [
+        "Avatar",
+        "Avengers: Endgame",
+        "Titanic",
+        "Star Wars: The Force Awakens"
+      ],
+      "correctIndex": 0,
+      "id": 18
+    },
+    {
+      "category": "Movies",
+      "question": "Who plays Hermione Granger in the Harry Potter films?",
+      "options": [
+        "Emma Watson",
+        "Emma Stone",
+        "Emma Roberts",
+        "Emma Thompson"
+      ],
+      "correctIndex": 0,
+      "id": 19
+    },
+    {
+      "category": "Movies",
+      "question": "Which animated film features the song 'Let It Go'?",
+      "options": [
+        "Frozen",
+        "Tangled",
+        "Moana",
+        "Encanto"
+      ],
+      "correctIndex": 0,
+      "id": 20
+    },
+    {
+      "category": "Movies",
+      "question": "In 'Mean Girls', what day do the Plastics wear pink?",
+      "options": [
+        "Friday",
+        "Wednesday",
+        "Monday",
+        "Tuesday"
+      ],
+      "correctIndex": 1,
+      "id": 21
+    },
+    {
+      "category": "Movies",
+      "question": "Who directed 'Lady Bird' and 'Little Women' (2019)?",
+      "options": [
+        "Greta Gerwig",
+        "Sofia Coppola",
+        "Chloé Zhao",
+        "Emerald Fennell"
+      ],
+      "correctIndex": 0,
+      "id": 22
+    },
+    {
+      "category": "Movies",
+      "question": "What is the name of the school in 'Mean Girls'?",
+      "options": [
+        "North Shore High",
+        "East River High",
+        "West Lake High",
+        "South Hill High"
+      ],
+      "correctIndex": 0,
+      "id": 23
+    },
+    {
+      "category": "Movies",
+      "question": "Which actress starred in 'La La Land' (2016)?",
+      "options": [
+        "Emma Stone",
+        "Anne Hathaway",
+        "Natalie Portman",
+        "Jennifer Lawrence"
+      ],
+      "correctIndex": 0,
+      "id": 24
+    },
+    {
+      "category": "Movies",
+      "question": "In 'The Princess Diaries', what country is Mia secretly the princess of?",
+      "options": [
+        "Genovia",
+        "Aldovia",
+        "Belgravia",
+        "Calabria"
+      ],
+      "correctIndex": 0,
+      "id": 25
+    },
+    {
+      "category": "Movies",
+      "question": "Which Pixar film is set largely inside a young girl's mind?",
+      "options": [
+        "Inside Out",
+        "Soul",
+        "Coco",
+        "Turning Red"
+      ],
+      "correctIndex": 0,
+      "id": 26
+    },
+    {
+      "category": "TV Shows",
+      "question": "Which streaming series is set in Hawkins, Indiana?",
+      "options": [
+        "Stranger Things",
+        "Wednesday",
+        "Outer Banks",
+        "Riverdale"
+      ],
+      "correctIndex": 0,
+      "id": 27
+    },
+    {
+      "category": "TV Shows",
+      "question": "Who plays the title character in Netflix's 'Wednesday'?",
+      "options": [
+        "Jenna Ortega",
+        "Millie Bobby Brown",
+        "Sadie Sink",
+        "Maya Hawke"
+      ],
+      "correctIndex": 0,
+      "id": 28
+    },
+    {
+      "category": "TV Shows",
+      "question": "Which show features Eleven, Mike, Will, and Dustin?",
+      "options": [
+        "Stranger Things",
+        "Heartstopper",
+        "Outer Banks",
+        "Locke & Key"
+      ],
+      "correctIndex": 0,
+      "id": 29
+    },
+    {
+      "category": "TV Shows",
+      "question": "In 'Friends', what is the name of Ross's pet monkey?",
+      "options": [
+        "Marcel",
+        "Mojo",
+        "Chimp",
+        "Coco"
+      ],
+      "correctIndex": 0,
+      "id": 30
+    },
+    {
+      "category": "TV Shows",
+      "question": "Which series is based on a YA graphic novel by Alice Oseman?",
+      "options": [
+        "Heartstopper",
+        "Never Have I Ever",
+        "Sex Education",
+        "Derry Girls"
+      ],
+      "correctIndex": 0,
+      "id": 31
+    },
+    {
+      "category": "TV Shows",
+      "question": "What is the name of the coffee shop in 'Friends'?",
+      "options": [
+        "Central Perk",
+        "Cafe Nervosa",
+        "Luke's Diner",
+        "Monk's"
+      ],
+      "correctIndex": 0,
+      "id": 32
+    },
+    {
+      "category": "TV Shows",
+      "question": "Which town is 'Gilmore Girls' set in?",
+      "options": [
+        "Stars Hollow",
+        "Capeside",
+        "Tree Hill",
+        "Riverdale"
+      ],
+      "correctIndex": 0,
+      "id": 33
+    },
+    {
+      "category": "TV Shows",
+      "question": "Who hosts 'The Tonight Show' as of 2024?",
+      "options": [
+        "Jimmy Fallon",
+        "Stephen Colbert",
+        "Jimmy Kimmel",
+        "Conan O'Brien"
+      ],
+      "correctIndex": 0,
+      "id": 34
+    },
+    {
+      "category": "TV Shows",
+      "question": "Which series features the Bridgerton family?",
+      "options": [
+        "Bridgerton",
+        "The Crown",
+        "Downton Abbey",
+        "Sanditon"
+      ],
+      "correctIndex": 0,
+      "id": 35
+    },
+    {
+      "category": "TV Shows",
+      "question": "In 'Euphoria', who plays Rue?",
+      "options": [
+        "Zendaya",
+        "Sydney Sweeney",
+        "Hunter Schafer",
+        "Maude Apatow"
+      ],
+      "correctIndex": 0,
+      "id": 36
+    },
+    {
+      "category": "TV Shows",
+      "question": "Which animated series features Princess Bubblegum and Marceline?",
+      "options": [
+        "Adventure Time",
+        "Steven Universe",
+        "Gravity Falls",
+        "Owl House"
+      ],
+      "correctIndex": 0,
+      "id": 37
+    },
+    {
+      "category": "TV Shows",
+      "question": "What is the name of the school in 'Sex Education'?",
+      "options": [
+        "Moordale",
+        "Greendale",
+        "Hartley",
+        "Cobra Kai"
+      ],
+      "correctIndex": 0,
+      "id": 38
+    },
+    {
+      "category": "Fashion & Beauty",
+      "question": "Which company is famous for the 'Birkin bag'?",
+      "options": [
+        "Hermès",
+        "Chanel",
+        "Louis Vuitton",
+        "Gucci"
+      ],
+      "correctIndex": 0,
+      "id": 39
+    },
+    {
+      "category": "Fashion & Beauty",
+      "question": "Who founded the brand Fenty Beauty?",
+      "options": [
+        "Rihanna",
+        "Kim Kardashian",
+        "Selena Gomez",
+        "Hailey Bieber"
+      ],
+      "correctIndex": 0,
+      "id": 40
+    },
+    {
+      "category": "Fashion & Beauty",
+      "question": "What does 'SPF' on sunscreen stand for?",
+      "options": [
+        "Sun Protection Factor",
+        "Solar Protection Filter",
+        "Skin Protection Formula",
+        "Surface Protection Field"
+      ],
+      "correctIndex": 0,
+      "id": 41
+    },
+    {
+      "category": "Fashion & Beauty",
+      "question": "Which decade is associated with bell-bottom jeans?",
+      "options": [
+        "1970s",
+        "1990s",
+        "2000s",
+        "1950s"
+      ],
+      "correctIndex": 0,
+      "id": 42
+    },
+    {
+      "category": "Fashion & Beauty",
+      "question": "Coco Chanel is most famous for which item?",
+      "options": [
+        "The little black dress",
+        "Platform heels",
+        "Combat boots",
+        "Cargo pants"
+      ],
+      "correctIndex": 0,
+      "id": 43
+    },
+    {
+      "category": "Fashion & Beauty",
+      "question": "Which makeup product is used to define the eye shape?",
+      "options": [
+        "Eyeliner",
+        "Blush",
+        "Bronzer",
+        "Highlighter"
+      ],
+      "correctIndex": 0,
+      "id": 44
+    },
+    {
+      "category": "Fashion & Beauty",
+      "question": "Hailey Bieber's skincare brand is called?",
+      "options": [
+        "Rhode",
+        "Rare",
+        "Glossier",
+        "Drunk Elephant"
+      ],
+      "correctIndex": 0,
+      "id": 45
+    },
+    {
+      "category": "Fashion & Beauty",
+      "question": "What is a 'capsule wardrobe'?",
+      "options": [
+        "A small mix-and-match wardrobe",
+        "A vintage clothes collection",
+        "Designer-only outfits",
+        "Travel luggage"
+      ],
+      "correctIndex": 0,
+      "id": 46
+    },
+    {
+      "category": "Fashion & Beauty",
+      "question": "Which fashion week is NOT one of the 'Big Four'?",
+      "options": [
+        "Sydney",
+        "Paris",
+        "Milan",
+        "New York"
+      ],
+      "correctIndex": 0,
+      "id": 47
+    },
+    {
+      "category": "Fashion & Beauty",
+      "question": "What does 'haute couture' literally mean in French?",
+      "options": [
+        "High sewing",
+        "High fashion",
+        "Hand made",
+        "Hot trend"
+      ],
+      "correctIndex": 0,
+      "id": 48
+    },
+    {
+      "category": "Fashion & Beauty",
+      "question": "Which designer founded the brand Off-White?",
+      "options": [
+        "Virgil Abloh",
+        "Marc Jacobs",
+        "Tom Ford",
+        "Alexander Wang"
+      ],
+      "correctIndex": 0,
+      "id": 49
+    },
+    {
+      "category": "Fashion & Beauty",
+      "question": "What skincare ingredient is famous for hydration and is found naturally in skin?",
+      "options": [
+        "Hyaluronic acid",
+        "Salicylic acid",
+        "Glycolic acid",
+        "Retinol"
+      ],
+      "correctIndex": 0,
+      "id": 50
+    },
+    {
+      "category": "Books",
+      "question": "Who wrote the 'Harry Potter' series?",
+      "options": [
+        "J.K. Rowling",
+        "Suzanne Collins",
+        "Stephenie Meyer",
+        "Cassandra Clare"
+      ],
+      "correctIndex": 0,
+      "id": 51
+    },
+    {
+      "category": "Books",
+      "question": "In 'The Hunger Games', what district is Katniss from?",
+      "options": [
+        "12",
+        "11",
+        "13",
+        "1"
+      ],
+      "correctIndex": 0,
+      "id": 52
+    },
+    {
+      "category": "Books",
+      "question": "Who wrote 'Pride and Prejudice'?",
+      "options": [
+        "Jane Austen",
+        "Charlotte Brontë",
+        "Emily Brontë",
+        "Virginia Woolf"
+      ],
+      "correctIndex": 0,
+      "id": 53
+    },
+    {
+      "category": "Books",
+      "question": "Which author wrote 'It Ends With Us'?",
+      "options": [
+        "Colleen Hoover",
+        "Sarah J. Maas",
+        "Emily Henry",
+        "Taylor Jenkins Reid"
+      ],
+      "correctIndex": 0,
+      "id": 54
+    },
+    {
+      "category": "Books",
+      "question": "What is the name of the school in 'Harry Potter'?",
+      "options": [
+        "Hogwarts",
+        "Ilvermorny",
+        "Beauxbatons",
+        "Durmstrang"
+      ],
+      "correctIndex": 0,
+      "id": 55
+    },
+    {
+      "category": "Books",
+      "question": "Who is the author of 'A Court of Thorns and Roses'?",
+      "options": [
+        "Sarah J. Maas",
+        "Leigh Bardugo",
+        "Holly Black",
+        "Cassandra Clare"
+      ],
+      "correctIndex": 0,
+      "id": 56
+    },
+    {
+      "category": "Books",
+      "question": "Which book features the love triangle between Bella, Edward, and Jacob?",
+      "options": [
+        "Twilight",
+        "The Vampire Diaries",
+        "Vampire Academy",
+        "Shadowhunters"
+      ],
+      "correctIndex": 0,
+      "id": 57
+    },
+    {
+      "category": "Books",
+      "question": "In 'The Fault in Our Stars', what city do Hazel and Augustus visit?",
+      "options": [
+        "Amsterdam",
+        "Paris",
+        "Rome",
+        "Berlin"
+      ],
+      "correctIndex": 0,
+      "id": 58
+    },
+    {
+      "category": "Books",
+      "question": "Who wrote 'The Diary of a Young Girl'?",
+      "options": [
+        "Anne Frank",
+        "Helen Keller",
+        "Maya Angelou",
+        "Malala Yousafzai"
+      ],
+      "correctIndex": 0,
+      "id": 59
+    },
+    {
+      "category": "Books",
+      "question": "Which fantasy series begins with 'Shadow and Bone'?",
+      "options": [
+        "Grishaverse",
+        "Throne of Glass",
+        "Mortal Instruments",
+        "Cruel Prince"
+      ],
+      "correctIndex": 0,
+      "id": 60
+    },
+    {
+      "category": "Books",
+      "question": "Who wrote 'Little Women'?",
+      "options": [
+        "Louisa May Alcott",
+        "Jane Austen",
+        "Charlotte Brontë",
+        "Lucy Maud Montgomery"
+      ],
+      "correctIndex": 0,
+      "id": 61
+    },
+    {
+      "category": "Books",
+      "question": "What is the first book in the 'Percy Jackson' series?",
+      "options": [
+        "The Lightning Thief",
+        "The Sea of Monsters",
+        "The Titan's Curse",
+        "The Last Olympian"
+      ],
+      "correctIndex": 0,
+      "id": 62
+    },
+    {
+      "category": "Animals",
+      "question": "What is the fastest land animal?",
+      "options": [
+        "Cheetah",
+        "Lion",
+        "Horse",
+        "Pronghorn"
+      ],
+      "correctIndex": 0,
+      "id": 63
+    },
+    {
+      "category": "Animals",
+      "question": "How many hearts does an octopus have?",
+      "options": [
+        "3",
+        "1",
+        "2",
+        "4"
+      ],
+      "correctIndex": 0,
+      "id": 64
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal is known as the 'King of the Jungle'?",
+      "options": [
+        "Lion",
+        "Tiger",
+        "Gorilla",
+        "Elephant"
+      ],
+      "correctIndex": 0,
+      "id": 65
+    },
+    {
+      "category": "Animals",
+      "question": "What is a baby kangaroo called?",
+      "options": [
+        "Joey",
+        "Cub",
+        "Kit",
+        "Calf"
+      ],
+      "correctIndex": 0,
+      "id": 66
+    },
+    {
+      "category": "Animals",
+      "question": "Which is the largest mammal on Earth?",
+      "options": [
+        "Blue whale",
+        "African elephant",
+        "Giraffe",
+        "Sperm whale"
+      ],
+      "correctIndex": 0,
+      "id": 67
+    },
+    {
+      "category": "Animals",
+      "question": "How many legs does a spider have?",
+      "options": [
+        "8",
+        "6",
+        "10",
+        "12"
+      ],
+      "correctIndex": 0,
+      "id": 68
+    },
+    {
+      "category": "Animals",
+      "question": "What do you call a group of lions?",
+      "options": [
+        "Pride",
+        "Pack",
+        "Herd",
+        "Flock"
+      ],
+      "correctIndex": 0,
+      "id": 69
+    },
+    {
+      "category": "Animals",
+      "question": "Which bird is famous for its colourful tail feathers and a 'fan' display?",
+      "options": [
+        "Peacock",
+        "Toucan",
+        "Flamingo",
+        "Parrot"
+      ],
+      "correctIndex": 0,
+      "id": 70
+    },
+    {
+      "category": "Animals",
+      "question": "What is the only mammal capable of true flight?",
+      "options": [
+        "Bat",
+        "Flying squirrel",
+        "Sugar glider",
+        "Colugo"
+      ],
+      "correctIndex": 0,
+      "id": 71
+    },
+    {
+      "category": "Animals",
+      "question": "What colour is a polar bear's skin under its fur?",
+      "options": [
+        "Black",
+        "White",
+        "Pink",
+        "Grey"
+      ],
+      "correctIndex": 0,
+      "id": 72
+    },
+    {
+      "category": "Animals",
+      "question": "Which animal sleeps the most each day?",
+      "options": [
+        "Koala",
+        "Sloth",
+        "Cat",
+        "Lion"
+      ],
+      "correctIndex": 0,
+      "id": 73
+    },
+    {
+      "category": "Animals",
+      "question": "What is the largest species of shark?",
+      "options": [
+        "Whale shark",
+        "Great white",
+        "Tiger shark",
+        "Hammerhead"
+      ],
+      "correctIndex": 0,
+      "id": 74
+    },
+    {
+      "category": "Animals",
+      "question": "Which Australian animal carries its baby in a pouch and lays eggs?",
+      "options": [
+        "Echidna",
+        "Kangaroo",
+        "Wombat",
+        "Koala"
+      ],
+      "correctIndex": 0,
+      "id": 75
+    },
+    {
+      "category": "Health & Wellness",
+      "question": "How many hours of sleep are typically recommended for teenagers?",
+      "options": [
+        "8–10 hours",
+        "4–5 hours",
+        "6–7 hours",
+        "12–14 hours"
+      ],
+      "correctIndex": 0,
+      "id": 76
+    },
+    {
+      "category": "Health & Wellness",
+      "question": "Which vitamin is produced when your skin is exposed to sunlight?",
+      "options": [
+        "Vitamin D",
+        "Vitamin C",
+        "Vitamin B12",
+        "Vitamin A"
+      ],
+      "correctIndex": 0,
+      "id": 77
+    },
+    {
+      "category": "Health & Wellness",
+      "question": "What is the largest organ in the human body?",
+      "options": [
+        "Skin",
+        "Liver",
+        "Lungs",
+        "Heart"
+      ],
+      "correctIndex": 0,
+      "id": 78
+    },
+    {
+      "category": "Health & Wellness",
+      "question": "Which type of exercise is best for cardiovascular health?",
+      "options": [
+        "Aerobic",
+        "Stretching",
+        "Weightlifting only",
+        "Balance"
+      ],
+      "correctIndex": 0,
+      "id": 79
+    },
+    {
+      "category": "Health & Wellness",
+      "question": "Roughly how much water is recommended per day for an active teen (in litres)?",
+      "options": [
+        "About 2 litres",
+        "About 5 litres",
+        "Less than 0.5 litres",
+        "About 8 litres"
+      ],
+      "correctIndex": 0,
+      "id": 80
+    },
+    {
+      "category": "Health & Wellness",
+      "question": "Which mineral is essential for strong bones and teeth?",
+      "options": [
+        "Calcium",
+        "Iron",
+        "Sodium",
+        "Zinc"
+      ],
+      "correctIndex": 0,
+      "id": 81
+    },
+    {
+      "category": "Health & Wellness",
+      "question": "What does 'mindfulness' generally refer to?",
+      "options": [
+        "Awareness of the present moment",
+        "Memorising facts",
+        "A type of cardio",
+        "A diet plan"
+      ],
+      "correctIndex": 0,
+      "id": 82
+    },
+    {
+      "category": "Health & Wellness",
+      "question": "Which yoga pose is also called 'Adho Mukha Svanasana'?",
+      "options": [
+        "Downward-facing dog",
+        "Warrior",
+        "Cobra",
+        "Tree"
+      ],
+      "correctIndex": 0,
+      "id": 83
+    },
+    {
+      "category": "Health & Wellness",
+      "question": "What is the resting heart rate range considered normal for most adults?",
+      "options": [
+        "60–100 bpm",
+        "30–50 bpm",
+        "120–150 bpm",
+        "150–180 bpm"
+      ],
+      "correctIndex": 0,
+      "id": 84
+    },
+    {
+      "category": "Health & Wellness",
+      "question": "Which food group provides the body's main source of energy?",
+      "options": [
+        "Carbohydrates",
+        "Vitamins",
+        "Water",
+        "Fats only"
+      ],
+      "correctIndex": 0,
+      "id": 85
+    },
+    {
+      "category": "Health & Wellness",
+      "question": "What does the 'R' in R.I.C.E. stand for when treating a sprain?",
+      "options": [
+        "Rest",
+        "Run",
+        "Repeat",
+        "Rinse"
+      ],
+      "correctIndex": 0,
+      "id": 86
+    },
+    {
+      "category": "Health & Wellness",
+      "question": "Which of these is a known benefit of regular journaling?",
+      "options": [
+        "Reduced stress",
+        "Lower vitamin D",
+        "Faster running speed",
+        "Better eyesight"
+      ],
+      "correctIndex": 0,
+      "id": 87
+    },
+    {
+      "category": "Geography",
+      "question": "What is the capital of Australia?",
+      "options": [
+        "Canberra",
+        "Sydney",
+        "Melbourne",
+        "Brisbane"
+      ],
+      "correctIndex": 0,
+      "id": 88
+    },
+    {
+      "category": "Geography",
+      "question": "Which is the longest river in the world?",
+      "options": [
+        "Nile",
+        "Amazon",
+        "Yangtze",
+        "Mississippi"
+      ],
+      "correctIndex": 0,
+      "id": 89
+    },
+    {
+      "category": "Geography",
+      "question": "Mount Everest is located on the border between Nepal and which country?",
+      "options": [
+        "China",
+        "India",
+        "Bhutan",
+        "Pakistan"
+      ],
+      "correctIndex": 0,
+      "id": 90
+    },
+    {
+      "category": "Geography",
+      "question": "Which country has the most natural lakes?",
+      "options": [
+        "Canada",
+        "Russia",
+        "Finland",
+        "USA"
+      ],
+      "correctIndex": 0,
+      "id": 91
+    },
+    {
+      "category": "Geography",
+      "question": "The Eiffel Tower is located in which city?",
+      "options": [
+        "Paris",
+        "Rome",
+        "London",
+        "Berlin"
+      ],
+      "correctIndex": 0,
+      "id": 92
+    },
+    {
+      "category": "Geography",
+      "question": "Which continent has the most countries?",
+      "options": [
+        "Africa",
+        "Europe",
+        "Asia",
+        "South America"
+      ],
+      "correctIndex": 0,
+      "id": 93
+    },
+    {
+      "category": "Geography",
+      "question": "What is the smallest country in the world?",
+      "options": [
+        "Vatican City",
+        "Monaco",
+        "San Marino",
+        "Liechtenstein"
+      ],
+      "correctIndex": 0,
+      "id": 94
+    },
+    {
+      "category": "Geography",
+      "question": "Which ocean is the largest?",
+      "options": [
+        "Pacific",
+        "Atlantic",
+        "Indian",
+        "Arctic"
+      ],
+      "correctIndex": 0,
+      "id": 95
+    },
+    {
+      "category": "Geography",
+      "question": "The Great Barrier Reef is off the coast of which country?",
+      "options": [
+        "Australia",
+        "Indonesia",
+        "Philippines",
+        "New Zealand"
+      ],
+      "correctIndex": 0,
+      "id": 96
+    },
+    {
+      "category": "Geography",
+      "question": "What is the capital of Japan?",
+      "options": [
+        "Tokyo",
+        "Kyoto",
+        "Osaka",
+        "Seoul"
+      ],
+      "correctIndex": 0,
+      "id": 97
+    },
+    {
+      "category": "Geography",
+      "question": "Which country is shaped like a boot?",
+      "options": [
+        "Italy",
+        "Greece",
+        "Croatia",
+        "Spain"
+      ],
+      "correctIndex": 0,
+      "id": 98
+    },
+    {
+      "category": "Geography",
+      "question": "The Amazon rainforest is mostly in which country?",
+      "options": [
+        "Brazil",
+        "Peru",
+        "Colombia",
+        "Venezuela"
+      ],
+      "correctIndex": 0,
+      "id": 99
+    },
+    {
+      "category": "Science & Space",
+      "question": "How many planets are in our solar system?",
+      "options": [
+        "8",
+        "9",
+        "7",
+        "10"
+      ],
+      "correctIndex": 0,
+      "id": 100
+    },
+    {
+      "category": "Science & Space",
+      "question": "What is the chemical symbol for gold?",
+      "options": [
+        "Au",
+        "Ag",
+        "Gd",
+        "Go"
+      ],
+      "correctIndex": 0,
+      "id": 101
+    },
+    {
+      "category": "Science & Space",
+      "question": "Which planet is known as the 'Red Planet'?",
+      "options": [
+        "Mars",
+        "Venus",
+        "Jupiter",
+        "Mercury"
+      ],
+      "correctIndex": 0,
+      "id": 102
+    },
+    {
+      "category": "Science & Space",
+      "question": "What does DNA stand for?",
+      "options": [
+        "Deoxyribonucleic acid",
+        "Deoxyribose nuclear acid",
+        "Dual nucleic acid",
+        "Direct nuclear acid"
+      ],
+      "correctIndex": 0,
+      "id": 103
+    },
+    {
+      "category": "Science & Space",
+      "question": "Who developed the theory of general relativity?",
+      "options": [
+        "Albert Einstein",
+        "Isaac Newton",
+        "Marie Curie",
+        "Stephen Hawking"
+      ],
+      "correctIndex": 0,
+      "id": 104
+    },
+    {
+      "category": "Science & Space",
+      "question": "What is the hardest natural substance on Earth?",
+      "options": [
+        "Diamond",
+        "Steel",
+        "Quartz",
+        "Iron"
+      ],
+      "correctIndex": 0,
+      "id": 105
+    },
+    {
+      "category": "Science & Space",
+      "question": "Which is the closest star to Earth?",
+      "options": [
+        "The Sun",
+        "Proxima Centauri",
+        "Sirius",
+        "Alpha Centauri"
+      ],
+      "correctIndex": 0,
+      "id": 106
+    },
+    {
+      "category": "Science & Space",
+      "question": "What gas do plants absorb from the air for photosynthesis?",
+      "options": [
+        "Carbon dioxide",
+        "Oxygen",
+        "Nitrogen",
+        "Hydrogen"
+      ],
+      "correctIndex": 0,
+      "id": 107
+    },
+    {
+      "category": "Science & Space",
+      "question": "Who was the first woman to win a Nobel Prize?",
+      "options": [
+        "Marie Curie",
+        "Rosalind Franklin",
+        "Ada Lovelace",
+        "Jane Goodall"
+      ],
+      "correctIndex": 0,
+      "id": 108
+    },
+    {
+      "category": "Science & Space",
+      "question": "What is H2O more commonly known as?",
+      "options": [
+        "Water",
+        "Salt",
+        "Hydrogen peroxide",
+        "Ammonia"
+      ],
+      "correctIndex": 0,
+      "id": 109
+    },
+    {
+      "category": "Science & Space",
+      "question": "How many bones are in the adult human body?",
+      "options": [
+        "206",
+        "201",
+        "212",
+        "190"
+      ],
+      "correctIndex": 0,
+      "id": 110
+    },
+    {
+      "category": "Science & Space",
+      "question": "Which planet has the most moons (as of recent counts)?",
+      "options": [
+        "Saturn",
+        "Jupiter",
+        "Neptune",
+        "Uranus"
+      ],
+      "correctIndex": 0,
+      "id": 111
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which country is the origin of sushi?",
+      "options": [
+        "Japan",
+        "China",
+        "Korea",
+        "Thailand"
+      ],
+      "correctIndex": 0,
+      "id": 112
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "What is the main ingredient in guacamole?",
+      "options": [
+        "Avocado",
+        "Tomato",
+        "Onion",
+        "Lime"
+      ],
+      "correctIndex": 0,
+      "id": 113
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which fruit is known as the 'king of fruits' in Southeast Asia?",
+      "options": [
+        "Durian",
+        "Mango",
+        "Pineapple",
+        "Papaya"
+      ],
+      "correctIndex": 0,
+      "id": 114
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "What is the main ingredient in traditional hummus?",
+      "options": [
+        "Chickpeas",
+        "Lentils",
+        "Beans",
+        "Peas"
+      ],
+      "correctIndex": 0,
+      "id": 115
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which cheese is traditionally used on a Margherita pizza?",
+      "options": [
+        "Mozzarella",
+        "Cheddar",
+        "Parmesan",
+        "Feta"
+      ],
+      "correctIndex": 0,
+      "id": 116
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Macarons are a famous dessert from which country?",
+      "options": [
+        "France",
+        "Italy",
+        "Belgium",
+        "Switzerland"
+      ],
+      "correctIndex": 0,
+      "id": 117
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "What is the Japanese word for 'tea ceremony'?",
+      "options": [
+        "Chanoyu",
+        "Sushi",
+        "Bento",
+        "Sakura"
+      ],
+      "correctIndex": 0,
+      "id": 118
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which berry is famous for being a 'superfood' from the Amazon?",
+      "options": [
+        "Açaí",
+        "Goji",
+        "Cranberry",
+        "Blueberry"
+      ],
+      "correctIndex": 0,
+      "id": 119
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "What is bubble tea's other common name?",
+      "options": [
+        "Boba",
+        "Chai",
+        "Matcha",
+        "Latte"
+      ],
+      "correctIndex": 0,
+      "id": 120
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Which spice is the most expensive by weight?",
+      "options": [
+        "Saffron",
+        "Vanilla",
+        "Cardamom",
+        "Cinnamon"
+      ],
+      "correctIndex": 0,
+      "id": 121
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "Tiramisu is a dessert that comes from which country?",
+      "options": [
+        "Italy",
+        "Greece",
+        "Spain",
+        "Portugal"
+      ],
+      "correctIndex": 0,
+      "id": 122
+    },
+    {
+      "category": "Food & Cuisine",
+      "question": "What plant does chocolate come from?",
+      "options": [
+        "Cacao",
+        "Coffee",
+        "Coconut",
+        "Cassava"
+      ],
+      "correctIndex": 0,
+      "id": 123
+    },
+    {
+      "category": "Art & Culture",
+      "question": "Who painted the Mona Lisa?",
+      "options": [
+        "Leonardo da Vinci",
+        "Michelangelo",
+        "Raphael",
+        "Donatello"
+      ],
+      "correctIndex": 0,
+      "id": 124
+    },
+    {
+      "category": "Art & Culture",
+      "question": "Which artist is famous for cutting off part of his ear?",
+      "options": [
+        "Vincent van Gogh",
+        "Pablo Picasso",
+        "Claude Monet",
+        "Edvard Munch"
+      ],
+      "correctIndex": 0,
+      "id": 125
+    },
+    {
+      "category": "Art & Culture",
+      "question": "Andy Warhol is associated with which art movement?",
+      "options": [
+        "Pop Art",
+        "Cubism",
+        "Impressionism",
+        "Surrealism"
+      ],
+      "correctIndex": 0,
+      "id": 126
+    },
+    {
+      "category": "Art & Culture",
+      "question": "Which Mexican artist is known for self-portraits and floral headpieces?",
+      "options": [
+        "Frida Kahlo",
+        "Diego Rivera",
+        "Remedios Varo",
+        "Leonora Carrington"
+      ],
+      "correctIndex": 0,
+      "id": 127
+    },
+    {
+      "category": "Art & Culture",
+      "question": "The Louvre is located in which city?",
+      "options": [
+        "Paris",
+        "Florence",
+        "Madrid",
+        "Vienna"
+      ],
+      "correctIndex": 0,
+      "id": 128
+    },
+    {
+      "category": "Art & Culture",
+      "question": "Which artist painted 'Starry Night'?",
+      "options": [
+        "Vincent van Gogh",
+        "Claude Monet",
+        "Henri Matisse",
+        "Paul Cézanne"
+      ],
+      "correctIndex": 0,
+      "id": 129
+    },
+    {
+      "category": "Art & Culture",
+      "question": "Ballet originated in which country (in the Renaissance courts)?",
+      "options": [
+        "Italy",
+        "France",
+        "Russia",
+        "Spain"
+      ],
+      "correctIndex": 0,
+      "id": 130
+    },
+    {
+      "category": "Art & Culture",
+      "question": "Who composed 'The Four Seasons'?",
+      "options": [
+        "Vivaldi",
+        "Mozart",
+        "Bach",
+        "Beethoven"
+      ],
+      "correctIndex": 0,
+      "id": 131
+    },
+    {
+      "category": "Art & Culture",
+      "question": "Which museum holds the Mona Lisa?",
+      "options": [
+        "Louvre",
+        "Met",
+        "Tate Modern",
+        "Prado"
+      ],
+      "correctIndex": 0,
+      "id": 132
+    },
+    {
+      "category": "Art & Culture",
+      "question": "Origami is the art of paper folding from which country?",
+      "options": [
+        "Japan",
+        "China",
+        "Korea",
+        "Vietnam"
+      ],
+      "correctIndex": 0,
+      "id": 133
+    },
+    {
+      "category": "Art & Culture",
+      "question": "Yayoi Kusama is famous for which motif?",
+      "options": [
+        "Polka dots",
+        "Stripes",
+        "Checkerboards",
+        "Stars"
+      ],
+      "correctIndex": 0,
+      "id": 134
+    },
+    {
+      "category": "Art & Culture",
+      "question": "Which is a primary colour?",
+      "options": [
+        "Red",
+        "Green",
+        "Purple",
+        "Orange"
+      ],
+      "correctIndex": 0,
+      "id": 135
+    },
+    {
+      "category": "General Knowledge",
+      "question": "How many continents are there?",
+      "options": [
+        "7",
+        "5",
+        "6",
+        "8"
+      ],
+      "correctIndex": 0,
+      "id": 136
+    },
+    {
+      "category": "General Knowledge",
+      "question": "How many days are in a leap year?",
+      "options": [
+        "366",
+        "365",
+        "364",
+        "367"
+      ],
+      "correctIndex": 0,
+      "id": 137
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the tallest mountain in the world?",
+      "options": [
+        "Everest",
+        "K2",
+        "Kilimanjaro",
+        "Denali"
+      ],
+      "correctIndex": 0,
+      "id": 138
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which language has the most native speakers worldwide?",
+      "options": [
+        "Mandarin Chinese",
+        "English",
+        "Spanish",
+        "Hindi"
+      ],
+      "correctIndex": 0,
+      "id": 139
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What is the currency of the United Kingdom?",
+      "options": [
+        "Pound sterling",
+        "Euro",
+        "Dollar",
+        "Krone"
+      ],
+      "correctIndex": 0,
+      "id": 140
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Who painted the ceiling of the Sistine Chapel?",
+      "options": [
+        "Michelangelo",
+        "Leonardo da Vinci",
+        "Raphael",
+        "Caravaggio"
+      ],
+      "correctIndex": 0,
+      "id": 141
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What does 'WWW' stand for?",
+      "options": [
+        "World Wide Web",
+        "Worldwide Wireless Web",
+        "World Web Wide",
+        "Web World Wide"
+      ],
+      "correctIndex": 0,
+      "id": 142
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which company makes the iPhone?",
+      "options": [
+        "Apple",
+        "Samsung",
+        "Google",
+        "Microsoft"
+      ],
+      "correctIndex": 0,
+      "id": 143
+    },
+    {
+      "category": "General Knowledge",
+      "question": "How many sides does a hexagon have?",
+      "options": [
+        "6",
+        "5",
+        "7",
+        "8"
+      ],
+      "correctIndex": 0,
+      "id": 144
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What does 'CEO' stand for?",
+      "options": [
+        "Chief Executive Officer",
+        "Central Executive Officer",
+        "Chief Expert Officer",
+        "Company Executive Owner"
+      ],
+      "correctIndex": 0,
+      "id": 145
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which social media platform is famous for short-form video?",
+      "options": [
+        "TikTok",
+        "LinkedIn",
+        "Pinterest",
+        "Reddit"
+      ],
+      "correctIndex": 0,
+      "id": 146
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What does 'AI' stand for?",
+      "options": [
+        "Artificial Intelligence",
+        "Automatic Interface",
+        "Algorithmic Input",
+        "Advanced Internet"
+      ],
+      "correctIndex": 0,
+      "id": 147
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which planet do we live on?",
+      "options": [
+        "Earth",
+        "Mars",
+        "Venus",
+        "Jupiter"
+      ],
+      "correctIndex": 0,
+      "id": 148
+    },
+    {
+      "category": "General Knowledge",
+      "question": "What colour do you get when mixing blue and yellow?",
+      "options": [
+        "Green",
+        "Purple",
+        "Orange",
+        "Brown"
+      ],
+      "correctIndex": 0,
+      "id": 149
+    },
+    {
+      "category": "General Knowledge",
+      "question": "Which is the only number that is neither prime nor composite (and is positive)?",
+      "options": [
+        "1",
+        "0",
+        "2",
+        "−1"
+      ],
+      "correctIndex": 0,
+      "id": 150
+    },
+    {
+      "category": "Australia",
+      "question": "How many states does Australia have (not counting territories)?",
+      "options": [
+        "6",
+        "7",
+        "8",
+        "5"
+      ],
+      "correctIndex": 0,
+      "id": 151
+    },
+    {
+      "category": "Australia",
+      "question": "Which two native animals appear on Australia's Coat of Arms?",
+      "options": [
+        "Kangaroo and emu",
+        "Koala and wombat",
+        "Kookaburra and platypus",
+        "Dingo and crocodile"
+      ],
+      "correctIndex": 0,
+      "id": 152
+    },
+    {
+      "category": "Australia",
+      "question": "What is Australia's national floral emblem?",
+      "options": [
+        "Golden wattle",
+        "Waratah",
+        "Banksia",
+        "Sturt's desert pea"
+      ],
+      "correctIndex": 0,
+      "id": 153
+    },
+    {
+      "category": "Australia",
+      "question": "What is Australia's national gemstone?",
+      "options": [
+        "Opal",
+        "Sapphire",
+        "Diamond",
+        "Pearl"
+      ],
+      "correctIndex": 0,
+      "id": 154
+    },
+    {
+      "category": "Australia",
+      "question": "What is the famous large rock in central Australia?",
+      "options": [
+        "Uluru",
+        "Mount Augustus",
+        "The Olgas",
+        "Wave Rock"
+      ],
+      "correctIndex": 0,
+      "id": 155
+    },
+    {
+      "category": "Australia",
+      "question": "What is the highest mountain on the Australian mainland?",
+      "options": [
+        "Mount Kosciuszko",
+        "Mount Bogong",
+        "Mount Townsend",
+        "Mount Ossa"
+      ],
+      "correctIndex": 0,
+      "id": 156
+    },
+    {
+      "category": "Australia",
+      "question": "Which iconic Australian dessert is made of meringue topped with cream and fruit?",
+      "options": [
+        "Pavlova",
+        "Lamington",
+        "ANZAC biscuit",
+        "Damper"
+      ],
+      "correctIndex": 0,
+      "id": 157
+    },
+    {
+      "category": "Australia",
+      "question": "Vegemite is made primarily from which ingredient?",
+      "options": [
+        "Yeast extract",
+        "Olive paste",
+        "Anchovy",
+        "Soy"
+      ],
+      "correctIndex": 0,
+      "id": 158
+    },
+    {
+      "category": "Australia",
+      "question": "Which Danish architect designed the Sydney Opera House?",
+      "options": [
+        "Jørn Utzon",
+        "Bjarke Ingels",
+        "Arne Jacobsen",
+        "Frank Gehry"
+      ],
+      "correctIndex": 0,
+      "id": 159
+    },
+    {
+      "category": "Australia",
+      "question": "On what date is Australia Day celebrated?",
+      "options": [
+        "26 January",
+        "1 January",
+        "25 April",
+        "11 November"
+      ],
+      "correctIndex": 0,
+      "id": 160
+    },
+    {
+      "category": "Australia",
+      "question": "Which is the longest river in Australia?",
+      "options": [
+        "Murray River",
+        "Darling River",
+        "Murrumbidgee River",
+        "Brisbane River"
+      ],
+      "correctIndex": 0,
+      "id": 161
+    },
+    {
+      "category": "Australia",
+      "question": "Which Australian city is hosting the 2032 Summer Olympics?",
+      "options": [
+        "Brisbane",
+        "Sydney",
+        "Melbourne",
+        "Perth"
+      ],
+      "correctIndex": 0,
+      "id": 162
+    },
+    {
+      "category": "States & Capitals (AU)",
+      "question": "What is the capital of Queensland?",
+      "options": [
+        "Brisbane",
+        "Cairns",
+        "Gold Coast",
+        "Townsville"
+      ],
+      "correctIndex": 0,
+      "id": 163
+    },
+    {
+      "category": "States & Capitals (AU)",
+      "question": "What is the capital of Victoria?",
+      "options": [
+        "Melbourne",
+        "Geelong",
+        "Ballarat",
+        "Bendigo"
+      ],
+      "correctIndex": 0,
+      "id": 164
+    },
+    {
+      "category": "States & Capitals (AU)",
+      "question": "What is the capital of New South Wales?",
+      "options": [
+        "Sydney",
+        "Newcastle",
+        "Wollongong",
+        "Canberra"
+      ],
+      "correctIndex": 0,
+      "id": 165
+    },
+    {
+      "category": "States & Capitals (AU)",
+      "question": "What is the capital of Western Australia?",
+      "options": [
+        "Perth",
+        "Fremantle",
+        "Broome",
+        "Bunbury"
+      ],
+      "correctIndex": 0,
+      "id": 166
+    },
+    {
+      "category": "States & Capitals (AU)",
+      "question": "What is the capital of South Australia?",
+      "options": [
+        "Adelaide",
+        "Mount Gambier",
+        "Port Augusta",
+        "Whyalla"
+      ],
+      "correctIndex": 0,
+      "id": 167
+    },
+    {
+      "category": "States & Capitals (AU)",
+      "question": "What is the capital of Tasmania?",
+      "options": [
+        "Hobart",
+        "Launceston",
+        "Devonport",
+        "Burnie"
+      ],
+      "correctIndex": 0,
+      "id": 168
+    },
+    {
+      "category": "States & Capitals (AU)",
+      "question": "What is the capital of the Northern Territory?",
+      "options": [
+        "Darwin",
+        "Alice Springs",
+        "Katherine",
+        "Tennant Creek"
+      ],
+      "correctIndex": 0,
+      "id": 169
+    },
+    {
+      "category": "States & Capitals (AU)",
+      "question": "Canberra is the capital of which territory?",
+      "options": [
+        "Australian Capital Territory",
+        "Northern Territory",
+        "Jervis Bay Territory",
+        "Norfolk Island"
+      ],
+      "correctIndex": 0,
+      "id": 170
+    },
+    {
+      "category": "States & Capitals (AU)",
+      "question": "Which is Australia's largest state by area?",
+      "options": [
+        "Western Australia",
+        "Queensland",
+        "New South Wales",
+        "South Australia"
+      ],
+      "correctIndex": 0,
+      "id": 171
+    },
+    {
+      "category": "States & Capitals (AU)",
+      "question": "Which is Australia's smallest state by area?",
+      "options": [
+        "Tasmania",
+        "Victoria",
+        "South Australia",
+        "ACT"
+      ],
+      "correctIndex": 0,
+      "id": 172
+    },
+    {
+      "category": "States & Capitals (AU)",
+      "question": "Which Australian state is an island, separated from the mainland by Bass Strait?",
+      "options": [
+        "Tasmania",
+        "Victoria",
+        "South Australia",
+        "Western Australia"
+      ],
+      "correctIndex": 0,
+      "id": 173
+    },
+    {
+      "category": "States & Capitals (AU)",
+      "question": "Which is the most populous Australian state?",
+      "options": [
+        "New South Wales",
+        "Victoria",
+        "Queensland",
+        "Western Australia"
+      ],
+      "correctIndex": 0,
+      "id": 174
+    },
+    {
+      "category": "Brisbane",
+      "question": "Brisbane is the capital of which Australian state?",
+      "options": [
+        "Queensland",
+        "New South Wales",
+        "Victoria",
+        "South Australia"
+      ],
+      "correctIndex": 0,
+      "id": 175
+    },
+    {
+      "category": "Brisbane",
+      "question": "Which river runs through Brisbane?",
+      "options": [
+        "Brisbane River",
+        "Logan River",
+        "Pine River",
+        "Murray River"
+      ],
+      "correctIndex": 0,
+      "id": 176
+    },
+    {
+      "category": "Brisbane",
+      "question": "In what year did the Story Bridge officially open?",
+      "options": [
+        "1940",
+        "1932",
+        "1955",
+        "1925"
+      ],
+      "correctIndex": 0,
+      "id": 177
+    },
+    {
+      "category": "Brisbane",
+      "question": "The Story Bridge is named after which prominent public servant?",
+      "options": [
+        "John Douglas Story",
+        "John Bradfield",
+        "Forgan Smith",
+        "Leslie Wilson"
+      ],
+      "correctIndex": 0,
+      "id": 178
+    },
+    {
+      "category": "Brisbane",
+      "question": "The Story Bridge connects Fortitude Valley to which suburb?",
+      "options": [
+        "Kangaroo Point",
+        "South Brisbane",
+        "New Farm",
+        "Woolloongabba"
+      ],
+      "correctIndex": 0,
+      "id": 179
+    },
+    {
+      "category": "Brisbane",
+      "question": "Which engineer designed both the Story Bridge and the Sydney Harbour Bridge?",
+      "options": [
+        "John Bradfield",
+        "Manuel Hornibrook",
+        "Leslie Wilson",
+        "Roger Hawken"
+      ],
+      "correctIndex": 0,
+      "id": 180
+    },
+    {
+      "category": "Brisbane",
+      "question": "The Story Bridge is the longest of which type of bridge in Australia?",
+      "options": [
+        "Cantilever bridge",
+        "Suspension bridge",
+        "Cable-stayed bridge",
+        "Arch bridge"
+      ],
+      "correctIndex": 0,
+      "id": 181
+    },
+    {
+      "category": "Brisbane",
+      "question": "What is the name of Brisbane's main cultural precinct on the south side of the river?",
+      "options": [
+        "South Bank",
+        "West End",
+        "Fortitude Valley",
+        "New Farm"
+      ],
+      "correctIndex": 0,
+      "id": 182
+    },
+    {
+      "category": "Brisbane",
+      "question": "Which iconic Queensland beer brand uses four X's in its name?",
+      "options": [
+        "XXXX",
+        "VB",
+        "Tooheys",
+        "Coopers"
+      ],
+      "correctIndex": 0,
+      "id": 183
+    },
+    {
+      "category": "Brisbane",
+      "question": "Brisbane is named after Sir Thomas Brisbane, who was governor of which colony?",
+      "options": [
+        "New South Wales",
+        "Queensland",
+        "Victoria",
+        "Tasmania"
+      ],
+      "correctIndex": 0,
+      "id": 184
+    },
+    {
+      "category": "Brisbane",
+      "question": "What is the name of the artificial beach lagoon at South Bank?",
+      "options": [
+        "Streets Beach",
+        "Eagle Street Beach",
+        "South Bank Cove",
+        "Riverlife Beach"
+      ],
+      "correctIndex": 0,
+      "id": 185
+    },
+    {
+      "category": "Brisbane",
+      "question": "Which annual fireworks event prominently features the Story Bridge?",
+      "options": [
+        "Riverfire",
+        "Brisbane Festival Sparks",
+        "Riverlights",
+        "Sky Bridge"
+      ],
+      "correctIndex": 0,
+      "id": 186
+    },
+    {
+      "category": "Brisbane",
+      "question": "Brisbane's longest-running daily newspaper is called?",
+      "options": [
+        "The Courier-Mail",
+        "The Brisbane Times",
+        "The Telegraph",
+        "The Sun"
+      ],
+      "correctIndex": 0,
+      "id": 187
+    },
+    {
+      "category": "Bulimba",
+      "question": "Bulimba is a suburb of which Australian city?",
+      "options": [
+        "Brisbane",
+        "Sydney",
+        "Melbourne",
+        "Adelaide"
+      ],
+      "correctIndex": 0,
+      "id": 188
+    },
+    {
+      "category": "Bulimba",
+      "question": "What is the main shopping street in Bulimba?",
+      "options": [
+        "Oxford Street",
+        "Brunswick Street",
+        "Riding Road",
+        "Wynnum Road"
+      ],
+      "correctIndex": 0,
+      "id": 189
+    },
+    {
+      "category": "Bulimba",
+      "question": "Bulimba sits on the bank of which river?",
+      "options": [
+        "Brisbane River",
+        "Bremer River",
+        "Norman Creek",
+        "Logan River"
+      ],
+      "correctIndex": 0,
+      "id": 190
+    },
+    {
+      "category": "Bulimba",
+      "question": "In what year was Bulimba House built?",
+      "options": [
+        "1849",
+        "1888",
+        "1901",
+        "1935"
+      ],
+      "correctIndex": 0,
+      "id": 191
+    },
+    {
+      "category": "Bulimba",
+      "question": "Who built Bulimba House and ran one of the area's first farms?",
+      "options": [
+        "David McConnel",
+        "Robert Jamieson",
+        "John Bradfield",
+        "Thomas Brisbane"
+      ],
+      "correctIndex": 0,
+      "id": 192
+    },
+    {
+      "category": "Bulimba",
+      "question": "The Bulimba ferry crosses the Brisbane River to which suburb?",
+      "options": [
+        "Teneriffe",
+        "New Farm",
+        "Hawthorne",
+        "Hamilton"
+      ],
+      "correctIndex": 0,
+      "id": 193
+    },
+    {
+      "category": "Bulimba",
+      "question": "Which prominent Queensland architect designed the Bulimba Hotel (1888)?",
+      "options": [
+        "Richard Gailey",
+        "Robin Dods",
+        "John Hall",
+        "Andrea Stombuco"
+      ],
+      "correctIndex": 0,
+      "id": 194
+    },
+    {
+      "category": "Bulimba",
+      "question": "Bulimba was first settled as which type of district in the colony?",
+      "options": [
+        "Agricultural",
+        "Industrial",
+        "Mining",
+        "Military"
+      ],
+      "correctIndex": 0,
+      "id": 195
+    },
+    {
+      "category": "Bulimba",
+      "question": "The riverside park in Bulimba rededicated in 1919 to honour fallen servicemen is called?",
+      "options": [
+        "Bulimba Memorial Park",
+        "Bulimba Riverside Park",
+        "Oxford Park",
+        "Riding Road Park"
+      ],
+      "correctIndex": 0,
+      "id": 196
+    },
+    {
+      "category": "Bulimba",
+      "question": "Which long-running shipyard has operated in Bulimba since the 1930s?",
+      "options": [
+        "Norman R Wright & Sons",
+        "Evans Deakin",
+        "Hornibrook",
+        "Cairncross"
+      ],
+      "correctIndex": 0,
+      "id": 197
+    },
+    {
+      "category": "Bulimba State School",
+      "question": "In what year was Bulimba State School first established?",
+      "options": [
+        "1866",
+        "1888",
+        "1901",
+        "1937"
+      ],
+      "correctIndex": 0,
+      "id": 198
+    },
+    {
+      "category": "Bulimba State School",
+      "question": "On what date in 1866 did Bulimba State School first open?",
+      "options": [
+        "16 July",
+        "1 January",
+        "26 January",
+        "25 December"
+      ],
+      "correctIndex": 0,
+      "id": 199
+    },
+    {
+      "category": "Bulimba State School",
+      "question": "What was the school originally called when it opened?",
+      "options": [
+        "Bulimba Mixed School",
+        "Bulimba Primary School",
+        "Bulimba National School",
+        "Bulimba Public School"
+      ],
+      "correctIndex": 0,
+      "id": 200
+    },
+    {
+      "category": "Bulimba State School",
+      "question": "Roughly how many students were enrolled when the school opened in 1866?",
+      "options": [
+        "45",
+        "100",
+        "200",
+        "12"
+      ],
+      "correctIndex": 0,
+      "id": 201
+    },
+    {
+      "category": "Bulimba State School",
+      "question": "Where were the school's very first classes held?",
+      "options": [
+        "The Wesleyan Chapel",
+        "Bulimba House",
+        "St John's Church",
+        "The Bulimba Ferry Hotel"
+      ],
+      "correctIndex": 0,
+      "id": 202
+    },
+    {
+      "category": "Bulimba State School",
+      "question": "What street is Bulimba State School located on?",
+      "options": [
+        "Oxford Street",
+        "Riding Road",
+        "Wynnum Road",
+        "Barton Parade"
+      ],
+      "correctIndex": 0,
+      "id": 203
+    },
+    {
+      "category": "Bulimba State School",
+      "question": "What is Bulimba State School's street number on Oxford Street?",
+      "options": [
+        "261",
+        "171",
+        "100",
+        "55"
+      ],
+      "correctIndex": 0,
+      "id": 204
+    },
+    {
+      "category": "Bulimba State School",
+      "question": "The school sits high atop which hill, with views across to Moreton Bay?",
+      "options": [
+        "Carlton Hill",
+        "Highgate Hill",
+        "Mount Coot-tha",
+        "Hamilton Hill"
+      ],
+      "correctIndex": 0,
+      "id": 205
+    },
+    {
+      "category": "Bulimba State School",
+      "question": "In which year was Bulimba State School added to the Queensland Heritage Register?",
+      "options": [
+        "1999",
+        "1985",
+        "2010",
+        "1966"
+      ],
+      "correctIndex": 0,
+      "id": 206
+    },
+    {
+      "category": "Bulimba State School",
+      "question": "In which year did Bulimba State School celebrate its 150th anniversary?",
+      "options": [
+        "2016",
+        "2006",
+        "2020",
+        "2000"
+      ],
+      "correctIndex": 0,
+      "id": 207
+    },
+    {
+      "category": "Bulimba State School",
+      "question": "Which former Australian Prime Minister launched the first volume of his autobiography at the school in 2017?",
+      "options": [
+        "Kevin Rudd",
+        "Julia Gillard",
+        "John Howard",
+        "Tony Abbott"
+      ],
+      "correctIndex": 0,
+      "id": 208
+    },
+    {
+      "category": "Bulimba State School",
+      "question": "The school's main brick building (Block A) was completed during which decade?",
+      "options": [
+        "1930s",
+        "1900s",
+        "1950s",
+        "1970s"
+      ],
+      "correctIndex": 0,
+      "id": 209
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Australia",
+        "New Zealand",
+        "United Kingdom",
+        "Fiji"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/au.png",
+      "id": 210
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Japan",
+        "China",
+        "South Korea",
+        "Taiwan"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/jp.png",
+      "id": 211
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "New Zealand",
+        "Australia",
+        "Fiji",
+        "Samoa"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/nz.png",
+      "id": 212
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "France",
+        "Italy",
+        "Ireland",
+        "Belgium"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/fr.png",
+      "id": 213
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Brazil",
+        "Mexico",
+        "Nigeria",
+        "Saudi Arabia"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/br.png",
+      "id": 214
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Canada",
+        "Denmark",
+        "England",
+        "Georgia"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/ca.png",
+      "id": 215
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "South Korea",
+        "Japan",
+        "Taiwan",
+        "Hong Kong"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/kr.png",
+      "id": 216
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Italy",
+        "Ireland",
+        "Mexico",
+        "Hungary"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/it.png",
+      "id": 217
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "Norway",
+        "Iceland",
+        "Denmark",
+        "Sweden"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/no.png",
+      "id": 218
+    },
+    {
+      "category": "Flags of the World",
+      "question": "Which country's flag is this?",
+      "options": [
+        "India",
+        "Iran",
+        "Niger",
+        "Ivory Coast"
+      ],
+      "correctIndex": 0,
+      "imageUrl": "https://flagcdn.com/w320/in.png",
+      "id": 219
+    }
+  ]
+};
+
+  /* ========== STATE ========== */
+  const STORAGE_KEY = "teenTrivia.questions.v1";
+  let QUESTIONS = [];
+  let game = {
+    queue: [],
+    index: 0,
+    score: 0,
+    correct: 0,
+    wrong: 0,
+    perQuestionTime: 20,
+    timerId: null,
+    timeLeft: 0,
+    answered: false,
+    selectedIndex: null,
+    currentShuffled: null
+  };
+
+  /* ========== INIT ========== */
+  const SYNC_KEY = "teenTrivia.sync.v1";
+  let syncSettings = {
+    url: '',
+    autoSync: false,
+    lastSyncedAt: null,
+    lastStatus: null
+  };
+
+  function loadSyncSettings() {
+    try {
+      const raw = localStorage.getItem(SYNC_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        syncSettings = Object.assign({ url: '', autoSync: false, lastSyncedAt: null, lastStatus: null }, parsed);
+      }
+    } catch(e) {}
+  }
+  function saveSyncSettings() {
+    try { localStorage.setItem(SYNC_KEY, JSON.stringify(syncSettings)); }
+    catch(e) {}
+  }
+
+  async function init() {
+    loadSyncSettings();
+
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        QUESTIONS = JSON.parse(stored);
+      } catch(e) {
+        QUESTIONS = [...DEFAULT_PACK.questions];
+      }
+    } else {
+      QUESTIONS = [...DEFAULT_PACK.questions];
+    }
+
+    renderCategories();
+    renderAdminList();
+    bindSyncControls();
+    refreshSyncUI();
+
+    // Try auto-sync silently (don't block app start)
+    tryAutoSync();
+  }
+
+  function persist() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(QUESTIONS)); }
+    catch(e) { /* storage may be unavailable */ }
+  }
+
+  /* ========== CLOUD SYNC ========== */
+  function extractDriveFileId(url) {
+    if (!url) return null;
+    const patterns = [
+      /\/file\/d\/([a-zA-Z0-9_-]{20,})/,
+      /[?&]id=([a-zA-Z0-9_-]{20,})/,
+      /\/document\/d\/([a-zA-Z0-9_-]{20,})/,
+      /\/open\?id=([a-zA-Z0-9_-]{20,})/
+    ];
+    for (const p of patterns) {
+      const m = url.match(p);
+      if (m) return m[1];
+    }
+    return null;
+  }
+
+  function buildFetchUrl(url) {
+    const trimmed = (url || '').trim();
+    if (!trimmed) return '';
+    if (trimmed.includes('drive.google.com')) {
+      const id = extractDriveFileId(trimmed);
+      if (id) {
+        return `https://drive.google.com/uc?export=download&id=${id}`;
+      }
+    }
+    return trimmed;
+  }
+
+  async function fetchSyncedQuestions(url) {
+    const fetchUrl = buildFetchUrl(url);
+    if (!fetchUrl) throw new Error('No URL provided.');
+
+    let res;
+    try {
+      res = await fetch(fetchUrl, { method: 'GET', cache: 'no-store', redirect: 'follow' });
+    } catch (e) {
+      throw new Error('Network/CORS error. Try the Apps Script setup (Option B in help).');
+    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+
+    let data;
+    try { data = JSON.parse(text); }
+    catch(e) {
+      if (/<html|<HTML|<!DOCTYPE/i.test(text.slice(0, 200))) {
+        throw new Error('Got HTML instead of JSON. The Drive direct link is being intercepted — try Option B (Apps Script).');
+      }
+      throw new Error('Response is not valid JSON.');
+    }
+
+    const arr = Array.isArray(data) ? data : (data.questions || []);
+    if (!Array.isArray(arr)) throw new Error('Invalid format: expected array of questions.');
+
+    const validated = arr.filter(q =>
+      q && typeof q.question === 'string' &&
+      Array.isArray(q.options) && q.options.length === 4 &&
+      typeof q.correctIndex === 'number' && q.correctIndex >= 0 && q.correctIndex < 4 &&
+      typeof q.category === 'string'
+    );
+
+    if (validated.length === 0) throw new Error('No valid questions found in the file.');
+
+    return validated.map((q, i) => ({
+      id: i + 1,
+      category: q.category,
+      question: q.question,
+      options: q.options.slice(),
+      correctIndex: q.correctIndex
+    }));
+  }
+
+  function setSyncPill(state, label) {
+    const pill = document.getElementById('syncPill');
+    if (!pill) return;
+    pill.className = 'sync-pill' + (state ? ' ' + state : '');
+    pill.textContent = label;
+  }
+
+  function updateSyncMeta() {
+    const meta = document.getElementById('syncMeta');
+    if (!meta) return;
+    if (syncSettings.lastSyncedAt) {
+      const ts = new Date(syncSettings.lastSyncedAt);
+      const icon = syncSettings.lastStatus === 'ok' ? '✓' : '⚠';
+      const verb = syncSettings.lastStatus === 'ok' ? 'Synced' : 'Failed';
+      meta.textContent = `${icon} ${verb}: ${ts.toLocaleString()}`;
+    } else {
+      meta.textContent = 'No sync yet.';
+    }
+  }
+
+  function refreshSyncUI() {
+    const urlInput  = document.getElementById('syncUrl');
+    const autoChk   = document.getElementById('syncAuto');
+    if (urlInput) urlInput.value = syncSettings.url || '';
+    if (autoChk)  autoChk.checked = !!syncSettings.autoSync;
+
+    if (!syncSettings.url) {
+      setSyncPill('', 'Not configured');
+    } else if (syncSettings.lastStatus === 'ok') {
+      setSyncPill('ok', 'Connected');
+    } else if (syncSettings.lastStatus === 'error') {
+      setSyncPill('err', 'Last sync failed');
+    } else {
+      setSyncPill('', 'Configured');
+    }
+    updateSyncMeta();
+  }
+
+  function bindSyncControls() {
+    const urlInput = document.getElementById('syncUrl');
+    const autoChk  = document.getElementById('syncAuto');
+    if (urlInput) {
+      urlInput.addEventListener('input', () => {
+        syncSettings.url = urlInput.value.trim();
+        saveSyncSettings();
+        if (!syncSettings.url) setSyncPill('', 'Not configured');
+      });
+    }
+    if (autoChk) {
+      autoChk.addEventListener('change', () => {
+        syncSettings.autoSync = autoChk.checked;
+        saveSyncSettings();
+      });
+    }
+  }
+
+  async function syncNow() {
+    const url = (document.getElementById('syncUrl')?.value || '').trim();
+    if (!url) { toast('Please paste a URL first.', true); return; }
+    setSyncPill('syncing', 'Syncing…');
+    try {
+      const newQs = await fetchSyncedQuestions(url);
+      QUESTIONS = newQs;
+      persist();
+      syncSettings.url = url;
+      syncSettings.lastSyncedAt = Date.now();
+      syncSettings.lastStatus = 'ok';
+      saveSyncSettings();
+      setSyncPill('ok', 'Connected');
+      updateSyncMeta();
+      renderCategories();
+      renderAdminList();
+      toast(`Synced ${newQs.length} question${newQs.length === 1 ? '' : 's'} from cloud.`);
+    } catch (err) {
+      syncSettings.lastSyncedAt = Date.now();
+      syncSettings.lastStatus = 'error';
+      saveSyncSettings();
+      setSyncPill('err', 'Failed');
+      updateSyncMeta();
+      toast('Sync failed: ' + err.message, true);
+    }
+  }
+
+  async function testSync() {
+    const url = (document.getElementById('syncUrl')?.value || '').trim();
+    if (!url) { toast('Please paste a URL first.', true); return; }
+    setSyncPill('syncing', 'Testing…');
+    try {
+      const newQs = await fetchSyncedQuestions(url);
+      setSyncPill('ok', 'Connection OK');
+      toast(`✓ Connection works! Found ${newQs.length} questions. Click "Sync now" to apply.`);
+    } catch (err) {
+      setSyncPill('err', 'Failed');
+      toast('Test failed: ' + err.message, true);
+    }
+  }
+
+  function clearSync() {
+    if (!confirm('Clear cloud sync settings?\n\n(Your current question library will not be affected.)')) return;
+    syncSettings = { url: '', autoSync: false, lastSyncedAt: null, lastStatus: null };
+    saveSyncSettings();
+    refreshSyncUI();
+    toast('Cloud sync settings cleared.');
+  }
+
+  async function tryAutoSync() {
+    if (!(syncSettings.autoSync && syncSettings.url)) return;
+    setSyncPill('syncing', 'Auto-sync…');
+    try {
+      const newQs = await fetchSyncedQuestions(syncSettings.url);
+      QUESTIONS = newQs;
+      persist();
+      syncSettings.lastSyncedAt = Date.now();
+      syncSettings.lastStatus = 'ok';
+      saveSyncSettings();
+      setSyncPill('ok', 'Connected');
+      updateSyncMeta();
+      renderCategories();
+      renderAdminList();
+      toast(`Auto-synced ${newQs.length} questions from cloud.`);
+    } catch(err) {
+      syncSettings.lastSyncedAt = Date.now();
+      syncSettings.lastStatus = 'error';
+      saveSyncSettings();
+      setSyncPill('err', 'Auto-sync failed');
+      updateSyncMeta();
+      console.warn('Auto-sync failed:', err);
+    }
+  }
+
+  /* ========== NAVIGATION ========== */
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function goWelcome()  { stopTimer(); show('screen-welcome'); }
+  function goCategory() { stopTimer(); renderCategories(); show('screen-category'); }
+  function goAdmin()    { stopTimer(); renderAdminList(); show('screen-admin'); }
+
+  /* ========== CATEGORY SCREEN ========== */
+  const CAT_ICONS = {
+    "Pop Music": "🎵",
+    "Movies": "🎬",
+    "TV Shows": "📺",
+    "Fashion & Beauty": "💄",
+    "Books": "📚",
+    "Animals": "🦋",
+    "Health & Wellness": "🌿",
+    "Geography": "🌍",
+    "Science & Space": "🔬",
+    "Food & Cuisine": "🍓",
+    "Art & Culture": "🎨",
+    "General Knowledge": "✨",
+    "Australia": "🇦🇺",
+    "States & Capitals (AU)": "🗺️",
+    "Brisbane": "🌉",
+    "Bulimba": "🏘️",
+    "Bulimba State School": "🎒",
+    "Flags of the World": "🚩"
+  };
+
+  function getCategories() {
+    const map = {};
+    QUESTIONS.forEach(q => { map[q.category] = (map[q.category] || 0) + 1; });
+    return Object.entries(map).sort((a,b) => a[0].localeCompare(b[0]));
+  }
+
+  function renderCategories() {
+    const grid = document.getElementById('catGrid');
+    const cats = getCategories();
+    document.getElementById('dbCount').textContent =
+      `${QUESTIONS.length} question${QUESTIONS.length===1?'':'s'} in library`;
+
+    let html = `
+      <div class="cat-card all" onclick="startGame('')">
+        <div class="icon">🎲</div>
+        <h3>All Categories</h3>
+        <p>Mix of every topic in the library</p>
+      </div>`;
+    cats.forEach(([name, count]) => {
+      const icon = CAT_ICONS[name] || "💫";
+      html += `
+        <div class="cat-card" onclick="startGame('${name.replace(/'/g, "\\'")}')">
+          <div class="icon">${icon}</div>
+          <h3>${escapeHtml(name)}</h3>
+          <p>${count} question${count===1?'':'s'}</p>
+        </div>`;
+    });
+    grid.innerHTML = html;
+  }
+
+  /* ========== START GAME ========== */
+  function startGame(category) {
+    const requested = parseInt(document.getElementById('numQuestions').value, 10) || 10;
+    const tpq = parseInt(document.getElementById('timePerQ').value, 10) || 20;
+
+    let pool = category ? QUESTIONS.filter(q => q.category === category) : [...QUESTIONS];
+    if (pool.length === 0) {
+      toast('No questions available in this category.', true);
+      return;
+    }
+    pool = shuffle(pool).slice(0, Math.min(requested, pool.length));
+
+    game.queue = pool;
+    game.index = 0;
+    game.score = 0;
+    game.correct = 0;
+    game.wrong = 0;
+    game.perQuestionTime = Math.max(5, Math.min(60, tpq));
+
+    show('screen-quiz');
+    presentQuestion();
+  }
+
+  /* ========== QUIZ ========== */
+  const ANSWER_STYLES = [
+    { cls: 'a-red',    shape: 'triangle' },
+    { cls: 'a-blue',   shape: 'diamond'  },
+    { cls: 'a-yellow', shape: 'circle'   },
+    { cls: 'a-pink',   shape: 'square'   }
+  ];
+
+  function shapeSVG(shape) {
+    const fill = "rgba(255,255,255,0.95)";
+    if (shape === 'triangle') return `<svg width="32" height="32" viewBox="0 0 32 32"><polygon points="16,4 30,28 2,28" fill="${fill}"/></svg>`;
+    if (shape === 'diamond')  return `<svg width="32" height="32" viewBox="0 0 32 32"><polygon points="16,2 30,16 16,30 2,16" fill="${fill}"/></svg>`;
+    if (shape === 'circle')   return `<svg width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="${fill}"/></svg>`;
+    if (shape === 'square')   return `<svg width="32" height="32" viewBox="0 0 32 32"><rect x="4" y="4" width="24" height="24" fill="${fill}"/></svg>`;
+    return '';
+  }
+
+  function presentQuestion() {
+    const q = game.queue[game.index];
+
+    /* Shuffle answer options so the correct answer is in a random slot */
+    const indexed = q.options.map((opt, i) => ({ opt, isCorrect: i === q.correctIndex }));
+    const shuffled = shuffle(indexed);
+    game.currentShuffled = shuffled;
+    game.answered = false;
+    game.selectedIndex = null;
+
+    document.getElementById('qprogress').textContent = `${game.index + 1} / ${game.queue.length}`;
+    document.getElementById('qcat').textContent = q.category;
+    document.getElementById('qscore').textContent = `${game.score} pts`;
+    document.getElementById('qText').textContent = q.question;
+
+    // Show/hide image
+    const imgWrap = document.getElementById('qImageWrap');
+    const imgEl   = document.getElementById('qImage');
+    if (q.imageUrl) {
+      imgEl.src = convertToImgUrl(q.imageUrl);
+      imgWrap.style.display = 'block';
+    } else {
+      imgEl.src = '';
+      imgWrap.style.display = 'none';
+    }
+
+    const wrap = document.getElementById('answers');
+    wrap.innerHTML = shuffled.map((s, i) => {
+      const style = ANSWER_STYLES[i];
+      return `
+        <button class="answer ${style.cls}" data-i="${i}" onclick="selectAnswer(${i})">
+          <span class="shape-icon">${shapeSVG(style.shape)}</span>
+          <span class="label">${escapeHtml(s.opt)}</span>
+        </button>`;
+    }).join('');
+
+    startTimer(game.perQuestionTime);
+  }
+
+  function startTimer(seconds) {
+    stopTimer();
+    game.timeLeft = seconds;
+    const ring = document.getElementById('timerRing');
+    const circle = document.getElementById('timerCircle');
+    const text = document.getElementById('timerText');
+    const total = seconds;
+    const C = 2 * Math.PI * 30; // ~188.5
+    circle.style.strokeDasharray = C;
+
+    const tick = () => {
+      text.textContent = game.timeLeft;
+      const offset = C * (1 - game.timeLeft / total);
+      circle.style.strokeDashoffset = offset;
+      if (game.timeLeft <= Math.ceil(total * 0.25)) ring.classList.add('warn');
+      else ring.classList.remove('warn');
+
+      if (game.timeLeft <= 0) {
+        stopTimer();
+        timeUp();
+        return;
+      }
+      game.timeLeft--;
+    };
+    tick();
+    game.timerId = setInterval(tick, 1000);
+  }
+  function stopTimer() {
+    if (game.timerId) { clearInterval(game.timerId); game.timerId = null; }
+    document.getElementById('timerRing').classList.remove('warn');
+  }
+
+  function selectAnswer(i) {
+    if (game.answered) return;
+    game.answered = true;
+    game.selectedIndex = i;
+    const remaining = game.timeLeft;
+    stopTimer();
+
+    const isCorrect = game.currentShuffled[i].isCorrect;
+    const buttons = document.querySelectorAll('.answer');
+    buttons.forEach((b, idx) => {
+      b.disabled = true;
+      if (game.currentShuffled[idx].isCorrect) b.classList.add('correct');
+      else if (idx === i) b.classList.add('wrong');
+      else b.classList.add('dim');
+    });
+
+    /* Score: base 600 if correct, plus speed bonus up to 400 */
+    let gain = 0;
+    if (isCorrect) {
+      const speed = Math.max(0, remaining) / game.perQuestionTime;
+      gain = Math.round(600 + speed * 400);
+      game.score += gain;
+      game.correct++;
+    } else {
+      game.wrong++;
+    }
+
+    setTimeout(() => showQuestionResult(isCorrect, gain, false), 900);
+  }
+
+  function timeUp() {
+    if (game.answered) return;
+    game.answered = true;
+    game.wrong++;
+    const buttons = document.querySelectorAll('.answer');
+    buttons.forEach((b, idx) => {
+      b.disabled = true;
+      if (game.currentShuffled[idx].isCorrect) b.classList.add('correct');
+      else b.classList.add('dim');
+    });
+    setTimeout(() => showQuestionResult(false, 0, true), 900);
+  }
+
+  function showQuestionResult(isCorrect, gain, isTimeout) {
+    const banner = document.getElementById('resultBanner');
+    banner.className = 'result-banner ' + (isCorrect ? 'right' : (isTimeout ? 'timeup' : 'wrong'));
+
+    const headline = document.getElementById('resultHeadline');
+    const sub = document.getElementById('resultSub');
+    const gainEl = document.getElementById('resultGain');
+
+    const correctOpt = game.currentShuffled.find(s => s.isCorrect).opt;
+
+    if (isCorrect) {
+      headline.textContent = pick(["Correct!", "Nailed it!", "Spot on!", "You got it!", "Brilliant!"]);
+      sub.textContent = `Answer: ${correctOpt}`;
+      gainEl.textContent = `+${gain} pts`;
+    } else if (isTimeout) {
+      headline.textContent = "Time's up!";
+      sub.textContent = `Answer: ${correctOpt}`;
+      gainEl.textContent = `+0 pts`;
+    } else {
+      headline.textContent = pick(["Not quite", "So close", "Oops!", "Almost"]);
+      sub.textContent = `Answer: ${correctOpt}`;
+      gainEl.textContent = `+0 pts`;
+    }
+
+    document.getElementById('qprogress2').textContent = `${game.index + 1} / ${game.queue.length}`;
+    document.getElementById('qcat2').textContent = game.queue[game.index].category;
+    document.getElementById('qscore2').textContent = `${game.score} pts`;
+    document.getElementById('rText').textContent = game.queue[game.index].question;
+
+    // Show/hide image on result screen
+    const rq = game.queue[game.index];
+    const rImgWrap = document.getElementById('rImageWrap');
+    const rImgEl   = document.getElementById('rImage');
+    if (rq && rq.imageUrl) {
+      rImgEl.src = convertToImgUrl(rq.imageUrl);
+      rImgWrap.style.display = 'block';
+    } else {
+      rImgEl.src = '';
+      rImgWrap.style.display = 'none';
+    }
+
+    document.getElementById('nextBtn').textContent =
+      (game.index + 1 >= game.queue.length) ? 'See final score →' : 'Next question →';
+
+    show('screen-result');
+  }
+
+  function nextQuestion() {
+    game.index++;
+    if (game.index >= game.queue.length) {
+      showFinal();
+    } else {
+      show('screen-quiz');
+      presentQuestion();
+    }
+  }
+
+  function showFinal() {
+    const total = game.queue.length;
+    const acc = total === 0 ? 0 : Math.round((game.correct / total) * 100);
+    document.getElementById('finalScore').textContent = game.score.toLocaleString();
+    document.getElementById('statCorrect').textContent = game.correct;
+    document.getElementById('statWrong').textContent = game.wrong;
+    document.getElementById('statAccuracy').textContent = acc + '%';
+
+    let head = "Brilliant!", crown = "👑";
+    if (acc >= 90)      { head = "Trivia royalty!";    crown = "👑"; }
+    else if (acc >= 70) { head = "Stunning round!";    crown = "🌟"; }
+    else if (acc >= 50) { head = "Great effort!";      crown = "✨"; }
+    else if (acc >= 30) { head = "Keep practising!";   crown = "🌱"; }
+    else                { head = "Better luck next time!"; crown = "💫"; }
+    document.getElementById('finalHeadline').textContent = head;
+    document.getElementById('crownEmoji').textContent = crown;
+
+    show('screen-final');
+  }
+
+  /* ========== ADMIN ========== */
+  let editingId = null;
+
+  function renderAdminList() {
+    const list = document.getElementById('qList');
+    const filter = document.getElementById('filterCat');
+    const text = document.getElementById('filterText')?.value?.toLowerCase() || '';
+
+    /* refresh categories in filter & datalist */
+    if (filter) {
+      const current = filter.value;
+      const cats = [...new Set(QUESTIONS.map(q => q.category))].sort();
+      filter.innerHTML = `<option value="">All categories</option>` +
+        cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+      filter.value = cats.includes(current) ? current : '';
+    }
+    const dl = document.getElementById('catList');
+    if (dl) {
+      const cats = [...new Set(QUESTIONS.map(q => q.category))].sort();
+      dl.innerHTML = cats.map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
+    }
+
+    const catFilter = filter?.value || '';
+    const filtered = QUESTIONS.filter(q => {
+      if (catFilter && q.category !== catFilter) return false;
+      if (text && !q.question.toLowerCase().includes(text)) return false;
+      return true;
+    });
+
+    document.getElementById('adminCount').textContent =
+      `${filtered.length} of ${QUESTIONS.length} shown`;
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div style="padding: 30px; text-align:center; color: var(--mint-mid);">No questions match. Add a new one above.</div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(q => `
+      <div class="q-row">
+        <div class="id">#${q.id}</div>
+        <div class="q">${escapeHtml(q.question)}</div>
+        <div class="cat">${escapeHtml(q.category)}</div>
+        <div class="actions">
+          ${q.imageUrl ? '<span class="img-badge">🖼 image</span>' : ''}
+          <button class="edit" onclick="openModal(${q.id})">Edit</button>
+          <button class="del" onclick="deleteQuestion(${q.id})">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openModal(id) {
+    editingId = (typeof id === 'number') ? id : null;
+    document.getElementById('modalTitle').textContent = editingId ? `Edit question #${editingId}` : 'New question';
+
+    if (editingId) {
+      const q = QUESTIONS.find(x => x.id === editingId);
+      document.getElementById('m_category').value = q.category;
+      document.getElementById('m_question').value = q.question;
+      document.getElementById('m_imageUrl').value = q.imageUrl || '';
+      previewModalImage();
+      [0,1,2,3].forEach(i => {
+        document.querySelector(`#optsGrid input[data-opt="${i}"]`).value = q.options[i] || '';
+      });
+      const radios = document.querySelectorAll('input[name="correct"]');
+      radios.forEach(r => r.checked = parseInt(r.value, 10) === q.correctIndex);
+      highlightCorrect();
+    } else {
+      document.getElementById('m_category').value = '';
+      document.getElementById('m_question').value = '';
+      document.getElementById('m_imageUrl').value = '';
+      previewModalImage();
+      [0,1,2,3].forEach(i => {
+        document.querySelector(`#optsGrid input[data-opt="${i}"]`).value = '';
+      });
+      document.querySelectorAll('input[name="correct"]').forEach(r => r.checked = false);
+      const first = document.querySelector('input[name="correct"][value="0"]');
+      if (first) first.checked = true;
+      highlightCorrect();
+    }
+
+    document.getElementById('modalBack').classList.add('active');
+  }
+  function closeModal() {
+    document.getElementById('modalBack').classList.remove('active');
+    editingId = null;
+  }
+
+  function highlightCorrect() {
+    document.querySelectorAll('.opt-block').forEach(el => el.classList.remove('correct'));
+    const checked = document.querySelector('input[name="correct"]:checked');
+    if (checked) {
+      const idx = parseInt(checked.value, 10);
+      document.querySelector(`.opt-block[data-i="${idx}"]`)?.classList.add('correct');
+    }
+  }
+  document.addEventListener('change', e => {
+    if (e.target && e.target.name === 'correct') highlightCorrect();
+  });
+
+  function saveQuestion() {
+    const cat = document.getElementById('m_category').value.trim();
+    const qt  = document.getElementById('m_question').value.trim();
+    const opts = [0,1,2,3].map(i => document.querySelector(`#optsGrid input[data-opt="${i}"]`).value.trim());
+    const checked = document.querySelector('input[name="correct"]:checked');
+
+    if (!cat) return toast('Please enter a category.', true);
+    if (!qt)  return toast('Please enter the question.', true);
+    if (opts.some(o => !o)) return toast('All four options need text.', true);
+    if (!checked) return toast('Please mark the correct answer.', true);
+
+    const correctIndex = parseInt(checked.value, 10);
+    const imageUrl = (document.getElementById('m_imageUrl')?.value || '').trim();
+
+    if (editingId) {
+      const q = QUESTIONS.find(x => x.id === editingId);
+      q.category = cat;
+      q.question = qt;
+      q.options = opts;
+      q.correctIndex = correctIndex;
+      if (imageUrl) { q.imageUrl = imageUrl; } else { delete q.imageUrl; }
+      toast('Question updated.');
+    } else {
+      const newId = QUESTIONS.length === 0 ? 1 : Math.max(...QUESTIONS.map(q => q.id)) + 1;
+      const newQ = { id: newId, category: cat, question: qt, options: opts, correctIndex };
+      if (imageUrl) newQ.imageUrl = imageUrl;
+      QUESTIONS.push(newQ);
+      toast('Question added.');
+    }
+
+    persist();
+    closeModal();
+    renderAdminList();
+    renderCategories();
+  }
+
+  function deleteQuestion(id) {
+    if (!confirm('Delete this question? This can be undone by re-importing or resetting.')) return;
+    QUESTIONS = QUESTIONS.filter(q => q.id !== id);
+    persist();
+    renderAdminList();
+    renderCategories();
+    toast('Deleted.');
+  }
+
+  function resetToDefaults() {
+    if (!confirm('Replace your current library with the default 150 questions? This will overwrite your custom changes (export first if you want to keep them).')) return;
+    QUESTIONS = JSON.parse(JSON.stringify(DEFAULT_PACK.questions));
+    persist();
+    renderAdminList();
+    renderCategories();
+    toast('Library reset to defaults.');
+  }
+
+  /* ========== IMPORT / EXPORT ========== */
+  function exportJSON() {
+    const data = {
+      version: "1.0",
+      title: "Teen Trivia – Custom Question Pack",
+      exportedAt: new Date().toISOString(),
+      questions: QUESTIONS
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'teen-trivia-questions.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('Exported!');
+  }
+
+  function importJSON(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const parsed = JSON.parse(e.target.result);
+        const arr = Array.isArray(parsed) ? parsed : (parsed.questions || []);
+        if (!Array.isArray(arr) || arr.length === 0) throw new Error('No questions found in file.');
+        const validated = arr.filter(q =>
+          q && typeof q.question === 'string' &&
+          Array.isArray(q.options) && q.options.length === 4 &&
+          typeof q.correctIndex === 'number' && q.correctIndex >= 0 && q.correctIndex < 4 &&
+          typeof q.category === 'string'
+        );
+        if (validated.length === 0) throw new Error('No valid questions in file.');
+
+        const choice = confirm(
+          `Found ${validated.length} valid questions.\n\nClick OK to REPLACE your current library.\nClick Cancel to MERGE with your current library.`
+        );
+        if (choice) {
+          QUESTIONS = validated.map((q, i) => ({
+            id: i + 1,
+            category: q.category,
+            question: q.question,
+            options: q.options,
+            correctIndex: q.correctIndex
+          }));
+        } else {
+          let nextId = QUESTIONS.length === 0 ? 1 : Math.max(...QUESTIONS.map(q => q.id)) + 1;
+          validated.forEach(q => {
+            QUESTIONS.push({
+              id: nextId++,
+              category: q.category,
+              question: q.question,
+              options: q.options,
+              correctIndex: q.correctIndex
+            });
+          });
+        }
+        persist();
+        renderAdminList();
+        renderCategories();
+        toast(`Imported ${validated.length} question${validated.length === 1 ? '' : 's'}.`);
+      } catch(err) {
+        toast('Import failed: ' + err.message, true);
+      }
+      event.target.value = '';
+    };
+    reader.readAsText(file);
+  }
+
+  /* ========== HELPERS ========== */
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+    }[c]));
+  }
+
+  let toastTimeout = null;
+  function toast(msg, isError) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.toggle('error', !!isError);
+    t.classList.add('show');
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+
+  /* -------- Image URL helpers -------- */
+  function convertToImgUrl(url) {
+    if (!url) return '';
+    const trimmed = url.trim();
+    // Convert Google Drive share/view links to direct display URL
+    if (trimmed.includes('drive.google.com')) {
+      const id = extractDriveFileId(trimmed);
+      if (id) return `https://drive.google.com/uc?id=${id}&export=view`;
+    }
+    return trimmed;
+  }
+
+  function previewModalImage() {
+    const url = (document.getElementById('m_imageUrl')?.value || '').trim();
+    const wrap = document.getElementById('imgPreviewWrap');
+    const img  = document.getElementById('imgPreviewImg');
+    if (!wrap || !img) return;
+    if (!url) {
+      wrap.classList.remove('has-img');
+      img.src = '';
+      return;
+    }
+    const displayUrl = convertToImgUrl(url);
+    img.src = displayUrl;
+    wrap.classList.add('has-img');
+    img.onerror = () => { wrap.classList.remove('has-img'); };
+    img.onload  = () => { wrap.classList.add('has-img'); };
+  }
+
+  /* boot */
+  init();
+</script>
+</body>
+</html>
