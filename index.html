@@ -2729,19 +2729,19 @@
      🔥 FIREBASE CONFIG — Replace with YOUR project values
      See the setup guide for step-by-step instructions.
      ───────────────────────────────────────────────────── */
-  const FIREBASE_CONFIG = {
-    apiKey:            "YOUR_API_KEY",
-    authDomain:        "YOUR_PROJECT.firebaseapp.com",
-    databaseURL:       "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-    projectId:         "YOUR_PROJECT",
-    storageBucket:     "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "000000000000",
-    appId:             "YOUR_APP_ID"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyDcM8qbq-tSLLnJTR63uZMw8_T3uqZqlgg",
+  authDomain: "teen-trivia-f92cd.firebaseapp.com",
+  projectId: "teen-trivia-f92cd",
+  storageBucket: "teen-trivia-f92cd.firebasestorage.app",
+  messagingSenderId: "549303477208",
+  appId: "1:549303477208:web:a0add89d47c254c6f048ad",
+  measurementId: "G-RQC879909K"
+};
 
   let firebaseReady = false;
   try {
-    if (FIREBASE_CONFIG.apiKey !== "YOUR_API_KEY") {
+    if (FIREBASE_CONFIG.apiKey !== "AIzaSyDcM8qbq-tSLLnJTR63uZMw8_T3uqZqlgg") {
       firebase.initializeApp(FIREBASE_CONFIG);
       firebaseReady = true;
     }
