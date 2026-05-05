@@ -2759,8 +2759,8 @@
     // Populate category select
     const sel = document.getElementById('onlineCatSelect');
     sel.innerHTML = '<option value="">All Categories (random mix)</option>';
-    getCategories().forEach(c => {
-      sel.innerHTML += `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`;
+    getCategories().forEach(([name, count]) => {
+      sel.innerHTML += `<option value="${escapeHtml(name)}">${escapeHtml(name)} (${count})</option>`;
     });
     show('screen-online-setup');
   }
@@ -2820,6 +2820,11 @@
       const cat = document.getElementById('onlineCatSelect').value;
       const numQ = parseInt(document.getElementById('onlineNumQ').value, 10) || 10;
       const tpq  = parseInt(document.getElementById('onlineTimeQ').value, 10) || 20;
+
+      if (QUESTIONS.length === 0) {
+        toast('No questions loaded. Check that questions.json is in the same folder.', true);
+        return;
+      }
 
       let pool = cat ? QUESTIONS.filter(q => q.category === cat) : [...QUESTIONS];
       if (pool.length === 0) { toast('No questions in this category.', true); return; }
