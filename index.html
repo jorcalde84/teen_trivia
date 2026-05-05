@@ -2743,7 +2743,14 @@
   try {
     firebase.initializeApp(FIREBASE_CONFIG);
     firebaseReady = true;
-  } catch(e) { console.warn('Firebase init failed:', e); }
+    // Quick database connectivity check
+    firebase.database().ref('.info/connected').on('value', snap => {
+      console.log('Firebase connected:', snap.val());
+    });
+  } catch(e) {
+    console.warn('Firebase init failed:', e);
+    alert('Firebase init failed: ' + e.message);
+  }
 
   function goOnlineMenu() {
     if (!firebaseReady) {
@@ -2831,39 +2838,45 @@
       pool = shuffle(pool).slice(0, Math.min(numQ, pool.length));
 
       const code = genRoomCode();
-      const ref = getDb().ref('rooms/' + code);
 
-      // Check code isn't taken
-      const snap = await ref.once('value');
-      if (snap.exists()) { toast('Code collision — try again.', true); return; }
+      try {
+        const ref = getDb().ref('rooms/' + code);
 
-      const roomData = {
-        status: 'lobby',
-        hostCreatedAt: firebase.database.ServerValue.TIMESTAMP,
-        settings: { timePerQ: tpq, category: cat || 'All' },
-        questions: pool.map((q, i) => ({
-          id: i,
-          category: q.category,
-          question: q.question,
-          options: q.options,
-          correctIndex: q.correctIndex,
-          imageUrl: q.imageUrl || null
-        })),
-        currentQuestion: -1,
-        players: {}
-      };
+        // Check code isn't taken
+        const snap = await ref.once('value');
+        if (snap.exists()) { toast('Code collision — try again.', true); return; }
 
-      await ref.set(roomData);
-      // Auto-delete room after 2 hours
-      ref.onDisconnect().remove();
+        const roomData = {
+          status: 'lobby',
+          hostCreatedAt: firebase.database.ServerValue.TIMESTAMP,
+          settings: { timePerQ: tpq, category: cat || 'All' },
+          questions: pool.map((q, i) => ({
+            id: i,
+            category: q.category,
+            question: q.question,
+            options: q.options,
+            correctIndex: q.correctIndex,
+            imageUrl: q.imageUrl || null
+          })),
+          currentQuestion: -1,
+          players: {}
+        };
 
-      roomRef = ref;
-      roomCode = code;
-      role = 'host';
-      onlineGame.questions = pool;
-      onlineGame.timePerQ = tpq;
+        await ref.set(roomData);
+        // Auto-delete room when host disconnects
+        ref.onDisconnect().remove();
 
-      showHostLobby();
+        roomRef = ref;
+        roomCode = code;
+        role = 'host';
+        onlineGame.questions = pool;
+        onlineGame.timePerQ = tpq;
+
+        showHostLobby();
+      } catch(err) {
+        console.error('createRoom error:', err);
+        toast('Failed to create room: ' + err.message, true);
+      }
     }
 
     function showHostLobby() {
