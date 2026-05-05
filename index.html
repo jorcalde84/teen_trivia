@@ -2729,10 +2729,15 @@
      🔥 FIREBASE CONFIG — Replace with YOUR project values
      See the setup guide for step-by-step instructions.
      ───────────────────────────────────────────────────── */
+// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-  
-  const firebaseConfig = {
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
   apiKey: "AIzaSyDcM8qbq-tSLLnJTR63uZMw8_T3uqZqlgg",
   authDomain: "teen-trivia-f92cd.firebaseapp.com",
   projectId: "teen-trivia-f92cd",
@@ -2741,6 +2746,10 @@ import { getAnalytics } from "firebase/analytics";
   appId: "1:549303477208:web:a0add89d47c254c6f048ad",
   measurementId: "G-RQC879909K"
 };
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
   let firebaseReady = false;
   try {
