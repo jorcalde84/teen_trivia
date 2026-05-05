@@ -1154,7 +1154,7 @@
       <div class="brand-wrap">
         <span class="brand-tag">Live Trivia · Pop Edition</span>
         <h1 class="brand-title">Teen<span class="accent">·</span>Trivia</h1>
-        <p class="brand-sub">A bright, fast-paced trivia game inspired by Kahoot. Pick a category, race the clock, and rack up points.</p>
+        <p class="brand-sub">A bright, fast-paced trivia game inspired by Kahoot. Pick a category, race the clock, and rack up points. By Rafa.</p>
       </div>
 
       <div class="welcome-main-actions">
@@ -2729,7 +2729,10 @@
      🔥 FIREBASE CONFIG — Replace with YOUR project values
      See the setup guide for step-by-step instructions.
      ───────────────────────────────────────────────────── */
-const firebaseConfig = {
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+  
+  const firebaseConfig = {
   apiKey: "AIzaSyDcM8qbq-tSLLnJTR63uZMw8_T3uqZqlgg",
   authDomain: "teen-trivia-f92cd.firebaseapp.com",
   projectId: "teen-trivia-f92cd",
