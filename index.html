@@ -2732,7 +2732,7 @@
   const FIREBASE_CONFIG = {
     apiKey:            "AIzaSyDcM8qbq-tSLLnJTR63uZMw8_T3uqZqlgg",
     authDomain:        "teen-trivia-f92cd.firebaseapp.com",
-    databaseURL:       "https://teen-trivia-f92cd-default-rtdb.firebaseio.com",
+    databaseURL:       "https://teen-trivia-f92cd-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId:         "teen-trivia-f92cd",
     storageBucket:     "teen-trivia-f92cd.firebasestorage.app",
     messagingSenderId: "549303477208",
@@ -2839,11 +2839,18 @@
 
       const code = genRoomCode();
 
+      toast('Creating room…');
+
       try {
         const ref = getDb().ref('rooms/' + code);
 
+        // Timeout after 8 seconds if Firebase hangs
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Connection timed out. Check your Firebase databaseURL and internet connection.')), 8000)
+        );
+
         // Check code isn't taken
-        const snap = await ref.once('value');
+        const snap = await Promise.race([ref.once('value'), timeoutPromise]);
         if (snap.exists()) { toast('Code collision — try again.', true); return; }
 
         const roomData = {
@@ -2862,7 +2869,9 @@
           players: {}
         };
 
-        await ref.set(roomData);
+        await Promise.race([ref.set(roomData), new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Writing room data timed out.')), 8000)
+        )]);
         // Auto-delete room when host disconnects
         ref.onDisconnect().remove();
 
@@ -3155,26 +3164,33 @@
       if (code.length < 4) { toast('Enter the game PIN shown on the host screen.', true); return; }
       if (!name) { toast('Enter a nickname!', true); return; }
 
-      const ref = getDb().ref('rooms/' + code);
-      const snap = await ref.once('value');
-      if (!snap.exists()) { toast('Room not found. Check the PIN.', true); return; }
-      const room = snap.val();
-      if (room.status !== 'lobby') { toast('This game has already started.', true); return; }
+      toast('Joining…');
 
-      playerId = genPlayerId();
-      playerName = name;
-      roomRef = ref;
-      roomCode = code;
-      role = 'player';
-      onlineGame.questions = room.questions || [];
-      onlineGame.timePerQ = room.settings?.timePerQ || 20;
+      try {
+        const ref = getDb().ref('rooms/' + code);
+        const timeoutP = new Promise((_, reject) => setTimeout(() => reject(new Error('Connection timed out.')), 8000));
+        const snap = await Promise.race([ref.once('value'), timeoutP]);
+        if (!snap.exists()) { toast('Room not found. Check the PIN.', true); return; }
+        const room = snap.val();
+        if (room.status !== 'lobby') { toast('This game has already started.', true); return; }
 
-      await roomRef.child('players/' + playerId).set({ name, score: 0, joinedAt: firebase.database.ServerValue.TIMESTAMP });
-      // Remove player on disconnect
-      roomRef.child('players/' + playerId).onDisconnect().remove();
+        playerId = genPlayerId();
+        playerName = name;
+        roomRef = ref;
+        roomCode = code;
+        role = 'player';
+        onlineGame.questions = room.questions || [];
+        onlineGame.timePerQ = room.settings?.timePerQ || 20;
 
-      showPlayerWait();
-      listenForGameState();
+        await roomRef.child('players/' + playerId).set({ name, score: 0, joinedAt: firebase.database.ServerValue.TIMESTAMP });
+        roomRef.child('players/' + playerId).onDisconnect().remove();
+
+        showPlayerWait();
+        listenForGameState();
+      } catch(err) {
+        console.error('joinRoom error:', err);
+        toast('Failed to join: ' + err.message, true);
+      }
     }
 
     function showPlayerWait() {
