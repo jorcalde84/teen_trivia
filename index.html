@@ -7,6 +7,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<!-- Firebase SDK (compat mode — single-file friendly) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<!-- QR Code generator -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   /* ---------- DESIGN TOKENS ---------- */
   :root {
@@ -900,6 +905,233 @@
   .hidden { display: none !important; }
   input[type="file"] { display: none; }
 
+  /* ---------- ONLINE MODE SCREENS ---------- */
+  .online-center {
+    min-height: calc(100vh - 48px);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; gap: 20px; padding: 24px 12px;
+  }
+  .online-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 36px 32px;
+    box-shadow: var(--shadow-soft);
+    max-width: 540px; width: 100%;
+  }
+  .room-code-display {
+    font-size: clamp(3rem, 10vw, 5rem);
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    color: var(--mint-deep);
+    margin: 12px 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .room-code-input {
+    font-family: inherit; font-weight: 800;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    text-align: center;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--mint-deep);
+    background: var(--mint-pale);
+    border: 3px solid var(--mint);
+    border-radius: var(--radius-md);
+    padding: 16px 24px;
+    width: 280px;
+    outline: none;
+  }
+  .room-code-input:focus { border-color: var(--mint-deep); }
+  .room-code-input::placeholder {
+    color: var(--mint-mid); opacity: 0.5;
+    font-size: 1.2rem; letter-spacing: 0.1em;
+  }
+  .nickname-input {
+    font-family: inherit; font-weight: 700; font-size: 1.1rem;
+    color: var(--mint-deep);
+    background: var(--mint-pale);
+    border: 2px solid var(--mint);
+    border-radius: var(--radius-sm);
+    padding: 14px 20px;
+    width: 100%; max-width: 300px;
+    outline: none; text-align: center;
+  }
+  .nickname-input:focus { border-color: var(--mint-deep); }
+  .qr-wrap { margin: 16px auto; display: flex; justify-content: center; }
+  .qr-wrap canvas, .qr-wrap img { border-radius: 12px !important; }
+
+  /* Lobby player list */
+  .lobby-players {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    justify-content: center;
+    margin: 18px 0; max-height: 280px; overflow-y: auto;
+    padding: 8px;
+  }
+  .lobby-chip {
+    background: linear-gradient(135deg, var(--mint), var(--mint-pale));
+    color: var(--mint-deep);
+    font-weight: 700; font-size: 0.92rem;
+    padding: 10px 18px;
+    border-radius: 999px;
+    animation: chipPop 0.3s ease;
+    box-shadow: 0 4px 12px rgba(85,139,114,0.2);
+  }
+  @keyframes chipPop {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .player-count {
+    font-size: 0.9rem; font-weight: 600;
+    color: var(--mint-mid);
+  }
+
+  /* Online host question view */
+  .host-q-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 32px 28px;
+    box-shadow: var(--shadow-soft);
+    max-width: 800px; width: 100%;
+  }
+  .host-answers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 22px;
+  }
+  .host-answer-bar {
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.05rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 56px;
+    transition: opacity 0.3s;
+  }
+  .host-answer-bar.correct { box-shadow: inset 0 0 0 4px rgba(255,255,255,0.6); }
+  .host-answer-bar.wrong { opacity: 0.45; }
+  .host-answer-count {
+    background: rgba(255,255,255,0.3);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 0.85rem;
+    min-width: 32px; text-align: center;
+  }
+  .answered-counter {
+    font-size: 1.1rem; font-weight: 700;
+    color: var(--mint-deep);
+    margin-top: 16px;
+  }
+
+  /* Player waiting / answer screen */
+  .player-answer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-width: 400px;
+    width: 100%;
+  }
+  .player-answer-btn {
+    aspect-ratio: 1;
+    border: none; border-radius: var(--radius-md);
+    cursor: pointer;
+    display: grid; place-items: center;
+    font-size: 2rem;
+    transition: transform 0.12s, box-shadow 0.12s;
+    box-shadow: var(--shadow-pop);
+  }
+  .player-answer-btn:hover { transform: translateY(-3px); }
+  .player-answer-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.18); }
+  .player-answer-btn.selected { transform: scale(0.92); box-shadow: inset 0 0 0 5px rgba(255,255,255,0.7); }
+  .player-answer-btn.a-red    { background: var(--pop-red); }
+  .player-answer-btn.a-blue   { background: var(--pop-blue); }
+  .player-answer-btn.a-yellow { background: var(--pop-yellow); }
+  .player-answer-btn.a-pink   { background: var(--pop-pink); }
+
+  /* Leaderboard */
+  .leaderboard-list {
+    list-style: none;
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .leaderboard-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    background: var(--white);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: var(--mint-deep);
+    box-shadow: 0 4px 12px rgba(85,139,114,0.12);
+    animation: fadeUp 0.4s ease backwards;
+  }
+  .leaderboard-list li:nth-child(1) { background: linear-gradient(135deg, #ffd700, #ffec80); font-size: 1.15rem; }
+  .leaderboard-list li:nth-child(2) { background: linear-gradient(135deg, #e0e0e0, #f5f5f5); }
+  .leaderboard-list li:nth-child(3) { background: linear-gradient(135deg, #e8a87c, #f5d3b8); }
+  .lb-rank { margin-right: 12px; font-size: 1.2rem; min-width: 30px; }
+  .lb-score { color: var(--mint-mid); }
+
+  /* Podium */
+  .podium-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 12px;
+    margin: 28px auto;
+    max-width: 480px;
+  }
+  .podium-col {
+    display: flex; flex-direction: column;
+    align-items: center;
+    animation: podiumRise 0.6s ease backwards;
+  }
+  .podium-col:nth-child(1) { animation-delay: 0.4s; }
+  .podium-col:nth-child(2) { animation-delay: 0.1s; }
+  .podium-col:nth-child(3) { animation-delay: 0.7s; }
+  @keyframes podiumRise {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .podium-avatar {
+    font-size: 2.2rem;
+    margin-bottom: 6px;
+  }
+  .podium-name {
+    font-weight: 800; font-size: 0.95rem;
+    color: var(--mint-deep);
+    margin-bottom: 8px;
+    max-width: 120px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .podium-bar {
+    width: 110px;
+    border-radius: 14px 14px 0 0;
+    display: grid; place-items: center;
+    color: white;
+    font-weight: 900;
+    font-size: 1.6rem;
+    padding-top: 16px;
+  }
+  .podium-bar.gold   { height: 160px; background: linear-gradient(180deg, #ffd700, #daa520); }
+  .podium-bar.silver { height: 120px; background: linear-gradient(180deg, #c0c0c0, #a0a0a0); }
+  .podium-bar.bronze { height: 90px;  background: linear-gradient(180deg, #cd7f32, #a0622e); }
+  .podium-score {
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 4px;
+    opacity: 0.85;
+  }
+  @media (max-width: 500px) {
+    .podium-bar { width: 90px; }
+    .host-answers-grid { grid-template-columns: 1fr; }
+  }
+
 </style>
 </head>
 <body>
@@ -948,8 +1180,7 @@
         <h3 style="font-size:1.35rem;font-weight:800;color:var(--mint-deep);margin-bottom:8px;">Solo Mode</h3>
         <p style="font-size:.88rem;color:var(--mint-mid);line-height:1.5;">Challenge yourself! Pick a category, race the clock, and see how high you can score.</p>
       </div>
-      <div onclick="alert('Online mode coming soon! 🎉')" style="background:white;border-radius:28px;padding:36px 28px 32px;text-align:center;cursor:not-allowed;border:2.5px solid transparent;opacity:.65;filter:grayscale(.3);box-shadow:0 10px 30px -10px rgba(85,139,114,.35);position:relative;overflow:hidden;">
-        <span style="position:absolute;top:16px;right:-30px;background:linear-gradient(135deg,var(--pop-pink),var(--pop-red));color:white;font-size:.62rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;padding:6px 40px;transform:rotate(35deg);box-shadow:0 4px 12px rgba(238,75,43,.35);">Coming Soon</span>
+      <div onclick="goOnlineMenu()" style="background:white;border-radius:28px;padding:36px 28px 32px;text-align:center;cursor:pointer;border:2.5px solid transparent;transition:transform .2s,border-color .2s,box-shadow .2s;box-shadow:0 10px 30px -10px rgba(85,139,114,.35);position:relative;overflow:hidden;" onmouseover="this.style.transform='translateY(-6px)';this.style.borderColor='var(--pop-pink)'" onmouseout="this.style.transform='';this.style.borderColor='transparent'">
         <div style="width:80px;height:80px;border-radius:22px;display:grid;place-items:center;margin:0 auto 18px;font-size:2.4rem;background:linear-gradient(135deg,var(--pop-pink),var(--pop-blue));">🌐</div>
         <h3 style="font-size:1.35rem;font-weight:800;color:var(--mint-deep);margin-bottom:8px;">Online Mode</h3>
         <p style="font-size:.88rem;color:var(--mint-mid);line-height:1.5;">Join friends with a game code, compete in real time, and climb the leaderboard together.</p>
@@ -1076,6 +1307,153 @@
   </section>
 
   <!-- ===================== ADMIN SCREEN ===================== -->
+
+  <!-- ===================== ONLINE: HOST SETUP ===================== -->
+  <section id="screen-online-setup" class="screen">
+    <div class="online-center">
+      <div class="online-card">
+        <h2 style="font-size:1.8rem;font-weight:800;color:var(--mint-deep);margin-bottom:6px;">🌐 Host a Game</h2>
+        <p style="color:var(--mint-mid);font-size:.92rem;margin-bottom:22px;">Choose a category and settings, then invite players.</p>
+        <div style="text-align:left;margin-bottom:16px;">
+          <label style="font-size:.85rem;font-weight:600;color:var(--mint-deep);">Category</label>
+          <select id="onlineCatSelect" style="font-family:inherit;font-weight:600;color:var(--mint-deep);border:2px solid var(--mint);background:var(--mint-pale);border-radius:var(--radius-sm);padding:10px 14px;width:100%;font-size:1rem;margin-top:6px;">
+            <option value="">All Categories (random mix)</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:16px;margin-bottom:22px;">
+          <div style="flex:1;text-align:left;">
+            <label style="font-size:.85rem;font-weight:600;color:var(--mint-deep);">Questions</label>
+            <input type="number" id="onlineNumQ" min="3" max="30" value="10" style="font-family:inherit;font-weight:700;color:var(--mint-deep);border:2px solid var(--mint);background:var(--mint-pale);border-radius:var(--radius-sm);padding:10px;width:100%;font-size:1rem;text-align:center;margin-top:6px;" />
+          </div>
+          <div style="flex:1;text-align:left;">
+            <label style="font-size:.85rem;font-weight:600;color:var(--mint-deep);">Seconds / Q</label>
+            <input type="number" id="onlineTimeQ" min="5" max="60" value="20" style="font-family:inherit;font-weight:700;color:var(--mint-deep);border:2px solid var(--mint);background:var(--mint-pale);border-radius:var(--radius-sm);padding:10px;width:100%;font-size:1rem;text-align:center;margin-top:6px;" />
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;" onclick="ONLINE.createRoom()">Create Room</button>
+      </div>
+      <button class="btn btn-ghost" onclick="goMode()">← Back</button>
+    </div>
+  </section>
+
+  <!-- ===================== ONLINE: HOST LOBBY ===================== -->
+  <section id="screen-online-lobby" class="screen">
+    <div class="online-center">
+      <div class="online-card">
+        <p style="font-size:.85rem;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--mint-mid);margin-bottom:4px;">Game PIN</p>
+        <div class="room-code-display" id="lobbyRoomCode">------</div>
+        <div class="qr-wrap" id="lobbyQR"></div>
+        <p style="font-size:.88rem;color:var(--mint-mid);margin-bottom:18px;">Players join at this page and enter the PIN above</p>
+        <div class="player-count" id="lobbyPlayerCount">0 players joined</div>
+        <div class="lobby-players" id="lobbyPlayerList"></div>
+        <button class="btn btn-pop" id="lobbyStartBtn" style="width:100%;margin-top:12px;" disabled onclick="ONLINE.hostStartGame()">Waiting for players…</button>
+      </div>
+      <button class="btn btn-ghost" onclick="ONLINE.destroyRoom()">Cancel game</button>
+    </div>
+  </section>
+
+  <!-- ===================== ONLINE: PLAYER JOIN ===================== -->
+  <section id="screen-online-join" class="screen">
+    <div class="online-center">
+      <div class="online-card">
+        <h2 style="font-size:1.6rem;font-weight:800;color:var(--mint-deep);margin-bottom:18px;">🎮 Join a Game</h2>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+          <input type="text" id="joinCode" class="room-code-input" maxlength="6" placeholder="PIN" autocomplete="off" />
+          <input type="text" id="joinNickname" class="nickname-input" maxlength="20" placeholder="Your nickname" autocomplete="off" />
+          <button class="btn btn-primary" style="width:100%;max-width:300px;" onclick="ONLINE.joinRoom()">Join!</button>
+        </div>
+        <div style="margin-top:24px;padding-top:20px;border-top:2px solid var(--mint-pale);">
+          <p style="font-size:.85rem;color:var(--mint-mid);margin-bottom:10px;">Or create your own game:</p>
+          <button class="btn btn-pop" style="width:100%;max-width:300px;" onclick="goHostSetup()">🎤 Host a Game</button>
+        </div>
+      </div>
+      <button class="btn btn-ghost" onclick="goMode()">← Back</button>
+    </div>
+  </section>
+
+  <!-- ===================== ONLINE: PLAYER WAITING (in lobby) ===================== -->
+  <section id="screen-online-player-wait" class="screen">
+    <div class="online-center">
+      <div class="online-card">
+        <div style="font-size:3rem;margin-bottom:12px;">✅</div>
+        <h2 style="font-size:1.5rem;font-weight:800;color:var(--mint-deep);margin-bottom:8px;">You're in!</h2>
+        <p style="color:var(--mint-mid);font-size:1rem;" id="playerWaitMsg">Waiting for the host to start the game…</p>
+        <div style="margin-top:18px;">
+          <div class="player-count" id="waitPlayerCount">0 players</div>
+          <div class="lobby-players" id="waitPlayerList"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ONLINE: HOST QUESTION VIEW ===================== -->
+  <section id="screen-online-host-q" class="screen">
+    <div class="online-center" style="justify-content:flex-start;padding-top:16px;">
+      <div style="display:flex;justify-content:space-between;width:100%;max-width:800px;align-items:center;margin-bottom:8px;">
+        <div class="qprogress" id="onlineHostProgress">1 / 10</div>
+        <div class="qcat" id="onlineHostCat" style="background:var(--white);color:var(--mint-deep);padding:8px 16px;border-radius:999px;font-weight:700;font-size:.85rem;box-shadow:var(--shadow-soft);">Category</div>
+      </div>
+      <div class="host-q-card">
+        <div class="q-image-wrap" id="onlineHostImgWrap" style="display:none;margin-bottom:16px;">
+          <img id="onlineHostImg" alt="Question image" style="max-height:200px;border-radius:12px;" onerror="document.getElementById('onlineHostImgWrap').style.display='none'" />
+        </div>
+        <div class="q" id="onlineHostQText" style="font-size:1.3rem;font-weight:700;color:var(--mint-deep);margin-bottom:8px;">Question?</div>
+        <div class="timer-ring" id="onlineHostTimerRing" style="margin:12px auto;">
+          <svg viewBox="0 0 72 72" width="64" height="64">
+            <circle class="timer-bg" cx="36" cy="36" r="30" fill="none" stroke="#e0e0e0" stroke-width="5"/>
+            <circle class="timer-fg" id="onlineHostTimerCircle" cx="36" cy="36" r="30"
+                    fill="none" stroke="var(--mint-deep)" stroke-width="5"
+                    stroke-dasharray="188.5" stroke-dashoffset="0"
+                    stroke-linecap="round" transform="rotate(-90 36 36)"/>
+          </svg>
+          <div class="timer-text" id="onlineHostTimerText" style="position:absolute;inset:0;display:grid;place-items:center;font-weight:800;font-size:1.3rem;color:var(--mint-deep);">20</div>
+        </div>
+        <div class="host-answers-grid" id="onlineHostAnswers"></div>
+        <div class="answered-counter" id="onlineHostAnswered">0 / 0 answered</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ONLINE: PLAYER QUESTION VIEW ===================== -->
+  <section id="screen-online-player-q" class="screen">
+    <div class="online-center">
+      <p style="font-size:.85rem;font-weight:600;color:var(--mint-mid);margin-bottom:6px;" id="playerQProgress">Question 1 of 10</p>
+      <p style="font-size:.78rem;color:var(--mint-mid);margin-bottom:22px;">Look at the host screen for the question!</p>
+      <div class="player-answer-grid" id="playerAnswerBtns">
+        <button class="player-answer-btn a-red" onclick="ONLINE.playerAnswer(0)">▲</button>
+        <button class="player-answer-btn a-blue" onclick="ONLINE.playerAnswer(1)">◆</button>
+        <button class="player-answer-btn a-yellow" onclick="ONLINE.playerAnswer(2)">●</button>
+        <button class="player-answer-btn a-pink" onclick="ONLINE.playerAnswer(3)">■</button>
+      </div>
+      <div id="playerAnswerFeedback" style="margin-top:20px;font-weight:700;font-size:1.1rem;color:var(--mint-deep);"></div>
+    </div>
+  </section>
+
+  <!-- ===================== ONLINE: LEADERBOARD (between questions) ===================== -->
+  <section id="screen-online-leaderboard" class="screen">
+    <div class="online-center">
+      <h2 style="font-size:1.6rem;font-weight:800;color:var(--mint-deep);margin-bottom:4px;">🏆 Leaderboard</h2>
+      <p style="font-size:.85rem;color:var(--mint-mid);margin-bottom:18px;" id="lbSubtitle">After question 1</p>
+      <ul class="leaderboard-list" id="onlineLeaderboard"></ul>
+      <button class="btn btn-primary" id="lbNextBtn" style="margin-top:22px;display:none;" onclick="ONLINE.hostNextQuestion()">Next question →</button>
+      <div id="lbPlayerWait" style="margin-top:16px;font-size:.9rem;color:var(--mint-mid);">Waiting for next question…</div>
+    </div>
+  </section>
+
+  <!-- ===================== ONLINE: FINAL PODIUM ===================== -->
+  <section id="screen-online-podium" class="screen">
+    <div class="online-center">
+      <h2 style="font-size:clamp(1.8rem,5vw,2.6rem);font-weight:900;color:var(--mint-deep);margin-bottom:0;">🎉 Game Over!</h2>
+      <div class="podium-wrap" id="podiumWrap"></div>
+      <h3 style="font-size:1.1rem;font-weight:700;color:var(--mint-mid);margin:8px 0 12px;">Full Results</h3>
+      <ul class="leaderboard-list" id="podiumFullList"></ul>
+      <div class="pill-row" style="margin-top:28px;">
+        <button class="btn btn-primary" onclick="ONLINE.destroyRoom()">Back to Home</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ADMIN SCREEN (original) ===================== -->
   <section id="screen-admin" class="screen">
     <div class="admin-head">
       <h2 style="font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800; color: var(--mint-deep);">
@@ -2346,8 +2724,590 @@
     img.onload  = () => { wrap.classList.add('has-img'); };
   }
 
+  /* ========== ONLINE MULTIPLAYER (Firebase) ========== */
+  /* ─────────────────────────────────────────────────────
+     🔥 FIREBASE CONFIG — Replace with YOUR project values
+     See the setup guide for step-by-step instructions.
+     ───────────────────────────────────────────────────── */
+  const FIREBASE_CONFIG = {
+    apiKey:            "YOUR_API_KEY",
+    authDomain:        "YOUR_PROJECT.firebaseapp.com",
+    databaseURL:       "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+    projectId:         "YOUR_PROJECT",
+    storageBucket:     "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "000000000000",
+    appId:             "YOUR_APP_ID"
+  };
+
+  let firebaseReady = false;
+  try {
+    if (FIREBASE_CONFIG.apiKey !== "YOUR_API_KEY") {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      firebaseReady = true;
+    }
+  } catch(e) { console.warn('Firebase init failed:', e); }
+
+  function goOnlineMenu() {
+    if (!firebaseReady) {
+      alert('Online mode is not configured yet.\n\nThe host needs to set up Firebase — see the setup guide.');
+      return;
+    }
+    show('screen-online-join');
+    document.getElementById('joinCode').value = '';
+    document.getElementById('joinNickname').value = '';
+    document.getElementById('joinCode').focus();
+  }
+  function goHostSetup() {
+    // Populate category select
+    const sel = document.getElementById('onlineCatSelect');
+    sel.innerHTML = '<option value="">All Categories (random mix)</option>';
+    getCategories().forEach(c => {
+      sel.innerHTML += `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`;
+    });
+    show('screen-online-setup');
+  }
+
+  const ONLINE = (() => {
+    let db = null;
+    let roomRef = null;
+    let roomCode = null;
+    let role = null;      // 'host' | 'player'
+    let playerId = null;
+    let playerName = null;
+    let listeners = [];   // firebase listener refs to clean up
+    let onlineGame = {
+      questions: [],
+      currentIndex: -1,
+      timePerQ: 20,
+      timerId: null,
+      timeLeft: 0,
+      totalPlayers: 0,
+      answered: false
+    };
+
+    function getDb() {
+      if (!db) db = firebase.database();
+      return db;
+    }
+
+    function genRoomCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let code = '';
+      for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+      return code;
+    }
+
+    function genPlayerId() {
+      return 'p_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function listen(ref, event, cb) {
+      ref.on(event, cb);
+      listeners.push({ ref, event, cb });
+    }
+
+    function cleanup() {
+      listeners.forEach(l => l.ref.off(l.event, l.cb));
+      listeners = [];
+      if (onlineGame.timerId) { clearInterval(onlineGame.timerId); onlineGame.timerId = null; }
+      roomRef = null;
+      roomCode = null;
+      role = null;
+      playerId = null;
+      onlineGame = { questions:[], currentIndex:-1, timePerQ:20, timerId:null, timeLeft:0, totalPlayers:0, answered:false };
+    }
+
+    /* ── HOST: Create Room ── */
+    async function createRoom() {
+      const cat = document.getElementById('onlineCatSelect').value;
+      const numQ = parseInt(document.getElementById('onlineNumQ').value, 10) || 10;
+      const tpq  = parseInt(document.getElementById('onlineTimeQ').value, 10) || 20;
+
+      let pool = cat ? QUESTIONS.filter(q => q.category === cat) : [...QUESTIONS];
+      if (pool.length === 0) { toast('No questions in this category.', true); return; }
+      pool = shuffle(pool).slice(0, Math.min(numQ, pool.length));
+
+      const code = genRoomCode();
+      const ref = getDb().ref('rooms/' + code);
+
+      // Check code isn't taken
+      const snap = await ref.once('value');
+      if (snap.exists()) { toast('Code collision — try again.', true); return; }
+
+      const roomData = {
+        status: 'lobby',
+        hostCreatedAt: firebase.database.ServerValue.TIMESTAMP,
+        settings: { timePerQ: tpq, category: cat || 'All' },
+        questions: pool.map((q, i) => ({
+          id: i,
+          category: q.category,
+          question: q.question,
+          options: q.options,
+          correctIndex: q.correctIndex,
+          imageUrl: q.imageUrl || null
+        })),
+        currentQuestion: -1,
+        players: {}
+      };
+
+      await ref.set(roomData);
+      // Auto-delete room after 2 hours
+      ref.onDisconnect().remove();
+
+      roomRef = ref;
+      roomCode = code;
+      role = 'host';
+      onlineGame.questions = pool;
+      onlineGame.timePerQ = tpq;
+
+      showHostLobby();
+    }
+
+    function showHostLobby() {
+      document.getElementById('lobbyRoomCode').textContent = roomCode;
+
+      // Generate QR code
+      const qrDiv = document.getElementById('lobbyQR');
+      qrDiv.innerHTML = '';
+      const joinUrl = window.location.href.split('?')[0] + '?room=' + roomCode;
+      new QRCode(qrDiv, {
+        text: joinUrl,
+        width: 180, height: 180,
+        colorDark: '#1f3a30',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      // Listen for players joining
+      const playersRef = roomRef.child('players');
+      listen(playersRef, 'value', snap => {
+        const players = snap.val() || {};
+        const names = Object.values(players).map(p => p.name);
+        const count = names.length;
+
+        document.getElementById('lobbyPlayerCount').textContent = count + ' player' + (count !== 1 ? 's' : '') + ' joined';
+        document.getElementById('lobbyPlayerList').innerHTML = names.map(n =>
+          `<span class="lobby-chip">${escapeHtml(n)}</span>`
+        ).join('');
+
+        const btn = document.getElementById('lobbyStartBtn');
+        if (count >= 1) {
+          btn.disabled = false;
+          btn.textContent = `Start game (${count} player${count !== 1 ? 's' : ''})`;
+        } else {
+          btn.disabled = true;
+          btn.textContent = 'Waiting for players…';
+        }
+      });
+
+      show('screen-online-lobby');
+    }
+
+    /* ── HOST: Start Game ── */
+    async function hostStartGame() {
+      await roomRef.update({ status: 'playing', currentQuestion: 0 });
+      onlineGame.currentIndex = 0;
+      hostShowQuestion(0);
+    }
+
+    function hostShowQuestion(idx) {
+      const q = onlineGame.questions[idx];
+      const total = onlineGame.questions.length;
+
+      document.getElementById('onlineHostProgress').textContent = (idx + 1) + ' / ' + total;
+      document.getElementById('onlineHostCat').textContent = q.category;
+      document.getElementById('onlineHostQText').textContent = q.question;
+
+      // Image
+      const imgWrap = document.getElementById('onlineHostImgWrap');
+      const img = document.getElementById('onlineHostImg');
+      if (q.imageUrl) {
+        img.src = convertToImgUrl(q.imageUrl);
+        imgWrap.style.display = '';
+      } else {
+        imgWrap.style.display = 'none';
+      }
+
+      // Answer bars
+      const colors = ['var(--pop-red)','var(--pop-blue)','var(--pop-yellow)','var(--pop-pink)'];
+      const shapes = ['▲','◆','●','■'];
+      const grid = document.getElementById('onlineHostAnswers');
+      grid.innerHTML = q.options.map((opt, i) =>
+        `<div class="host-answer-bar" id="hostBar${i}" style="background:${colors[i]}">
+          <span>${shapes[i]} ${escapeHtml(opt)}</span>
+          <span class="host-answer-count" id="hostCount${i}">0</span>
+        </div>`
+      ).join('');
+
+      document.getElementById('onlineHostAnswered').textContent = '0 answered';
+
+      // Clear previous answers in Firebase
+      roomRef.child('answers/q' + idx).remove();
+      roomRef.update({ currentQuestion: idx, status: 'question' });
+
+      // Listen for answers
+      const ansRef = roomRef.child('answers/q' + idx);
+      listen(ansRef, 'value', snap => {
+        const answers = snap.val() || {};
+        const counts = [0, 0, 0, 0];
+        Object.values(answers).forEach(a => {
+          if (a.choice >= 0 && a.choice <= 3) counts[a.choice]++;
+        });
+        for (let i = 0; i < 4; i++) {
+          const el = document.getElementById('hostCount' + i);
+          if (el) el.textContent = counts[i];
+        }
+        const total = Object.keys(answers).length;
+        document.getElementById('onlineHostAnswered').textContent = total + ' answered';
+      });
+
+      // Start timer
+      hostStartTimer(onlineGame.timePerQ);
+
+      show('screen-online-host-q');
+      SOUND.ensure();
+      SOUND.playMusic('countdown');
+    }
+
+    function hostStartTimer(seconds) {
+      onlineGame.timeLeft = seconds;
+      const circle = document.getElementById('onlineHostTimerCircle');
+      const textEl = document.getElementById('onlineHostTimerText');
+      const C = 2 * Math.PI * 30;
+      circle.style.strokeDasharray = C;
+      circle.style.strokeDashoffset = '0';
+      textEl.textContent = seconds;
+
+      if (onlineGame.timerId) clearInterval(onlineGame.timerId);
+      onlineGame.timerId = setInterval(() => {
+        onlineGame.timeLeft--;
+        textEl.textContent = Math.max(0, onlineGame.timeLeft);
+        const frac = 1 - (onlineGame.timeLeft / seconds);
+        circle.style.strokeDashoffset = (frac * C).toString();
+        if (onlineGame.timeLeft <= 5) {
+          circle.style.stroke = 'var(--pop-red)';
+          SOUND.stinger('tick');
+        }
+
+        if (onlineGame.timeLeft <= 0) {
+          clearInterval(onlineGame.timerId);
+          onlineGame.timerId = null;
+          hostTimeUp();
+        }
+      }, 1000);
+    }
+
+    async function hostTimeUp() {
+      SOUND.stopMusic();
+      const idx = onlineGame.currentIndex;
+      const q = onlineGame.questions[idx];
+      const correct = q.correctIndex;
+
+      // Reveal correct/wrong on host bars
+      for (let i = 0; i < q.options.length; i++) {
+        const bar = document.getElementById('hostBar' + i);
+        if (bar) bar.classList.add(i === correct ? 'correct' : 'wrong');
+      }
+
+      // Calculate scores for this round
+      const ansSnap = await roomRef.child('answers/q' + idx).once('value');
+      const answers = ansSnap.val() || {};
+      const updates = {};
+      Object.entries(answers).forEach(([pid, a]) => {
+        if (a.choice === correct) {
+          const timeBonus = Math.round((a.timeLeft / onlineGame.timePerQ) * 500);
+          const points = 500 + timeBonus;
+          updates['players/' + pid + '/score'] = firebase.database.ServerValue.increment(points);
+          updates['answers/q' + idx + '/' + pid + '/points'] = points;
+        } else {
+          updates['answers/q' + idx + '/' + pid + '/points'] = 0;
+        }
+      });
+      updates['status'] = 'results';
+      await roomRef.update(updates);
+
+      SOUND.stinger(correct >= 0 ? 'correct' : 'wrong');
+
+      // Wait 3 seconds then show leaderboard
+      setTimeout(() => hostShowLeaderboard(), 3000);
+    }
+
+    async function hostShowLeaderboard() {
+      const snap = await roomRef.child('players').once('value');
+      const players = snap.val() || {};
+      const sorted = Object.entries(players)
+        .map(([id, p]) => ({ id, name: p.name, score: p.score || 0 }))
+        .sort((a, b) => b.score - a.score);
+
+      renderLeaderboard(sorted, onlineGame.currentIndex + 1);
+
+      const isLast = onlineGame.currentIndex >= onlineGame.questions.length - 1;
+      const nextBtn = document.getElementById('lbNextBtn');
+      const waitMsg = document.getElementById('lbPlayerWait');
+
+      if (role === 'host') {
+        if (isLast) {
+          nextBtn.textContent = 'Show Final Podium 🏆';
+          nextBtn.onclick = () => hostShowPodium(sorted);
+        } else {
+          nextBtn.textContent = 'Next question →';
+          nextBtn.onclick = () => ONLINE.hostNextQuestion();
+        }
+        nextBtn.style.display = '';
+        waitMsg.style.display = 'none';
+      } else {
+        nextBtn.style.display = 'none';
+        waitMsg.style.display = '';
+        waitMsg.textContent = isLast ? 'Waiting for final results…' : 'Waiting for next question…';
+      }
+
+      await roomRef.update({ status: 'leaderboard' });
+      show('screen-online-leaderboard');
+      SOUND.playMusic('category');
+    }
+
+    function renderLeaderboard(sorted, afterQ) {
+      document.getElementById('lbSubtitle').textContent = 'After question ' + afterQ;
+      const medals = ['🥇','🥈','🥉'];
+      const list = document.getElementById('onlineLeaderboard');
+      list.innerHTML = sorted.slice(0, 10).map((p, i) => {
+        const medal = i < 3 ? medals[i] : (i + 1);
+        return `<li style="animation-delay:${i * 0.08}s">
+          <span><span class="lb-rank">${medal}</span>${escapeHtml(p.name)}</span>
+          <span class="lb-score">${p.score.toLocaleString()} pts</span>
+        </li>`;
+      }).join('');
+    }
+
+    /* ── HOST: Next Question ── */
+    async function hostNextQuestion() {
+      onlineGame.currentIndex++;
+      await roomRef.update({ status: 'question', currentQuestion: onlineGame.currentIndex });
+      hostShowQuestion(onlineGame.currentIndex);
+    }
+
+    /* ── HOST: Final Podium ── */
+    async function hostShowPodium(sorted) {
+      await roomRef.update({ status: 'podium' });
+      renderPodium(sorted);
+      show('screen-online-podium');
+      SOUND.stinger('podium');
+      SOUND.playMusic('podium');
+      setTimeout(() => CONFETTI.burst(300), 400);
+      setTimeout(() => CONFETTI.burst(200), 1200);
+      setTimeout(() => CONFETTI.burst(150), 2200);
+    }
+
+    function renderPodium(sorted) {
+      const top3 = sorted.slice(0, 3);
+      const avatars = ['👑','⭐','🌟'];
+      const barCls = ['gold','silver','bronze'];
+      const wrap = document.getElementById('podiumWrap');
+
+      // Arrange: 2nd, 1st, 3rd
+      const order = top3.length >= 3 ? [top3[1], top3[0], top3[2]] : (top3.length === 2 ? [top3[1], top3[0]] : [top3[0]]);
+      const orderIdx = top3.length >= 3 ? [1, 0, 2] : (top3.length === 2 ? [1, 0] : [0]);
+
+      wrap.innerHTML = order.map((p, oi) => {
+        const rank = orderIdx[oi];
+        return `<div class="podium-col">
+          <div class="podium-avatar">${avatars[rank] || '🎮'}</div>
+          <div class="podium-name">${escapeHtml(p.name)}</div>
+          <div class="podium-bar ${barCls[rank]}">
+            ${rank + 1}
+            <div class="podium-score">${p.score.toLocaleString()} pts</div>
+          </div>
+        </div>`;
+      }).join('');
+
+      // Full results list
+      const medals = ['🥇','🥈','🥉'];
+      document.getElementById('podiumFullList').innerHTML = sorted.map((p, i) => {
+        const medal = i < 3 ? medals[i] : (i + 1);
+        return `<li style="animation-delay:${i * 0.08}s">
+          <span><span class="lb-rank">${medal}</span>${escapeHtml(p.name)}</span>
+          <span class="lb-score">${p.score.toLocaleString()} pts</span>
+        </li>`;
+      }).join('');
+    }
+
+    /* ── PLAYER: Join Room ── */
+    async function joinRoom() {
+      const code = (document.getElementById('joinCode').value || '').trim().toUpperCase();
+      const name = (document.getElementById('joinNickname').value || '').trim();
+
+      if (code.length < 4) { toast('Enter the game PIN shown on the host screen.', true); return; }
+      if (!name) { toast('Enter a nickname!', true); return; }
+
+      const ref = getDb().ref('rooms/' + code);
+      const snap = await ref.once('value');
+      if (!snap.exists()) { toast('Room not found. Check the PIN.', true); return; }
+      const room = snap.val();
+      if (room.status !== 'lobby') { toast('This game has already started.', true); return; }
+
+      playerId = genPlayerId();
+      playerName = name;
+      roomRef = ref;
+      roomCode = code;
+      role = 'player';
+      onlineGame.questions = room.questions || [];
+      onlineGame.timePerQ = room.settings?.timePerQ || 20;
+
+      await roomRef.child('players/' + playerId).set({ name, score: 0, joinedAt: firebase.database.ServerValue.TIMESTAMP });
+      // Remove player on disconnect
+      roomRef.child('players/' + playerId).onDisconnect().remove();
+
+      showPlayerWait();
+      listenForGameState();
+    }
+
+    function showPlayerWait() {
+      document.getElementById('playerWaitMsg').textContent = 'Waiting for the host to start the game…';
+
+      listen(roomRef.child('players'), 'value', snap => {
+        const players = snap.val() || {};
+        const names = Object.values(players).map(p => p.name);
+        document.getElementById('waitPlayerCount').textContent = names.length + ' player' + (names.length !== 1 ? 's' : '');
+        document.getElementById('waitPlayerList').innerHTML = names.map(n =>
+          `<span class="lobby-chip">${escapeHtml(n)}</span>`
+        ).join('');
+      });
+
+      show('screen-online-player-wait');
+    }
+
+    function listenForGameState() {
+      listen(roomRef, 'value', snap => {
+        const room = snap.val();
+        if (!room) {
+          toast('Room was closed by the host.', true);
+          cleanup();
+          goWelcome();
+          return;
+        }
+
+        const status = room.status;
+        const qIdx = room.currentQuestion;
+
+        if (status === 'question' && qIdx >= 0) {
+          if (onlineGame.currentIndex !== qIdx) {
+            onlineGame.currentIndex = qIdx;
+            onlineGame.answered = false;
+            playerShowQuestion(qIdx);
+          }
+        } else if (status === 'leaderboard' || status === 'results') {
+          if (role === 'player' && document.querySelector('#screen-online-leaderboard.active') === null) {
+            // Player sees leaderboard too
+            const players = room.players || {};
+            const sorted = Object.entries(players)
+              .map(([id, p]) => ({ id, name: p.name, score: p.score || 0 }))
+              .sort((a, b) => b.score - a.score);
+            renderLeaderboard(sorted, qIdx + 1);
+            document.getElementById('lbNextBtn').style.display = 'none';
+            document.getElementById('lbPlayerWait').style.display = '';
+            const isLast = qIdx >= (room.questions?.length || 0) - 1;
+            document.getElementById('lbPlayerWait').textContent = isLast ? 'Waiting for final results…' : 'Waiting for next question…';
+            show('screen-online-leaderboard');
+          }
+        } else if (status === 'podium') {
+          if (role === 'player') {
+            const players = room.players || {};
+            const sorted = Object.entries(players)
+              .map(([id, p]) => ({ id, name: p.name, score: p.score || 0 }))
+              .sort((a, b) => b.score - a.score);
+            renderPodium(sorted);
+            show('screen-online-podium');
+            SOUND.stinger('podium');
+            SOUND.playMusic('podium');
+            setTimeout(() => CONFETTI.burst(300), 400);
+            setTimeout(() => CONFETTI.burst(200), 1200);
+          }
+        }
+      });
+    }
+
+    function playerShowQuestion(idx) {
+      const total = onlineGame.questions.length;
+      document.getElementById('playerQProgress').textContent = 'Question ' + (idx + 1) + ' of ' + total;
+      document.getElementById('playerAnswerFeedback').textContent = '';
+
+      // Reset buttons
+      document.querySelectorAll('.player-answer-btn').forEach(btn => {
+        btn.classList.remove('selected');
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      });
+
+      show('screen-online-player-q');
+    }
+
+    /* ── PLAYER: Submit Answer ── */
+    async function playerAnswer(choice) {
+      if (onlineGame.answered) return;
+      onlineGame.answered = true;
+
+      // Visual feedback
+      document.querySelectorAll('.player-answer-btn').forEach((btn, i) => {
+        if (i === choice) btn.classList.add('selected');
+        else { btn.style.opacity = '0.3'; btn.disabled = true; }
+      });
+
+      const timeLeft = onlineGame.timeLeft || 0;
+      await roomRef.child('answers/q' + onlineGame.currentIndex + '/' + playerId).set({
+        choice,
+        timeLeft,
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+      });
+
+      // Check if correct
+      const q = onlineGame.questions[onlineGame.currentIndex];
+      const isCorrect = choice === q.correctIndex;
+      const fb = document.getElementById('playerAnswerFeedback');
+      if (isCorrect) {
+        fb.textContent = '✅ Correct!';
+        fb.style.color = 'var(--mint-deep)';
+        SOUND.stinger('correct');
+      } else {
+        fb.textContent = '❌ Not quite…';
+        fb.style.color = 'var(--pop-red)';
+        SOUND.stinger('wrong');
+      }
+    }
+
+    /* ── Destroy / Leave Room ── */
+    async function destroyRoom() {
+      if (role === 'host' && roomRef) {
+        try { await roomRef.remove(); } catch(e) {}
+      } else if (role === 'player' && roomRef && playerId) {
+        try { await roomRef.child('players/' + playerId).remove(); } catch(e) {}
+      }
+      cleanup();
+      goWelcome();
+    }
+
+    /* ── Auto-join from URL param ── */
+    function checkUrlJoin() {
+      const params = new URLSearchParams(window.location.search);
+      const room = params.get('room');
+      if (room && firebaseReady) {
+        document.getElementById('joinCode').value = room;
+        show('screen-online-join');
+        document.getElementById('joinNickname').focus();
+        // Clean URL
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
+
+    return {
+      createRoom, joinRoom, playerAnswer,
+      hostStartGame, hostNextQuestion, destroyRoom,
+      checkUrlJoin
+    };
+  })();
+
   /* boot */
   init();
+  ONLINE.checkUrlJoin();
 </script>
 </body>
 </html>
