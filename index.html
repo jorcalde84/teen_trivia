@@ -1924,7 +1924,10 @@
     <div class="online-center" style="justify-content:flex-start;padding-top:16px;">
       <div style="display:flex;justify-content:space-between;width:100%;max-width:800px;align-items:center;margin-bottom:8px;">
         <div class="qprogress" id="onlineHostProgress">1 / 10</div>
-        <div class="qcat" id="onlineHostCat" style="background:var(--white);color:var(--mint-deep);padding:8px 16px;border-radius:999px;font-weight:700;font-size:.85rem;box-shadow:var(--shadow-soft);">Category</div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="qcat" id="onlineHostCat" style="background:var(--white);color:var(--mint-deep);padding:8px 16px;border-radius:999px;font-weight:700;font-size:.85rem;box-shadow:var(--shadow-soft);">Category</div>
+          <button class="btn btn-secondary" style="padding:8px 18px;font-size:.82rem;" onclick="ONLINE.cancelGame()">Cancel</button>
+        </div>
       </div>
       <div class="host-q-card">
         <div class="q-image-wrap" id="onlineHostImgWrap" style="display:none;margin-bottom:16px;">
@@ -1959,6 +1962,7 @@
         <button class="player-answer-btn a-pink" onclick="ONLINE.playerAnswer(3)">■</button>
       </div>
       <div id="playerAnswerFeedback" style="margin-top:20px;font-weight:700;font-size:1.1rem;color:var(--mint-deep);"></div>
+      <button class="btn btn-ghost" style="margin-top:16px;" onclick="ONLINE.leaveGame()">Leave game</button>
     </div>
   </section>
 
@@ -3831,14 +3835,13 @@
         imgWrap.style.display = 'none';
       }
 
-      // Answer bars (use same classes as player buttons → matched gradients)
+      // Answer bars (no vote counts shown — prevents influencing players)
       const classes = ['a-red', 'a-blue', 'a-yellow', 'a-pink'];
       const shapes = ['▲','◆','●','■'];
       const grid = document.getElementById('onlineHostAnswers');
       grid.innerHTML = q.options.map((opt, i) =>
         `<div class="host-answer-bar ${classes[i]}" id="hostBar${i}">
           <span><span style="margin-right:8px;">${shapes[i]}</span>${escapeHtml(opt)}</span>
-          <span class="host-answer-count" id="hostCount${i}">0</span>
         </div>`
       ).join('');
 
@@ -3848,18 +3851,10 @@
       roomRef.child('answers/q' + idx).remove();
       roomRef.update({ currentQuestion: idx, status: 'question' });
 
-      // Listen for answers
+      // Listen for answer count (total only — no per-option breakdown)
       const ansRef = roomRef.child('answers/q' + idx);
       listen(ansRef, 'value', snap => {
         const answers = snap.val() || {};
-        const counts = [0, 0, 0, 0];
-        Object.values(answers).forEach(a => {
-          if (a.choice >= 0 && a.choice <= 3) counts[a.choice]++;
-        });
-        for (let i = 0; i < 4; i++) {
-          const el = document.getElementById('hostCount' + i);
-          if (el) el.textContent = counts[i];
-        }
         const total = Object.keys(answers).length;
         document.getElementById('onlineHostAnswered').textContent = total + ' answered';
       });
@@ -3908,20 +3903,31 @@
       const q = onlineGame.questions[idx];
       const correct = q.correctIndex;
 
-      // Reveal correct/wrong on host bars
-      for (let i = 0; i < q.options.length; i++) {
-        const bar = document.getElementById('hostBar' + i);
-        if (bar) bar.classList.add(i === correct ? 'correct' : 'wrong');
-      }
-
-      // Calculate scores for this round
+      // Reveal correct/wrong on host bars + show vote counts NOW (safe after time is up)
       const ansSnap = await roomRef.child('answers/q' + idx).once('value');
       const answers = ansSnap.val() || {};
+      const counts = [0, 0, 0, 0];
+      Object.values(answers).forEach(a => {
+        if (a.choice >= 0 && a.choice <= 3) counts[a.choice]++;
+      });
+      for (let i = 0; i < q.options.length; i++) {
+        const bar = document.getElementById('hostBar' + i);
+        if (bar) {
+          bar.classList.add(i === correct ? 'correct' : 'wrong');
+          // Append the count badge now that voting is closed
+          const badge = document.createElement('span');
+          badge.className = 'host-answer-count';
+          badge.textContent = counts[i];
+          bar.appendChild(badge);
+        }
+      }
+
+      // Calculate scores — aligned with Solo mode: base 600 + speed bonus up to 400
       const updates = {};
       Object.entries(answers).forEach(([pid, a]) => {
         if (a.choice === correct) {
-          const timeBonus = Math.round((a.timeLeft / onlineGame.timePerQ) * 500);
-          const points = 500 + timeBonus;
+          const speed = Math.max(0, a.timeLeft) / onlineGame.timePerQ;
+          const points = Math.round(600 + speed * 400);
           updates['players/' + pid + '/score'] = firebase.database.ServerValue.increment(points);
           updates['answers/q' + idx + '/' + pid + '/points'] = points;
         } else {
@@ -4212,6 +4218,21 @@
       goWelcome();
     }
 
+    /* ── Cancel mid-game (host) ── */
+    async function cancelGame() {
+      if (!confirm('End this game for everyone? All progress will be lost.')) return;
+      if (onlineGame.timerId) { clearInterval(onlineGame.timerId); onlineGame.timerId = null; }
+      SOUND.stopMusic();
+      await destroyRoom();
+    }
+
+    /* ── Leave mid-game (player) ── */
+    async function leaveGame() {
+      if (!confirm('Leave this game? You won\'t be able to rejoin.')) return;
+      SOUND.stopMusic();
+      await destroyRoom();
+    }
+
     /* ── Auto-join from URL param ── */
     function checkUrlJoin() {
       const params = new URLSearchParams(window.location.search);
@@ -4228,6 +4249,7 @@
     return {
       createRoom, joinRoom, playerAnswer,
       hostStartGame, hostNextQuestion, destroyRoom,
+      cancelGame, leaveGame,
       checkUrlJoin
     };
   })();
