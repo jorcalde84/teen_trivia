@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "title": "Teen Trivia – Custom Question Pack",
-  "exportedAt": "2026-05-05T10:26:04.307Z",
+  "exportedAt": "2026-05-06T11:15:46.694Z",
   "questions": [
     {
       "category": "Pop Music",
@@ -321,7 +321,7 @@
       ],
       "correctIndex": 0,
       "id": 26,
-      "imageUrl": "https://static.wikia.nocookie.net/thq/images/1/1e/Disney_Pixar_background.png/revision/latest/thumbnail/width/360/height/450?cb=20180811112651"
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTj8RDm3LLxwCiPbe87UKyRVAo1RwayVbZAwA&s"
     },
     {
       "category": "TV Shows",
@@ -3214,7 +3214,7 @@
         "Bailey"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Finding_Dory.jpg",
+      "imageUrl": "https://www.rollingstone.com/wp-content/uploads/2023/05/Finding-Nemo-Anniversary.jpg?crop=2px%2C65px%2C1793px%2C1009px&resize=1600%2C900",
       "id": 253
     },
     {
@@ -3227,7 +3227,7 @@
         "Cars"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Inside_Out_%282015_film%29_poster.jpg",
+      "imageUrl": "https://www.hollywoodinsider.com/wp-content/uploads/2020/05/Hollywood-Insider-Top-Pixar-Movies-Finding-Nemo-Toy-Story-Up.jpg",
       "id": 254
     },
     {
@@ -3240,7 +3240,7 @@
         "Fear"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Inside_Out_%282015_film%29_poster.jpg",
+      "imageUrl": "https://cdn.theatlantic.com/thumbor/9s9oa5rV0yvOsw29zawlL9Qd934=/0x156:3000x1844/960x540/media/img/mt/2015/06/inside_out_personality_islands/original.jpg",
       "id": 255
     },
     {
@@ -3279,7 +3279,7 @@
         "Onward"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Coco_%282017_film%29_poster.jpg",
+      "imageUrl": "https://lumiere-a.akamaihd.net/v1/images/au_shop_pixar_po_card_m_255f0ce5.jpeg?region=0,32,1024,576&width=960",
       "id": 258
     },
     {
@@ -3292,7 +3292,7 @@
         "Train dragons"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Coco_%282017_film%29_poster.jpg",
+      "imageUrl": "https://imageio.forbes.com/blogs-images/danidiplacido/files/2017/11/disney-pixars-coco-ht-mem-171117_4x3_992.jpg?height=533&width=711&fit=bounds",
       "id": 259
     },
     {
@@ -3305,7 +3305,7 @@
         "A Bug's Life"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/RatatouillePoster.jpg",
+      "imageUrl": "https://www.hollywoodinsider.com/wp-content/uploads/2020/05/Hollywood-Insider-Top-Pixar-Movies-Finding-Nemo-Toy-Story-Up.jpg",
       "id": 260
     },
     {
@@ -3331,7 +3331,7 @@
         "Elemental"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/The_Incredibles.jpg",
+      "imageUrl": "https://i0.wp.com/awardsradar.com/wp-content/uploads/2024/06/pixar_animation_studios_wallpaper__1995_2023__by_coolteen15_dg1u1e3-fullview.jpg?fit=1280%2C721&ssl=1",
       "id": 262
     },
     {
@@ -3357,7 +3357,7 @@
         "Wall-E"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Up_%282009_film%29.jpg",
+      "imageUrl": "https://www.mickeynews.com/wp-content/uploads/2024/05/8e790984-1280x640.jpg",
       "id": 264
     },
     {
@@ -3383,7 +3383,7 @@
         "Rapunzel"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Brave_Poster.jpg",
+      "imageUrl": "https://www.hollywoodinsider.com/wp-content/uploads/2020/05/Hollywood-Insider-Top-Pixar-Movies-Finding-Nemo-Toy-Story-Up.jpg",
       "id": 266
     },
     {
@@ -3396,7 +3396,7 @@
         "Onward"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/WALL-Eposter.jpg",
+      "imageUrl": "https://www.mickeynews.com/wp-content/uploads/2024/05/8e790984-1280x640.jpg",
       "id": 267
     },
     {
@@ -3409,7 +3409,7 @@
         "Chick Hicks"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Cars_2006.jpg",
+      "imageUrl": "https://variety.com/wp-content/uploads/2016/06/cars.jpg?w=1000&h=667&crop=1",
       "id": 268
     },
     {
@@ -3422,7 +3422,7 @@
         "Onward"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Elemental_%282023_film%29_poster.jpg",
+      "imageUrl": "https://www.hollywoodinsider.com/wp-content/uploads/2020/05/Hollywood-Insider-Top-Pixar-Movies-Finding-Nemo-Toy-Story-Up.jpg",
       "id": 269
     },
     {
@@ -3747,7 +3747,8 @@
         "Coco"
       ],
       "correctIndex": 0,
-      "id": 294
+      "id": 294,
+      "imageUrl": "https://res.cloudinary.com/jerrick/image/upload/v1735872783/6777510fbadb78001d9307a3.jpg"
     },
     {
       "category": "Disney & Pixar",
@@ -3772,7 +3773,8 @@
         "Mulan"
       ],
       "correctIndex": 0,
-      "id": 296
+      "id": 296,
+      "imageUrl": "https://res.cloudinary.com/jerrick/image/upload/v1735872783/6777510fbadb78001d9307a3.jpg"
     },
     {
       "category": "Disney & Pixar",
@@ -3908,7 +3910,7 @@
         "Fox"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://media.wired.com/photos/622aaa9ae5e91991368ff669/1:1/w_1350,h_1350,c_limit/Turning-Red-Pixar-Still-Culture.jpeg",
+      "imageUrl": "https://d23.com/app/uploads/2022/03/1180w-600h_031022_meet-the-characters-turning-red_03.jpg",
       "id": 307
     },
     {
@@ -4022,7 +4024,7 @@
         "Cars"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://gcp-na-images.contentstack.com/v3/assets/bltea6093859af6183b/blt79e8b780e8a9ada6/698a45ddcabb1dddcde525c9/360_arat_0618.jpg?branch=production&width=3840&quality=75&auto=webp&crop=3:2",
+      "imageUrl": "https://s3.us-west-1.amazonaws.com/redwood-labs/showpage/uploads/images/43357827-8588-4ec4-930d-2fa76846d1ce.jpg",
       "id": 316
     },
     {
@@ -4035,7 +4037,7 @@
         "Up"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Coco_(2017_film)_poster.jpg",
+      "imageUrl": "https://s3.us-west-1.amazonaws.com/redwood-labs/showpage/uploads/images/43357827-8588-4ec4-930d-2fa76846d1ce.jpg",
       "id": 317
     },
     {
@@ -4048,7 +4050,7 @@
         "Violet"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/Brave_Poster.jpg",
+      "imageUrl": "https://static.wikia.nocookie.net/disney/images/d/d2/Profile_-_Merida.jpeg/revision/latest?cb=20230913063318",
       "id": 318
     },
     {
@@ -4061,7 +4063,7 @@
         "Elemental"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/The_Incredibles.jpg",
+      "imageUrl": "https://jonnegroni.com/wp-content/uploads/2017/06/untitled-design-3.jpg?w=798",
       "id": 319
     },
     {
@@ -4074,7 +4076,7 @@
         "Shooting ice"
       ],
       "correctIndex": 0,
-      "imageUrl": "https://en.wikipedia.org/wiki/Special:FilePath/The_Incredibles.jpg",
+      "imageUrl": "https://a1cf74336522e87f135f-2f21ace9a6cf0052456644b80fa06d4f.ssl.cf2.rackcdn.com/images/characters/large/800/Violet-Parr.The-Incredibles.webp",
       "id": 320
     },
     {
@@ -4092,7 +4094,7 @@
     },
     {
       "category": "Disney & Pixar",
-      "question": "Which Disney movie has a young woman named Raya searching for the last dragon?",
+      "question": "Which Disney movie has a young woman searching for the last dragon?",
       "options": [
         "Raya and the Last Dragon",
         "Mulan",
@@ -4100,7 +4102,8 @@
         "Brave"
       ],
       "correctIndex": 0,
-      "id": 322
+      "id": 322,
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/en/a/aa/Disney_Sisu.png"
     },
     {
       "category": "Brands",
@@ -6317,7 +6320,8 @@
         "Constellation"
       ],
       "correctIndex": 3,
-      "id": 501
+      "id": 501,
+      "imageUrl": "https://live-production.wcms.abc-cdn.net.au/91e467de0519091b63560d39246e3d7e?impolicy=wcms_crop_resize&cropH=316&cropW=560&xPos=0&yPos=204&width=862&height=485"
     },
     {
       "category": "General Knowledge",
@@ -7225,8 +7229,7 @@
         "The Sun"
       ],
       "correctIndex": 0,
-      "id": 571,
-      "imageUrl": "https://source.unsplash.com/640x420/?The+Moon+space"
+      "id": 571
     },
     {
       "category": "Science & Space",
@@ -7239,7 +7242,7 @@
       ],
       "correctIndex": 2,
       "id": 572,
-      "imageUrl": "https://source.unsplash.com/640x420/?Milky+Way+space"
+      "imageUrl": "https://cdn.britannica.com/29/148329-050-269A9EFE/night-sky-Milky-Way-Galaxy.jpg"
     },
     {
       "category": "Science & Space",
@@ -7278,7 +7281,7 @@
       ],
       "correctIndex": 2,
       "id": 575,
-      "imageUrl": "https://source.unsplash.com/640x420/?Jupiter+space"
+      "imageUrl": "https://www.meteorologiaenred.com/wp-content/uploads/2020/06/Sat%C3%A9lites-naturales.jpg"
     },
     {
       "category": "Science & Space",
@@ -7291,7 +7294,7 @@
       ],
       "correctIndex": 1,
       "id": 576,
-      "imageUrl": "https://source.unsplash.com/640x420/?Gravity+space"
+      "imageUrl": "https://www.snexplores.org/wp-content/uploads/sites/3/2019/11/a797_1200.2.rc_.FOB_.jpg"
     },
     {
       "category": "Science & Space",
@@ -7304,7 +7307,7 @@
       ],
       "correctIndex": 1,
       "id": 577,
-      "imageUrl": "https://source.unsplash.com/640x420/?Pluto+space"
+      "imageUrl": "https://cdn.mos.cms.futurecdn.net/DoZSMXF87kCuzbymsuEFHo.jpg"
     },
     {
       "category": "Science & Space",
@@ -7316,8 +7319,7 @@
         "Asteroid"
       ],
       "correctIndex": 2,
-      "id": 578,
-      "imageUrl": "https://source.unsplash.com/640x420/?Galaxy+space"
+      "id": 578
     },
     {
       "category": "Science & Space",
@@ -7369,7 +7371,7 @@
       ],
       "correctIndex": 1,
       "id": 582,
-      "imageUrl": "https://source.unsplash.com/640x420/?Orbit+space"
+      "imageUrl": "https://cdn.mos.cms.futurecdn.net/wiCxuWfzL2n3dqEYmytHMb.jpg"
     },
     {
       "category": "Science & Space",
@@ -7382,7 +7384,7 @@
       ],
       "correctIndex": 0,
       "id": 583,
-      "imageUrl": "https://source.unsplash.com/640x420/?Neptune+space"
+      "imageUrl": "https://www.sciencefriday.com/wp-content/uploads/2022/04/Neptune.jpg"
     },
     {
       "category": "Science & Space",
@@ -7395,7 +7397,7 @@
       ],
       "correctIndex": 2,
       "id": 584,
-      "imageUrl": "https://source.unsplash.com/640x420/?New+Moon+space"
+      "imageUrl": "https://www.csiro.au/-/media/Owned-articles/2026/04-April/Moon/Credit-Michael-Coombes-8-April-2026.jpg?mw=1200&hash=4DB3D62D98A600AC9287C6A40B836422"
     },
     {
       "category": "Science & Space",
@@ -7434,7 +7436,7 @@
       ],
       "correctIndex": 3,
       "id": 587,
-      "imageUrl": "https://source.unsplash.com/640x420/?Exoplanet+space"
+      "imageUrl": "https://www.astronomy.com/wp-content/uploads/2023/08/holiday16x9.jpg"
     },
     {
       "category": "Animals",
@@ -9278,7 +9280,7 @@
       ],
       "correctIndex": 3,
       "id": 729,
-      "imageUrl": "https://source.unsplash.com/640x420/?HMS+Endeavour+history"
+      "imageUrl": "https://dictionaryofsydney.org/sites/default/files/media/a14dad85340df73d8466246c7f9aaa17e346e3cf.jpg"
     },
     {
       "category": "History",
@@ -9291,7 +9293,7 @@
       ],
       "correctIndex": 1,
       "id": 730,
-      "imageUrl": "https://source.unsplash.com/640x420/?Federation+history"
+      "imageUrl": "https://www.nma.gov.au/__data/assets/image/0010/547876/MA52731162-opening-parliament-1200w.jpg"
     },
     {
       "category": "History",
@@ -9317,7 +9319,7 @@
       ],
       "correctIndex": 1,
       "id": 732,
-      "imageUrl": "https://source.unsplash.com/640x420/?Eureka+Stockade+history"
+      "imageUrl": "https://www.ballarat.vic.gov.au/sites/default/files/2023-11/FL15744767.jpg"
     },
     {
       "category": "History",
@@ -9330,7 +9332,7 @@
       ],
       "correctIndex": 1,
       "id": 733,
-      "imageUrl": "https://source.unsplash.com/640x420/?People+searching+for+gold+history"
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/An_Australian_Gold_Diggings.jpg/500px-An_Australian_Gold_Diggings.jpg"
     },
     {
       "category": "History",
@@ -9343,7 +9345,7 @@
       ],
       "correctIndex": 0,
       "id": 734,
-      "imageUrl": "https://source.unsplash.com/640x420/?ANZAC+Day+history"
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZKM9QVI7FuH4gIri84inkJH00d4piaYg-ug&s"
     },
     {
       "category": "History",
@@ -9369,7 +9371,7 @@
       ],
       "correctIndex": 1,
       "id": 736,
-      "imageUrl": "https://source.unsplash.com/640x420/?Sydney+history"
+      "imageUrl": "https://live-production.wcms.abc-cdn.net.au/53c3b1b59766e802edf6b604a9a33f65?impolicy=wcms_crop_resize&cropH=1148&cropW=1726&xPos=102&yPos=160&width=862&height=575"
     },
     {
       "category": "History",
@@ -9395,7 +9397,7 @@
       ],
       "correctIndex": 2,
       "id": 738,
-      "imageUrl": "https://source.unsplash.com/640x420/?Dame+Enid+Lyons+history"
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Enid_Lyons_1930s.jpg/250px-Enid_Lyons_1930s.jpg"
     },
     {
       "category": "History",
@@ -9447,7 +9449,7 @@
       ],
       "correctIndex": 0,
       "id": 742,
-      "imageUrl": "https://source.unsplash.com/640x420/?Stolen+Generations+history"
+      "imageUrl": "https://australianstogether.org.au/assets/Uploads/hero/Stolen-Generation-header-image__FocusFillWyItMC4wMCIsIjAuMDYiLDE0MDAsNjc0XQ.jpg"
     },
     {
       "category": "History",
@@ -9512,7 +9514,7 @@
       ],
       "correctIndex": 3,
       "id": 747,
-      "imageUrl": "https://source.unsplash.com/640x420/?A+queen+of+Egypt+history"
+      "imageUrl": "https://th-thumbnailer.cdn-si-edu.com/159lw0q_ZMf1NINqw7vM-aMxAJQ=/1280x720/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/Presence-Cleopatra-engraving-631.jpg"
     },
     {
       "category": "History",
@@ -9538,7 +9540,7 @@
       ],
       "correctIndex": 3,
       "id": 749,
-      "imageUrl": "https://source.unsplash.com/640x420/?Hadrian%E2%80%99s+Wall+history"
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Hadrian%27s_Wall_at_Sycamore_Gap_-_geograph.org.uk_-_4593047.jpg/500px-Hadrian%27s_Wall_at_Sycamore_Gap_-_geograph.org.uk_-_4593047.jpg"
     },
     {
       "category": "History",
@@ -9551,7 +9553,7 @@
       ],
       "correctIndex": 2,
       "id": 750,
-      "imageUrl": "https://source.unsplash.com/640x420/?Ancient+China+history"
+      "imageUrl": "https://cdn.britannica.com/89/179589-138-3EE27C94/Overview-Great-Wall-of-China.jpg?w=800&h=450&c=crop"
     },
     {
       "category": "History",
@@ -9577,7 +9579,7 @@
       ],
       "correctIndex": 0,
       "id": 752,
-      "imageUrl": "https://source.unsplash.com/640x420/?Inca+history"
+      "imageUrl": "https://www.machu-picchu.org/wp-content/uploads/2025/12/Historic-Sanctuary-Of-Machu-Picchu.jpg"
     },
     {
       "category": "History",
@@ -9590,7 +9592,7 @@
       ],
       "correctIndex": 2,
       "id": 753,
-      "imageUrl": "https://source.unsplash.com/640x420/?Maya+history"
+      "imageUrl": "https://montecristomagazine.com/wp-content/uploads/2025/12/Travel-Chichen-Itza_Page_1_Image_0001.webp"
     },
     {
       "category": "History",
@@ -9603,7 +9605,7 @@
       ],
       "correctIndex": 2,
       "id": 754,
-      "imageUrl": "https://source.unsplash.com/640x420/?Vikings+history"
+      "imageUrl": "https://thewarriorlodge.com/cdn/shop/articles/4cf10df10c1e05816b0af74c0934f544_3754886e-8d6d-4fa8-83b4-4665496afe1e.jpg?v=1771668302"
     },
     {
       "category": "History",
@@ -9615,8 +9617,7 @@
         "Vikings"
       ],
       "correctIndex": 2,
-      "id": 755,
-      "imageUrl": "https://source.unsplash.com/640x420/?Samurai+history"
+      "id": 755
     },
     {
       "category": "History",
@@ -9629,7 +9630,7 @@
       ],
       "correctIndex": 0,
       "id": 756,
-      "imageUrl": "https://source.unsplash.com/640x420/?A+period+of+new+art%2C+science%2C+and+learning+history"
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2Q1BU2JdB1OZhFr2J5NY2KzG4QlrHqE1mQw&s"
     },
     {
       "category": "History",
@@ -9642,7 +9643,7 @@
       ],
       "correctIndex": 2,
       "id": 757,
-      "imageUrl": "https://source.unsplash.com/640x420/?Leonardo+da+Vinci+history"
+      "imageUrl": "https://cdn.britannica.com/87/2087-050-8B2A01CD/Mona-Lisa-oil-wood-panel-Leonardo-da.jpg"
     },
     {
       "category": "History",
@@ -9655,7 +9656,7 @@
       ],
       "correctIndex": 1,
       "id": 758,
-      "imageUrl": "https://source.unsplash.com/640x420/?Johannes+Gutenberg+history"
+      "imageUrl": "https://cdn.britannica.com/89/171689-138-FCD8F373/history-printing-press-work-discussion-Johannes-Gutenberg.jpg?w=800&h=450&c=crop"
     },
     {
       "category": "History",
@@ -9668,7 +9669,7 @@
       ],
       "correctIndex": 3,
       "id": 759,
-      "imageUrl": "https://source.unsplash.com/640x420/?Galileo+Galilei+history"
+      "imageUrl": "https://www.worldhistory.org/img/c/p/1200x627/17766.png.webp"
     },
     {
       "category": "History",
@@ -9681,7 +9682,7 @@
       ],
       "correctIndex": 0,
       "id": 760,
-      "imageUrl": "https://source.unsplash.com/640x420/?World+War+II+history"
+      "imageUrl": "https://www.thoughtco.com/thmb/X-pWOWyzuOir73p3FfEH46uQ2CQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/NaziInvasion-56a48da83df78cf77282f06f.jpg"
     },
     {
       "category": "History",
@@ -9707,7 +9708,7 @@
       ],
       "correctIndex": 1,
       "id": 762,
-      "imageUrl": "https://source.unsplash.com/640x420/?It+fell+history"
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5d/Berlinermauer.jpg"
     },
     {
       "category": "History",
@@ -9720,7 +9721,7 @@
       ],
       "correctIndex": 2,
       "id": 763,
-      "imageUrl": "https://source.unsplash.com/640x420/?Neil+Armstrong+history"
+      "imageUrl": "https://live-production.wcms.abc-cdn.net.au/1ae977b2c89a0b5af9c56d513d29b6a6?impolicy=wcms_crop_resize&cropH=545&cropW=966&xPos=120&yPos=0&width=862&height=485"
     },
     {
       "category": "History",
@@ -9733,7 +9734,7 @@
       ],
       "correctIndex": 1,
       "id": 764,
-      "imageUrl": "https://source.unsplash.com/640x420/?1969+history"
+      "imageUrl": "https://live-production.wcms.abc-cdn.net.au/1ae977b2c89a0b5af9c56d513d29b6a6?impolicy=wcms_crop_resize&cropH=545&cropW=966&xPos=120&yPos=0&width=862&height=485"
     },
     {
       "category": "History",
@@ -9746,7 +9747,7 @@
       ],
       "correctIndex": 1,
       "id": 765,
-      "imageUrl": "https://source.unsplash.com/640x420/?Amelia+Earhart+history"
+      "imageUrl": "https://www.timeforkids.com/wp-content/uploads/2020/09/AG_amelia.jpg?w=1024"
     },
     {
       "category": "History",
@@ -9772,7 +9773,7 @@
       ],
       "correctIndex": 2,
       "id": 767,
-      "imageUrl": "https://source.unsplash.com/640x420/?Martin+Luther+King+Jr.+history"
+      "imageUrl": "https://res.cloudinary.com/graham-media-group/image/upload/f_auto/q_auto/c_scale,w_640/v1/media/gmg/DJPDQCNZQJBHJEYQ2DGBH3EPVU.jpg?_a=DAJHqpE+ZAAA"
     },
     {
       "category": "History",
@@ -9785,7 +9786,7 @@
       ],
       "correctIndex": 1,
       "id": 768,
-      "imageUrl": "https://source.unsplash.com/640x420/?George+Washington+history"
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Gilbert_Stuart_Williamstown_Portrait_of_George_Washington.jpg/250px-Gilbert_Stuart_Williamstown_Portrait_of_George_Washington.jpg"
     },
     {
       "category": "History",
@@ -9798,7 +9799,7 @@
       ],
       "correctIndex": 0,
       "id": 769,
-      "imageUrl": "https://source.unsplash.com/640x420/?Abraham+Lincoln+history"
+      "imageUrl": "https://images.immediate.co.uk/production/volatile/sites/7/2015/05/GettyImages-463917157-8ac3a7f-d868842-e1634139068680.jpg?quality=90&resize=554,503"
     },
     {
       "category": "History",
@@ -9824,7 +9825,7 @@
       ],
       "correctIndex": 0,
       "id": 771,
-      "imageUrl": "https://source.unsplash.com/640x420/?Alexander+Fleming+history"
+      "imageUrl": "https://ichef.bbci.co.uk/ace/standard/976/cpsprodpb/59C2/production/_103287922_gettyimages-2667900.jpg"
     },
     {
       "category": "History",
@@ -9837,7 +9838,7 @@
       ],
       "correctIndex": 1,
       "id": 772,
-      "imageUrl": "https://source.unsplash.com/640x420/?Charles+Darwin+history"
+      "imageUrl": "https://www.sciencehistory.org/wp-content/uploads/2023/04/l0063032-scaled.jpg"
     },
     {
       "category": "History",
@@ -9850,7 +9851,7 @@
       ],
       "correctIndex": 1,
       "id": 773,
-      "imageUrl": "https://source.unsplash.com/640x420/?Marie+Curie+history"
+      "imageUrl": "https://www.sciencehistory.org/wp-content/uploads/2023/04/newspaper_cover_discovery_of_radium-699x1024.jpg"
     },
     {
       "category": "History",
@@ -9889,7 +9890,7 @@
       ],
       "correctIndex": 0,
       "id": 776,
-      "imageUrl": "https://source.unsplash.com/640x420/?Spanish+flu+history"
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIo2-YWxHvWkc25fMLuyYH3jtXbVtevF7njw&s"
     },
     {
       "category": "History",
@@ -9902,7 +9903,7 @@
       ],
       "correctIndex": 0,
       "id": 777,
-      "imageUrl": "https://source.unsplash.com/640x420/?Bubonic+plague+history"
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLA97gcFsgtDi9oHK9utQ8SKMJcIxdV50S8g&s"
     },
     {
       "category": "History",
@@ -9915,7 +9916,7 @@
       ],
       "correctIndex": 1,
       "id": 778,
-      "imageUrl": "https://source.unsplash.com/640x420/?France+history"
+      "imageUrl": "https://cdn.britannica.com/82/183382-050-D832EC3A/Detail-head-crown-Statue-of-Liberty-New.jpg"
     },
     {
       "category": "History",
@@ -9928,7 +9929,7 @@
       ],
       "correctIndex": 2,
       "id": 779,
-      "imageUrl": "https://source.unsplash.com/640x420/?New+York+City+history"
+      "imageUrl": "https://cdn.britannica.com/82/183382-050-D832EC3A/Detail-head-crown-Statue-of-Liberty-New.jpg"
     },
     {
       "category": "History",
@@ -9941,7 +9942,7 @@
       ],
       "correctIndex": 3,
       "id": 780,
-      "imageUrl": "https://source.unsplash.com/640x420/?Pompeii+history"
+      "imageUrl": "https://smv.org/media/images/2019.06.24_vesuvius1_N1grK4c.width-1200.jpg"
     },
     {
       "category": "History",
@@ -9954,7 +9955,7 @@
       ],
       "correctIndex": 2,
       "id": 781,
-      "imageUrl": "https://source.unsplash.com/640x420/?Queen+Victoria+history"
+      "imageUrl": "https://www.english-heritage.org.uk/siteassets/home/learn/histories/women-in-history/queen-victoria/victoria-and-family.jpg?w=640&mode=none&scale=downscale&quality=60&anchor=&WebsiteVersion=20200219"
     },
     {
       "category": "History",
@@ -9967,7 +9968,7 @@
       ],
       "correctIndex": 2,
       "id": 782,
-      "imageUrl": "https://source.unsplash.com/640x420/?Elizabeth+I+history"
+      "imageUrl": "https://images.immediate.co.uk/production/volatile/sites/7/2018/05/GettyImages-587489922-2-4ec0d92.jpg?quality=90&resize=637,425"
     },
     {
       "category": "History",
@@ -9980,7 +9981,7 @@
       ],
       "correctIndex": 2,
       "id": 783,
-      "imageUrl": "https://source.unsplash.com/640x420/?Mongol+Empire+history"
+      "imageUrl": "https://cdn.prod.website-files.com/64b16a147091fa60e74d1e28/65ce9ef853ad7fa3d9f6886b_Untitled%20design%20(59).png"
     },
     {
       "category": "History",
@@ -10006,7 +10007,7 @@
       ],
       "correctIndex": 0,
       "id": 785,
-      "imageUrl": "https://source.unsplash.com/640x420/?Ships+bringing+British+settlers+and+convicts+to+Australia+history"
+      "imageUrl": "https://www.seacraftgallery.com.au/wp-content/uploads/2019/05/Group-of-Ships.jpg"
     },
     {
       "category": "History",
@@ -10019,7 +10020,7 @@
       ],
       "correctIndex": 0,
       "id": 786,
-      "imageUrl": "https://source.unsplash.com/640x420/?1788+history"
+      "imageUrl": "https://www.seacraftgallery.com.au/wp-content/uploads/2019/05/Group-of-Ships.jpg"
     },
     {
       "category": "History",
@@ -10032,7 +10033,7 @@
       ],
       "correctIndex": 3,
       "id": 787,
-      "imageUrl": "https://source.unsplash.com/640x420/?Canberra+history"
+      "imageUrl": "https://www.library.gov.au/sites/default/files/styles/media_carousel/public/images/2024-10/collection-print-canberra-plan-walter-marion-burley-griffin-nla-obj-3210431032.jpeg?h=ae20c61a&itok=ST5q9NXX"
     },
     {
       "category": "Sports",
@@ -12398,7 +12399,7 @@
       ],
       "correctIndex": 0,
       "id": 969,
-      "imageUrl": "https://source.unsplash.com/640x420/?The+Olgas+Australia+landform"
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTx4RbXSrvYB819jmSm8MBg9l2JoVQ4eLrusw&s"
     },
     {
       "category": "Geography",
@@ -12411,7 +12412,7 @@
       ],
       "correctIndex": 0,
       "id": 970,
-      "imageUrl": "https://source.unsplash.com/640x420/?Mount+Kosciuszko+Australia+landform"
+      "imageUrl": "https://hikingscenery.com/wp-content/uploads/2020/01/DSCN3149-1200x900.jpg"
     },
     {
       "category": "Geography",
@@ -12437,7 +12438,7 @@
       ],
       "correctIndex": 0,
       "id": 972,
-      "imageUrl": "https://source.unsplash.com/640x420/?Ningaloo+Reef+Australia+landform"
+      "imageUrl": "https://www.whalesharkdive.com/wp-content/uploads/2025/05/Where-is-Ningaloo-Reef.jpg"
     },
     {
       "category": "Geography",
@@ -12554,7 +12555,7 @@
       ],
       "correctIndex": 1,
       "id": 981,
-      "imageUrl": "https://source.unsplash.com/640x420/?Bungle+Bungles+Australia+landform"
+      "imageUrl": "https://b3027388.smushcdn.com/3027388/wp-content/uploads/2020/10/bungle-bungles.jpg?lossy=1&strip=1&webp=1"
     },
     {
       "category": "Geography",
