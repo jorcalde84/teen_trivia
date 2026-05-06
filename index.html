@@ -3666,7 +3666,8 @@
       timerId: null,
       timeLeft: 0,
       totalPlayers: 0,
-      answered: false
+      answered: false,
+      streaks: {}
     };
 
     function getDb() {
@@ -3698,7 +3699,7 @@
       roomCode = null;
       role = null;
       playerId = null;
-      onlineGame = { questions:[], currentIndex:-1, timePerQ:20, timerId:null, timeLeft:0, totalPlayers:0, answered:false };
+      onlineGame = { questions:[], currentIndex:-1, timePerQ:20, timerId:null, timeLeft:0, totalPlayers:0, answered:false, streaks:{} };
     }
 
     /* ── HOST: Create Room ── */
@@ -3736,14 +3737,19 @@
           status: 'lobby',
           hostCreatedAt: firebase.database.ServerValue.TIMESTAMP,
           settings: { timePerQ: tpq, category: cat || 'All' },
-          questions: pool.map((q, i) => ({
-            id: i,
-            category: q.category,
-            question: q.question,
-            options: q.options,
-            correctIndex: q.correctIndex,
-            imageUrl: q.imageUrl || null
-          })),
+          questions: pool.map((q, i) => {
+            // Shuffle answer positions so the correct answer isn't always in the same spot
+            const indexed = q.options.map((opt, oi) => ({ opt, wasCorrect: oi === q.correctIndex }));
+            const shuffled = shuffle(indexed);
+            return {
+              id: i,
+              category: q.category,
+              question: q.question,
+              options: shuffled.map(s => s.opt),
+              correctIndex: shuffled.findIndex(s => s.wasCorrect),
+              imageUrl: q.imageUrl || null
+            };
+          }),
           currentQuestion: -1,
           players: {}
         };
@@ -3757,7 +3763,7 @@
         roomRef = ref;
         roomCode = code;
         role = 'host';
-        onlineGame.questions = pool;
+        onlineGame.questions = roomData.questions; // use shuffled version
         onlineGame.timePerQ = tpq;
 
         showHostLobby();
@@ -3812,12 +3818,20 @@
 
     /* ── HOST: Start Game ── */
     async function hostStartGame() {
+      // Count players for early-finish detection
+      const pSnap = await roomRef.child('players').once('value');
+      const playerData = pSnap.val() || {};
+      onlineGame.totalPlayers = Object.keys(playerData).length;
+      onlineGame.streaks = {}; // track answer streaks per player (Kahoot scoring)
+      Object.keys(playerData).forEach(pid => { onlineGame.streaks[pid] = 0; });
+
       await roomRef.update({ status: 'playing', currentQuestion: 0 });
       onlineGame.currentIndex = 0;
       hostShowQuestion(0);
     }
 
     function hostShowQuestion(idx) {
+      _hostTimeUpFired = false;
       const q = onlineGame.questions[idx];
       const total = onlineGame.questions.length;
 
@@ -3853,10 +3867,19 @@
 
       // Listen for answer count (total only — no per-option breakdown)
       const ansRef = roomRef.child('answers/q' + idx);
+      let earlyFinishTriggered = false;
       listen(ansRef, 'value', snap => {
         const answers = snap.val() || {};
         const total = Object.keys(answers).length;
-        document.getElementById('onlineHostAnswered').textContent = total + ' answered';
+        document.getElementById('onlineHostAnswered').textContent = total + ' of ' + onlineGame.totalPlayers + ' answered';
+
+        // Early finish: if everyone answered, skip remaining time
+        if (total >= onlineGame.totalPlayers && onlineGame.totalPlayers > 0 && !earlyFinishTriggered) {
+          earlyFinishTriggered = true;
+          if (onlineGame.timerId) { clearInterval(onlineGame.timerId); onlineGame.timerId = null; }
+          // Short pause so the last player sees their selection, then reveal
+          setTimeout(() => hostTimeUp(), 800);
+        }
       });
 
       // Start timer
@@ -3897,7 +3920,10 @@
       }, 1000);
     }
 
+    let _hostTimeUpFired = false;
     async function hostTimeUp() {
+      if (_hostTimeUpFired) return;
+      _hostTimeUpFired = true;
       SOUND.stopMusic();
       const idx = onlineGame.currentIndex;
       const q = onlineGame.questions[idx];
@@ -3922,17 +3948,57 @@
         }
       }
 
-      // Calculate scores — aligned with Solo mode: base 600 + speed bonus up to 400
+      // ══════════════════════════════════════════════════════
+      // KAHOOT SCORING: speed-based with 50% floor + streaks
+      // ══════════════════════════════════════════════════════
+      // Speed formula: points = (1 - (responseTime / timer) / 2) * 1000
+      //   → Answer instantly = 1000 pts, answer at last second ≈ 500 pts
+      // Streak bonus: 2nd correct +100, 3rd +200, 4th +300, 5th+ +500
+      //   → Wrong/no answer resets streak to 0
+
+      const streakBonusTable = [0, 0, 100, 200, 300, 500]; // index = streak count
+
       const updates = {};
+      const allPlayerIds = new Set();
+
+      // Get all player IDs to detect who didn't answer
+      try {
+        const pSnap = await roomRef.child('players').once('value');
+        const pData = pSnap.val() || {};
+        Object.keys(pData).forEach(pid => allPlayerIds.add(pid));
+      } catch(e) {}
+
+      // Score players who answered
       Object.entries(answers).forEach(([pid, a]) => {
+        allPlayerIds.delete(pid); // mark as answered
+
         if (a.choice === correct) {
-          const speed = Math.max(0, a.timeLeft) / onlineGame.timePerQ;
-          const points = Math.round(600 + speed * 400);
-          updates['players/' + pid + '/score'] = firebase.database.ServerValue.increment(points);
-          updates['answers/q' + idx + '/' + pid + '/points'] = points;
+          // Kahoot speed formula
+          const responseTime = onlineGame.timePerQ - Math.max(0, a.timeLeft);
+          const speedRatio = responseTime / onlineGame.timePerQ;
+          const pointMultiplier = 1 - (speedRatio / 2);
+          const basePoints = Math.round(pointMultiplier * 1000);
+
+          // Streak bonus
+          if (!onlineGame.streaks) onlineGame.streaks = {};
+          onlineGame.streaks[pid] = (onlineGame.streaks[pid] || 0) + 1;
+          const streak = onlineGame.streaks[pid];
+          const streakBonus = streak >= 5 ? 500 : (streakBonusTable[streak] || 0);
+
+          const totalPoints = basePoints + streakBonus;
+          updates['players/' + pid + '/score'] = firebase.database.ServerValue.increment(totalPoints);
+          updates['answers/q' + idx + '/' + pid + '/points'] = totalPoints;
+          updates['answers/q' + idx + '/' + pid + '/streak'] = streak;
         } else {
+          // Wrong answer: reset streak
+          if (onlineGame.streaks) onlineGame.streaks[pid] = 0;
           updates['answers/q' + idx + '/' + pid + '/points'] = 0;
         }
+      });
+
+      // Players who didn't answer: reset their streak too
+      allPlayerIds.forEach(pid => {
+        if (onlineGame.streaks) onlineGame.streaks[pid] = 0;
       });
       updates['status'] = 'results';
       await roomRef.update(updates);
@@ -4165,6 +4231,17 @@
         btn.style.opacity = '1';
       });
 
+      // Start local timer so timeLeft is accurate for scoring
+      onlineGame.timeLeft = onlineGame.timePerQ;
+      if (onlineGame.timerId) clearInterval(onlineGame.timerId);
+      onlineGame.timerId = setInterval(() => {
+        onlineGame.timeLeft = Math.max(0, onlineGame.timeLeft - 1);
+        if (onlineGame.timeLeft <= 0) {
+          clearInterval(onlineGame.timerId);
+          onlineGame.timerId = null;
+        }
+      }, 1000);
+
       show('screen-online-player-q');
     }
 
@@ -4173,13 +4250,16 @@
       if (onlineGame.answered) return;
       onlineGame.answered = true;
 
+      // Stop local timer and capture timeLeft
+      if (onlineGame.timerId) { clearInterval(onlineGame.timerId); onlineGame.timerId = null; }
+      const timeLeft = onlineGame.timeLeft || 0;
+
       // Visual feedback
       document.querySelectorAll('.player-answer-btn').forEach((btn, i) => {
         if (i === choice) btn.classList.add('selected');
         else { btn.style.opacity = '0.3'; btn.disabled = true; }
       });
 
-      const timeLeft = onlineGame.timeLeft || 0;
       await roomRef.child('answers/q' + onlineGame.currentIndex + '/' + playerId).set({
         choice,
         timeLeft,
